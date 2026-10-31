@@ -78,6 +78,32 @@ app.use('/uploads', express.static(path.resolve(__dirname, '../uploads')));
 // Request Timing & Server-Timing Logger
 app.use(requestLogger);
 
+// Graceful fallback rewrite if client requests without /api prefix (e.g. /categories, /dashboard/stats)
+app.use((req, res, next) => {
+  const apiPrefixes = [
+    '/health',
+    '/categories',
+    '/roadmaps',
+    '/modules',
+    '/days',
+    '/tasks',
+    '/dashboard',
+    '/analytics',
+    '/calendar',
+    '/personal-tasks',
+    '/notes',
+    '/revisions',
+    '/projects',
+    '/study-sessions',
+    '/notifications',
+    '/reminders',
+  ];
+  if (apiPrefixes.some((p) => req.path === p || req.path.startsWith(`${p}/`))) {
+    req.url = `/api${req.url}`;
+  }
+  next();
+});
+
 // Prevent stale proxy caching for mutable API routes
 app.use('/api', (req, res, next) => {
   res.setHeader('Cache-Control', 'private, no-cache');

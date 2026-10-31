@@ -1,6 +1,13 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+// Automatically ensure clean /api suffix even if user omits it in Vercel environment variables
+const getNormalizedApiUrl = () => {
+  const envUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+  const trimmed = envUrl.trim().replace(/\/+$/, '');
+  return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+};
+
+const API_BASE_URL = getNormalizedApiUrl();
 
 const DEFAULT_CACHE_TTL = 30000; // 30 seconds
 
