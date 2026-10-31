@@ -1,0 +1,51 @@
+services:
+  # ---------------------------------------------------------------------------
+  # DevPath Backend API Web Service
+  # ---------------------------------------------------------------------------
+  - type: web
+    name: devpath-api
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install && npx prisma generate
+    startCommand: node src/server.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: APP_ACCESS_SECRET
+        generateValue: true
+
+  # ---------------------------------------------------------------------------
+  # DevPath Background Reminder Cron Job (Runs every 15 minutes)
+  # Prevents idle sleep interruptions on Render free tier
+  # ---------------------------------------------------------------------------
+  - type: cron
+    name: devpath-reminder-worker
+    runtime: node
+    rootDir: backend
+    plan: free
+    schedule: "*/15 * * * *"
+    buildCommand: npm install && npx prisma generate
+    startCommand: node src/scripts/process-reminders.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromService:
+          type: web
+          name: devpath-api
+          envVarKey: DATABASE_URL
+      - key: DIRECT_URL
+        fromService:
+          type: web
+          name: devpath-api
+          envVarKey: DIRECT_URL

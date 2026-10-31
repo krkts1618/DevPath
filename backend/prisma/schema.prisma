@@ -1,0 +1,613 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model RoadmapCategory {
+  id           String   @id @default(uuid()) @db.Uuid
+  name         String   @unique @db.VarChar(100)
+  slug         String   @unique @db.VarChar(120)
+  description  String?  @db.Text
+  displayOrder Int      @default(0) @map("display_order")
+  status       String   @default("active") @db.VarChar(20)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  roadmaps Roadmap[]
+
+  @@index([status])
+  @@map("roadmap_categories")
+}
+
+model Roadmap {
+  id                   String    @id @default(uuid()) @db.Uuid
+  categoryId           String    @map("category_id") @db.Uuid
+  title                String    @db.VarChar(200)
+  slug                 String    @unique @db.VarChar(220)
+  description          String?   @db.Text
+  duration             Int
+  targetDailyStudyTime Int       @default(120) @map("target_daily_study_time")
+  startDate            DateTime? @map("start_date")
+  status               String    @default("active") @db.VarChar(20)
+  displayOrder         Int       @default(0) @map("display_order")
+  iconIdentifier       String?   @map("icon_identifier") @db.VarChar(50)
+  themeIdentifier      String?   @map("theme_identifier") @db.VarChar(50)
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+
+  category      RoadmapCategory    @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  modules       Module[]
+  roadmapDays   RoadmapDay[]
+  dailyNotes    DailyNote[]
+  resources     Resource[]
+  revisionItems RevisionSchedule[]
+  projects      Project[]
+  pauseHistory  RoadmapPauseHistory[]
+  personalTasks PersonalTask[]
+  notes         Note[]
+  studySessions StudySession[]
+
+  @@index([categoryId])
+  @@index([status])
+  @@map("roadmaps")
+}
+
+model Module {
+  id           String   @id @default(uuid()) @db.Uuid
+  roadmapId    String   @map("roadmap_id") @db.Uuid
+  title        String   @db.VarChar(200)
+  description  String?  @db.Text
+  startingDay  Int      @map("starting_day")
+  endingDay    Int      @map("ending_day")
+  displayOrder Int      @default(0) @map("display_order")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  roadmap     Roadmap      @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  roadmapDays RoadmapDay[]
+
+  @@index([roadmapId])
+  @@index([displayOrder])
+  @@map("modules")
+}
+
+model RoadmapDay {
+  id                 String   @id @default(uuid()) @db.Uuid
+  roadmapId          String   @map("roadmap_id") @db.Uuid
+  moduleId           String?  @map("module_id") @db.Uuid
+  dayNumber          Int      @map("day_number")
+  title              String   @db.VarChar(255)
+  objective          String?  @db.Text
+  estimatedStudyTime Int      @default(120) @map("estimated_study_time")
+  dayType            String   @default("learning") @map("day_type") @db.VarChar(30)
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  roadmap               Roadmap            @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  module                Module?            @relation(fields: [moduleId], references: [id], onDelete: SetNull)
+  tasks                 Task[]
+  dailyNotes            DailyNote[]
+  notes                 Note[]
+  revisionItems         RevisionSchedule[]
+  studySessions         StudySession[]
+  originalReassignments TaskReassignment[] @relation("OriginalDay")
+  newReassignments      TaskReassignment[] @relation("NewDay")
+
+  @@unique([roadmapId, dayNumber])
+  @@index([roadmapId])
+  @@index([moduleId])
+  @@index([dayNumber])
+  @@map("roadmap_days")
+}
+
+model Task {
+  id                String   @id @default(uuid()) @db.Uuid
+  roadmapDayId      String   @map("roadmap_day_id") @db.Uuid
+  title             String   @db.VarChar(300)
+  description       String?  @db.Text
+  taskType          String   @default("learn") @map("task_type") @db.VarChar(30)
+  priority          String   @default("normal") @db.VarChar(20)
+  estimatedDuration Int      @default(30) @map("estimated_duration")
+  isRequired        Boolean  @default(true) @map("is_required")
+  displayOrder      Int      @default(0) @map("display_order")
+  githubUrl         String?  @map("github_url") @db.VarChar(500)
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  roadmapDay    RoadmapDay         @relation(fields: [roadmapDayId], references: [id], onDelete: Cascade)
+  completions   TaskCompletion[]
+  reassignments TaskReassignment[]
+  resources     Resource[]
+  revisionItems RevisionSchedule[]
+  notes         Note[]
+  projectTasks  ProjectTask[]
+  studySessions StudySession[]
+
+  @@index([roadmapDayId])
+  @@index([roadmapDayId, isRequired])
+  @@index([taskType])
+  @@map("tasks")
+}
+
+model TaskCompletion {
+  id          String   @id @default(uuid()) @db.Uuid
+  taskId      String   @map("task_id") @db.Uuid
+  completed   Boolean  @default(true)
+  completedAt DateTime @default(now()) @map("completed_at")
+  notes       String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId])
+  @@index([taskId])
+  @@index([completedAt])
+  @@index([completed])
+  @@index([completed, completedAt])
+  @@map("task_completions")
+}
+
+model DailyNote {
+  id           String   @id @default(uuid()) @db.Uuid
+  roadmapId    String?  @map("roadmap_id") @db.Uuid
+  roadmapDayId String?  @map("roadmap_day_id") @db.Uuid
+  title        String?  @db.VarChar(200)
+  content      String   @db.Text
+  noteDate     DateTime @default(now()) @map("note_date")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  roadmap    Roadmap?    @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  roadmapDay RoadmapDay? @relation(fields: [roadmapDayId], references: [id], onDelete: Cascade)
+
+  @@index([roadmapId])
+  @@index([roadmapDayId])
+  @@index([noteDate])
+  @@map("daily_notes")
+}
+
+model Resource {
+  id           String   @id @default(uuid()) @db.Uuid
+  roadmapId    String?  @map("roadmap_id") @db.Uuid
+  taskId       String?  @map("task_id") @db.Uuid
+  title        String   @db.VarChar(255)
+  url          String   @db.VarChar(1000)
+  description  String?  @db.Text
+  resourceType String   @default("documentation") @map("resource_type") @db.VarChar(50)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  roadmap Roadmap? @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  task    Task?    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([roadmapId])
+  @@index([taskId])
+  @@index([resourceType])
+  @@map("resources")
+}
+
+model RevisionSchedule {
+  id               String    @id @default(uuid()) @db.Uuid
+  roadmapId        String?   @map("roadmap_id") @db.Uuid
+  roadmapDayId     String?   @map("roadmap_day_id") @db.Uuid
+  taskId           String?   @map("task_id") @db.Uuid
+  noteId           String?   @map("note_id") @db.Uuid
+  topic            String    @default("General Revision") @db.VarChar(300)
+  description      String?   @db.Text
+  stage            Int       @default(1)
+  intervalDays     Int       @default(1) @map("interval_days")
+  scheduledDate    DateTime  @map("scheduled_date")
+  lastRevisedAt    DateTime? @map("last_revised_at")
+  status           String    @default("due") @db.VarChar(20)
+  priority         String    @default("normal") @db.VarChar(20)
+  difficultyRating String?   @map("difficulty_rating") @db.VarChar(20)
+  revisionNumber   Int       @default(1) @map("revision_number")
+  completed        Boolean   @default(false)
+  completedAt      DateTime? @map("completed_at")
+  notes            String?   @db.Text
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  roadmap    Roadmap?          @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  roadmapDay RoadmapDay?       @relation(fields: [roadmapDayId], references: [id], onDelete: Cascade)
+  task       Task?             @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  note       Note?             @relation(fields: [noteId], references: [id], onDelete: SetNull)
+  sessions      RevisionSession[]
+  studySessions StudySession[]
+
+  @@index([roadmapId])
+  @@index([taskId])
+  @@index([scheduledDate])
+  @@index([completed])
+  @@index([status])
+  @@index([completed, status, scheduledDate])
+  @@map("revision_schedule")
+}
+
+model RevisionSession {
+  id                 String   @id @default(uuid()) @db.Uuid
+  revisionScheduleId String   @map("revision_schedule_id") @db.Uuid
+  rating             String   @db.VarChar(20)
+  notes              String?  @db.Text
+  durationMinutes    Int      @default(10) @map("duration_minutes")
+  revisedAt          DateTime @default(now()) @map("revised_at")
+
+  revisionSchedule RevisionSchedule @relation(fields: [revisionScheduleId], references: [id], onDelete: Cascade)
+
+  @@index([revisionScheduleId])
+  @@index([revisedAt])
+  @@map("revision_sessions")
+}
+
+model Project {
+  id               String    @id @default(uuid()) @db.Uuid
+  roadmapId        String?   @map("roadmap_id") @db.Uuid
+  name             String    @db.VarChar(200)
+  description      String?   @db.Text
+  problemStatement String?   @map("problem_statement") @db.Text
+  goals            String?   @db.Text
+  techStack        String?   @map("tech_stack") @db.Text
+  githubUrl        String?   @map("github_url") @db.VarChar(500)
+  demoUrl          String?   @map("demo_url") @db.VarChar(500)
+  documentationUrl String?   @map("documentation_url") @db.VarChar(500)
+  status           String    @default("planned") @db.VarChar(30)
+  priority         String    @default("normal") @db.VarChar(20)
+  startDate        DateTime? @map("start_date")
+  targetDate       DateTime? @map("target_date")
+  endDate          DateTime? @map("end_date")
+  projectNotes     String?   @map("project_notes") @db.Text
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  roadmap    Roadmap?           @relation(fields: [roadmapId], references: [id], onDelete: SetNull)
+  milestones    ProjectMilestone[]
+  tasks         ProjectTask[]
+  resources     ProjectResource[]
+  studySessions StudySession[]
+
+  @@index([roadmapId])
+  @@index([status])
+  @@map("projects")
+}
+
+model ProjectMilestone {
+  id           String    @id @default(uuid()) @db.Uuid
+  projectId    String    @map("project_id") @db.Uuid
+  title        String    @db.VarChar(200)
+  description  String?   @db.Text
+  dueDate      DateTime? @map("due_date")
+  status       String    @default("pending") @db.VarChar(30)
+  displayOrder Int       @default(0) @map("display_order")
+  completedAt  DateTime? @map("completed_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  project Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tasks   ProjectTask[]
+
+  @@index([projectId])
+  @@index([status])
+  @@map("project_milestones")
+}
+
+model ProjectTask {
+  id                String    @id @default(uuid()) @db.Uuid
+  projectId         String    @map("project_id") @db.Uuid
+  milestoneId       String?   @map("milestone_id") @db.Uuid
+  roadmapTaskId     String?   @map("roadmap_task_id") @db.Uuid
+  title             String    @db.VarChar(255)
+  description       String?   @db.Text
+  priority          String    @default("normal") @db.VarChar(20)
+  dueDate           DateTime? @map("due_date")
+  estimatedDuration Int       @default(30) @map("estimated_duration")
+  status            String    @default("todo") @db.VarChar(30)
+  completedAt       DateTime? @map("completed_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  project        Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  milestone      ProjectMilestone? @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
+  curriculumTask Task?             @relation(fields: [roadmapTaskId], references: [id], onDelete: SetNull)
+  studySessions  StudySession[]
+
+  @@index([projectId])
+  @@index([milestoneId])
+  @@index([status])
+  @@map("project_tasks")
+}
+
+model ProjectResource {
+  id           String   @id @default(uuid()) @db.Uuid
+  projectId    String   @map("project_id") @db.Uuid
+  title        String   @db.VarChar(200)
+  url          String   @db.VarChar(1000)
+  resourceType String   @default("link") @map("resource_type") @db.VarChar(50)
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@map("project_resources")
+}
+
+model Note {
+  id           String   @id @default(uuid()) @db.Uuid
+  title        String   @db.VarChar(300)
+  content      String   @db.Text
+  roadmapId    String?  @map("roadmap_id") @db.Uuid
+  roadmapDayId String?  @map("roadmap_day_id") @db.Uuid
+  taskId       String?  @map("task_id") @db.Uuid
+  isPinned     Boolean  @default(false) @map("is_pinned")
+  isFavorite   Boolean  @default(false) @map("is_favorite")
+  isArchived   Boolean  @default(false) @map("is_archived")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  roadmap    Roadmap?    @relation(fields: [roadmapId], references: [id], onDelete: SetNull)
+  roadmapDay RoadmapDay? @relation(fields: [roadmapDayId], references: [id], onDelete: SetNull)
+  task       Task?       @relation(fields: [taskId], references: [id], onDelete: SetNull)
+
+  tags              NoteTagMapping[]
+  attachments       NoteAttachment[]
+  revisionSchedules RevisionSchedule[]
+
+  @@index([roadmapId])
+  @@index([roadmapDayId])
+  @@index([taskId])
+  @@index([isPinned])
+  @@index([isFavorite])
+  @@index([isArchived])
+  @@map("notes")
+}
+
+model NoteTag {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique @db.VarChar(60)
+  color     String?  @db.VarChar(30)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  notes NoteTagMapping[]
+
+  @@map("note_tags")
+}
+
+model NoteTagMapping {
+  noteId     String   @map("note_id") @db.Uuid
+  tagId      String   @map("tag_id") @db.Uuid
+  assignedAt DateTime @default(now()) @map("assigned_at")
+
+  note Note    @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  tag  NoteTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([noteId, tagId])
+  @@index([noteId])
+  @@index([tagId])
+  @@map("note_tag_mappings")
+}
+
+model NoteAttachment {
+  id        String   @id @default(uuid()) @db.Uuid
+  noteId    String   @map("note_id") @db.Uuid
+  fileName  String   @map("file_name") @db.VarChar(255)
+  fileUrl   String   @map("file_url") @db.VarChar(1000)
+  fileType  String   @map("file_type") @db.VarChar(100)
+  fileSize  Int      @map("file_size")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  note Note @relation(fields: [noteId], references: [id], onDelete: Cascade)
+
+  @@index([noteId])
+  @@map("note_attachments")
+}
+
+model TaskReassignment {
+  id                   String   @id @default(uuid()) @db.Uuid
+  taskId               String   @map("task_id") @db.Uuid
+  originalRoadmapDayId String   @map("original_roadmap_day_id") @db.Uuid
+  newRoadmapDayId      String   @map("new_roadmap_day_id") @db.Uuid
+  reason               String?  @db.Text
+  reassignedAt         DateTime @default(now()) @map("reassigned_at")
+  createdAt            DateTime @default(now()) @map("created_at")
+
+  task        Task       @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  originalDay RoadmapDay @relation("OriginalDay", fields: [originalRoadmapDayId], references: [id], onDelete: Cascade)
+  newDay      RoadmapDay @relation("NewDay", fields: [newRoadmapDayId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@index([originalRoadmapDayId])
+  @@index([newRoadmapDayId])
+  @@map("task_reassignments")
+}
+
+model RoadmapPauseHistory {
+  id        String    @id @default(uuid()) @db.Uuid
+  roadmapId String    @map("roadmap_id") @db.Uuid
+  pausedAt  DateTime  @default(now()) @map("paused_at")
+  resumedAt DateTime? @map("resumed_at")
+  reason    String?   @db.Text
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  roadmap Roadmap @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+
+  @@index([roadmapId])
+  @@map("roadmap_pause_history")
+}
+
+model PlannedRestDay {
+  id        String   @id @default(uuid()) @db.Uuid
+  date      String   @unique @db.VarChar(10)
+  title     String?  @db.VarChar(150)
+  reason    String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([date])
+  @@map("planned_rest_days")
+}
+
+model PersonalTask {
+  id                String    @id @default(uuid()) @db.Uuid
+  roadmapId         String?   @map("roadmap_id") @db.Uuid
+  title             String    @db.VarChar(300)
+  description       String?   @db.Text
+  scheduledDate     String    @map("scheduled_date") @db.VarChar(10)
+  dueDate           String?   @map("due_date") @db.VarChar(10)
+  priority          String    @default("normal") @db.VarChar(20)
+  estimatedDuration Int       @default(30) @map("estimated_duration")
+  category          String?   @db.VarChar(100)
+  completed         Boolean   @default(false)
+  completedAt       DateTime? @map("completed_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  roadmap Roadmap? @relation(fields: [roadmapId], references: [id], onDelete: SetNull)
+
+  @@index([roadmapId])
+  @@index([scheduledDate])
+  @@index([completed])
+  @@index([completed, completedAt])
+  @@index([scheduledDate, completed])
+  @@map("personal_tasks")
+}
+
+model StreakTargetConfig {
+  id            String   @id @default(uuid()) @db.Uuid
+  target        Int      @default(5)
+  effectiveFrom String   @map("effective_from") @db.VarChar(10)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@index([effectiveFrom])
+  @@map("streak_target_configs")
+}
+
+model StudySession {
+  id                    String    @id @default(uuid()) @db.Uuid
+  sessionType           String    @default("pomodoro") @map("session_type") @db.VarChar(30)
+  title                 String?   @db.VarChar(255)
+  roadmapId             String?   @map("roadmap_id") @db.Uuid
+  roadmapDayId          String?   @map("roadmap_day_id") @db.Uuid
+  taskId                String?   @map("task_id") @db.Uuid
+  revisionScheduleId    String?   @map("revision_schedule_id") @db.Uuid
+  projectId             String?   @map("project_id") @db.Uuid
+  projectTaskId         String?   @map("project_task_id") @db.Uuid
+  targetDurationMinutes Int?      @map("target_duration_minutes")
+  actualDurationSeconds Int       @default(0) @map("actual_duration_seconds")
+  pausedDurationSeconds Int       @default(0) @map("paused_duration_seconds")
+  status                String    @default("active") @db.VarChar(30)
+  startedAt             DateTime  @default(now()) @map("started_at")
+  endedAt               DateTime? @map("ended_at")
+  pausedAt              DateTime? @map("paused_at")
+  completedAt           DateTime? @map("completed_at")
+  notes                 String?   @db.Text
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  roadmap          Roadmap?          @relation(fields: [roadmapId], references: [id], onDelete: SetNull)
+  roadmapDay       RoadmapDay?       @relation(fields: [roadmapDayId], references: [id], onDelete: SetNull)
+  task             Task?             @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  revisionSchedule RevisionSchedule? @relation(fields: [revisionScheduleId], references: [id], onDelete: SetNull)
+  project          Project?          @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  projectTask      ProjectTask?      @relation(fields: [projectTaskId], references: [id], onDelete: SetNull)
+
+  @@index([roadmapId])
+  @@index([roadmapDayId])
+  @@index([taskId])
+  @@index([revisionScheduleId])
+  @@index([projectId])
+  @@index([projectTaskId])
+  @@index([status])
+  @@index([startedAt])
+  @@index([sessionType])
+  @@map("study_sessions")
+}
+
+model Notification {
+  id                String    @id @default(uuid()) @db.Uuid
+  title             String    @db.VarChar(255)
+  description       String    @db.Text
+  notificationType  String    @map("notification_type") @db.VarChar(50)
+  priority          String    @default("normal") @db.VarChar(20)
+  isRead            Boolean   @default(false) @map("is_read")
+  readAt            DateTime? @map("read_at")
+  relatedEntityType String?   @map("related_entity_type") @db.VarChar(50)
+  relatedEntityId   String?   @map("related_entity_id") @db.VarChar(100)
+  actionUrl         String?   @map("action_url") @db.VarChar(255)
+  idempotencyKey    String?   @unique @map("idempotency_key") @db.VarChar(200)
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  @@index([isRead])
+  @@index([notificationType])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+model NotificationPreference {
+  id                              String   @id @default(uuid()) @db.Uuid
+  dailyRemindersEnabled          Boolean  @default(true) @map("daily_reminders_enabled")
+  missedTaskRemindersEnabled      Boolean  @default(true) @map("missed_task_reminders_enabled")
+  revisionRemindersEnabled        Boolean  @default(true) @map("revision_reminders_enabled")
+  streakRemindersEnabled          Boolean  @default(true) @map("streak_reminders_enabled")
+  focusCompletionEnabled          Boolean  @default(true) @map("focus_completion_enabled")
+  projectDeadlineRemindersEnabled Boolean  @default(true) @map("project_deadline_reminders_enabled")
+  dailyDigestEnabled              Boolean  @default(true) @map("daily_digest_enabled")
+  dailyDigestTime                 String   @default("08:00") @map("daily_digest_time") @db.VarChar(10)
+  browserNotificationsEnabled     Boolean  @default(false) @map("browser_notifications_enabled")
+  soundEnabled                    Boolean  @default(true) @map("sound_enabled")
+  quietHoursEnabled               Boolean  @default(false) @map("quiet_hours_enabled")
+  quietHoursStart                 String   @default("22:30") @map("quiet_hours_start") @db.VarChar(10)
+  quietHoursEnd                   String   @default("07:00") @map("quiet_hours_end") @db.VarChar(10)
+  timezone                        String   @default("Asia/Kolkata") @db.VarChar(50)
+  createdAt                       DateTime @default(now()) @map("created_at")
+  updatedAt                       DateTime @updatedAt @map("updated_at")
+
+  @@map("notification_preferences")
+}
+
+model ReminderSchedule {
+  id            String    @id @default(uuid()) @db.Uuid
+  title         String    @db.VarChar(200)
+  reminderTime  String    @map("reminder_time") @db.VarChar(10)
+  weekdays      Json      @default("[0, 1, 2, 3, 4, 5, 6]")
+  category      String    @default("daily_study") @db.VarChar(50)
+  customMessage String?   @map("custom_message") @db.Text
+  isActive      Boolean   @default(true) @map("is_active")
+  timezone      String    @default("Asia/Kolkata") @db.VarChar(50)
+  nextRunAt     DateTime? @map("next_run_at")
+  lastRunAt     DateTime? @map("last_run_at")
+  lastStatus    String?   @map("last_status") @db.VarChar(50)
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  executions ReminderExecution[]
+
+  @@index([isActive])
+  @@index([reminderTime])
+  @@map("reminder_schedules")
+}
+
+model ReminderExecution {
+  id                   String    @id @default(uuid()) @db.Uuid
+  scheduleId           String?   @map("schedule_id") @db.Uuid
+  executionType        String    @default("scheduled") @map("execution_type") @db.VarChar(50)
+  executedAt           DateTime  @default(now()) @map("executed_at")
+  status               String    @default("success") @db.VarChar(50)
+  notificationsCreated Int       @default(0) @map("notifications_created")
+  details              Json?
+  createdAt            DateTime  @default(now()) @map("created_at")
+
+  schedule ReminderSchedule? @relation(fields: [scheduleId], references: [id], onDelete: SetNull)
+
+  @@index([scheduleId])
+  @@index([executedAt])
+  @@index([status])
+  @@map("reminder_executions")
+}
+
