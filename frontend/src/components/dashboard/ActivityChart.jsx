@@ -2,6 +2,7 @@ import React from 'react';
 import {
   BarChart,
   Bar,
+  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -10,6 +11,7 @@ import {
 } from 'recharts';
 import { Activity } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import { formatKolkataDate } from '../../utils/date.util';
 
 export default function ActivityChart({ data = [] }) {
   const { theme } = useTheme();
@@ -19,14 +21,16 @@ export default function ActivityChart({ data = [] }) {
     data.length > 0
       ? data
       : [
-          { day: 'Mon', completed: 0 },
-          { day: 'Tue', completed: 0 },
-          { day: 'Wed', completed: 0 },
-          { day: 'Thu', completed: 0 },
-          { day: 'Fri', completed: 0 },
-          { day: 'Sat', completed: 0 },
-          { day: 'Sun', completed: 0 },
+          { day: 'Mon', completed: 0, date: '' },
+          { day: 'Tue', completed: 0, date: '' },
+          { day: 'Wed', completed: 0, date: '' },
+          { day: 'Thu', completed: 0, date: '' },
+          { day: 'Fri', completed: 0, date: '' },
+          { day: 'Sat', completed: 0, date: '' },
+          { day: 'Sun', completed: 0, date: '' },
         ];
+
+  const totalWeeklyCompleted = chartData.reduce((acc, item) => acc + (item.completed || 0), 0);
 
   return (
     <div className="bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl p-5 shadow-xs">
@@ -37,9 +41,11 @@ export default function ActivityChart({ data = [] }) {
             Weekly Learning Activity
           </h3>
         </div>
-        <span className="text-[11px] text-[#737C74] dark:text-[#948979] font-mono">
-          Last 7 Days
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded-full bg-[#E8F0EB] text-[#244C3B] dark:bg-[#393E46] dark:text-[#DFD0B8] border border-[#C5D9CB] dark:border-[#4F5561]">
+            {totalWeeklyCompleted} completed (7d)
+          </span>
+        </div>
       </div>
 
       <div className="h-56 w-full">
@@ -59,7 +65,7 @@ export default function ActivityChart({ data = [] }) {
               axisLine={false}
               tick={{
                 fill: isDark ? '#948979' : '#737C74',
-                fontSize: 12,
+                fontSize: 11,
                 fontFamily: 'monospace',
               }}
             />
@@ -69,35 +75,57 @@ export default function ActivityChart({ data = [] }) {
               allowDecimals={false}
               tick={{
                 fill: isDark ? '#948979' : '#737C74',
-                fontSize: 12,
+                fontSize: 11,
                 fontFamily: 'monospace',
               }}
             />
             <Tooltip
-              contentStyle={{
-                backgroundColor: isDark ? '#393E46' : '#FFFFFF',
-                borderColor: isDark ? '#4F5561' : '#E8E8DF',
-                borderRadius: '8px',
-                color: isDark ? '#DFD0B8' : '#202A23',
-                fontSize: '12px',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+              content={({ active, payload }) => {
+                if (active && payload && payload.length) {
+                  const item = payload[0].payload;
+                  const dateLabel = item.date
+                    ? formatKolkataDate(item.date, { weekday: 'short', month: 'short', day: 'numeric' })
+                    : item.day;
+                  return (
+                    <div className="bg-[#FFFFFF] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46] p-2.5 rounded-lg shadow-md text-xs">
+                      <div className="font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-0.5">
+                        {dateLabel} {item.isToday ? '(Today)' : ''}
+                      </div>
+                      <div className="font-mono text-[#244C3B] dark:text-[#DFD0B8] flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                        <span>{item.completed} {item.completed === 1 ? 'task' : 'tasks'} completed</span>
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
               }}
-              formatter={(val) => [`${val} tasks`, 'Completed']}
             />
             <Bar
               dataKey="completed"
-              fill={isDark ? '#DFD0B8' : '#244C3B'}
               radius={[4, 4, 0, 0]}
               maxBarSize={36}
-            />
+            >
+              {chartData.map((entry, index) => {
+                let barColor = isDark ? '#DFD0B8' : '#244C3B';
+                if (entry.isToday) {
+                  barColor = '#10B981'; // Vibrant emerald highlight for today
+                } else if (entry.completed >= 5) {
+                  barColor = isDark ? '#ECE3D4' : '#1A3B2C';
+                }
+                return <Cell key={`cell-${index}`} fill={barColor} />;
+              })}
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </div>
 
-      <div className="mt-3 pt-3 border-t border-[#E8E8DF] dark:border-[#393E46] text-center">
-        <p className="text-[11px] text-[#737C74] dark:text-[#948979] font-mono">
-          Task completion velocity is recorded live from PostgreSQL completion logs.
-        </p>
+      <div className="mt-3 pt-3 border-t border-[#E8E8DF] dark:border-[#393E46] flex items-center justify-between text-[11px] text-[#737C74] dark:text-[#948979] font-mono">
+        <span>Kolkata Standard Time (IST)</span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-emerald-500" />
+          <span>Today's bar highlighted</span>
+        </span>
       </div>
     </div>
   );

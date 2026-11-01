@@ -21,6 +21,7 @@ import TodayTaskPreview from '../components/dashboard/TodayTaskPreview';
 import ActiveRoadmapsGrid from '../components/dashboard/ActiveRoadmapsGrid';
 import ActivityChart from '../components/dashboard/ActivityChart';
 import NotificationSummaryCard from '../components/dashboard/NotificationSummaryCard';
+import RecentActivityFeed from '../components/dashboard/RecentActivityFeed';
 import StatCard from '../components/ui/StatCard';
 import Button from '../components/ui/Button';
 import { StatCardSkeleton, CardSkeleton } from '../components/ui/Skeleton';
@@ -253,7 +254,10 @@ export default function DashboardPage() {
           </div>
 
           {/* Weekly Learning Activity */}
-          <ActivityChart />
+          <ActivityChart data={stats?.weeklyActivity} />
+
+          {/* Recent Activity Timeline */}
+          <RecentActivityFeed activities={stats?.recentActivity} />
 
           {/* Spaced Recall & Revisions Card */}
           <div className="bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl p-5 shadow-xs">

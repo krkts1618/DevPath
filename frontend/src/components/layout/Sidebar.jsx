@@ -12,11 +12,11 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
-  Terminal,
   Timer,
   Bell,
 } from 'lucide-react';
 import { useNotifications } from '../../context/NotificationContext';
+import DevPathLogo from '../common/DevPathLogo';
 import SidebarItem from './SidebarItem';
 import LearningTracksNav from './LearningTracksNav';
 
@@ -75,20 +75,9 @@ export default function Sidebar({
               to="/"
               onClick={handleLinkClick}
               className="flex items-center gap-3 overflow-hidden group"
+              title="DevPath • Engineering Learning Tracker"
             >
-              <div className="w-9 h-9 rounded-xl bg-[#244C3B] dark:bg-[#DFD0B8] text-white dark:text-[#222831] flex items-center justify-center flex-shrink-0 shadow-sm group-hover:bg-[#1A3B2C] dark:group-hover:bg-[#ECE3D4] transition-colors">
-                <Terminal className="w-5 h-5" />
-              </div>
-              {!isCollapsed && (
-                <div className="flex flex-col truncate">
-                  <span className="font-bold text-base tracking-tight text-[#202A23] dark:text-[#DFD0B8] leading-none">
-                    DevPath
-                  </span>
-                  <span className="text-[11px] text-[#737C74] dark:text-[#948979] font-medium tracking-wide mt-1">
-                    Engineering Tracker
-                  </span>
-                </div>
-              )}
+              <DevPathLogo compact={isCollapsed} />
             </NavLink>
 
             {/* Desktop collapse toggle */}

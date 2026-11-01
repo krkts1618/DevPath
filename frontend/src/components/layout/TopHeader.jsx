@@ -5,6 +5,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useTimer } from '../../context/TimerContext';
 import Button from '../ui/Button';
 import NotificationBellDropdown from '../notifications/NotificationBellDropdown';
+import { formatKolkataDate } from '../../utils/date.util';
 
 function formatCompactTime(totalSeconds) {
   if (totalSeconds === null || totalSeconds === undefined || isNaN(totalSeconds)) {
@@ -55,13 +56,12 @@ export default function TopHeader({
     currentTitle = { title: 'DevPath', subtitle: 'Engineering Learning Tracker' };
   }
 
-  const todayFormatted = new Intl.DateTimeFormat('en-IN', {
-    timeZone: 'Asia/Kolkata',
+  const todayFormatted = formatKolkataDate(new Date(), {
     weekday: 'short',
     day: 'numeric',
     month: 'short',
     year: 'numeric',
-  }).format(new Date());
+  });
 
   return (
     <header className="sticky top-0 z-30 bg-[#F7F7F2]/90 dark:bg-[#222831]/90 backdrop-blur-md border-b border-[#E8E8DF] dark:border-[#393E46] h-16">

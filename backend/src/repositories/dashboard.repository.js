@@ -1,5 +1,9 @@
 import { prisma } from '../config/db.js';
-import { getKolkataDateString } from '../utils/date.util.js';
+import {
+  getKolkataDateString,
+  addDaysToKolkataDate,
+  DEFAULT_TIMEZONE,
+} from '../utils/date.util.js';
 import {
   ProgressionService,
   computeProgressionFromRoadmap,
@@ -7,12 +11,26 @@ import {
 
 export const DashboardRepository = {
   /**
-   * Get high-level statistics across roadmaps, tasks, and streaks.
-   * Completely asynchronous, efficient in-memory progression calculations.
+   * Get high-level statistics across roadmaps, tasks, streaks, weekly activity, and recent events.
+   * Efficient in-memory progression calculations and lean parallel database reads.
    */
   async getStats() {
-    // 1. Fetch roadmaps with lean selective fields, streak metrics, and counts all in parallel
-    const [roadmaps, streakData, totalRoadmapsCount, completedCount, archivedCount] = await Promise.all([
+    const todayStr = getKolkataDateString();
+    const sevenDaysAgoStr = addDaysToKolkataDate(todayStr, -6);
+    // Rough UTC boundary for 7 days ago to filter indexed completedAt
+    const [sYear, sMonth, sDay] = sevenDaysAgoStr.split('-').map(Number);
+    const sevenDaysAgoUtc = new Date(Date.UTC(sYear, sMonth - 1, sDay, 0, 0, 0));
+
+    // 1. Fetch roadmaps, streaks, counts, recent completions, and 7-day activity all in parallel
+    const [
+      roadmaps,
+      streakData,
+      totalRoadmapsCount,
+      completedCount,
+      archivedCount,
+      recentCompletions,
+      last7DaysCompletions,
+    ] = await Promise.all([
       prisma.roadmap.findMany({
         where: { status: 'active' },
         include: {
@@ -52,6 +70,34 @@ export const DashboardRepository = {
       prisma.roadmap.count(),
       prisma.roadmap.count({ where: { status: 'completed' } }),
       prisma.roadmap.count({ where: { status: 'archived' } }),
+      prisma.taskCompletion.findMany({
+        where: { completed: true },
+        orderBy: { completedAt: 'desc' },
+        take: 8,
+        include: {
+          task: {
+            select: {
+              id: true,
+              title: true,
+              taskType: true,
+              priority: true,
+              roadmapDay: {
+                select: {
+                  dayNumber: true,
+                  roadmap: { select: { id: true, title: true } },
+                },
+              },
+            },
+          },
+        },
+      }),
+      prisma.taskCompletion.findMany({
+        where: {
+          completed: true,
+          completedAt: { gte: sevenDaysAgoUtc },
+        },
+        select: { completedAt: true },
+      }),
     ]);
 
     const activeRoadmaps = roadmaps;
@@ -64,7 +110,6 @@ export const DashboardRepository = {
     let queueTotalTasks = 0;
 
     for (const r of activeRoadmaps) {
-      // Synchronous in-memory computation
       const prog = computeProgressionFromRoadmap(r);
       totalTasks += prog.totalTasks;
       completedTasks += prog.completedTasks;
@@ -112,6 +157,46 @@ export const DashboardRepository = {
     const overallProgressPercent =
       totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
+    // Calculate weekly activity grouped by Asia/Kolkata date
+    const dailyCounts = new Map();
+    last7DaysCompletions.forEach((c) => {
+      if (c.completedAt) {
+        const dStr = getKolkataDateString(c.completedAt);
+        dailyCounts.set(dStr, (dailyCounts.get(dStr) || 0) + 1);
+      }
+    });
+
+    const weeklyActivity = [];
+    for (let i = 6; i >= 0; i--) {
+      const dStr = addDaysToKolkataDate(todayStr, -i);
+      const [year, month, day] = dStr.split('-').map(Number);
+      const tempDate = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+      const dayLabel = new Intl.DateTimeFormat('en-US', {
+        timeZone: DEFAULT_TIMEZONE,
+        weekday: 'short',
+      }).format(tempDate);
+
+      weeklyActivity.push({
+        day: dayLabel,
+        date: dStr,
+        completed: dailyCounts.get(dStr) || 0,
+        isToday: dStr === todayStr,
+      });
+    }
+
+    // Format recent activity items with IST timestamps
+    const recentActivity = recentCompletions.map((c) => ({
+      id: c.id,
+      taskId: c.taskId,
+      title: c.task?.title || 'Curriculum Task',
+      taskType: c.task?.taskType || 'task',
+      priority: c.task?.priority || 'normal',
+      roadmapId: c.task?.roadmapDay?.roadmap?.id || null,
+      roadmapTitle: c.task?.roadmapDay?.roadmap?.title || 'Engineering Curriculum',
+      dayNumber: c.task?.roadmapDay?.dayNumber || 1,
+      completedAt: c.completedAt,
+    }));
+
     return {
       activeRoadmapsCount: activeRoadmaps.length,
       completedRoadmapsCount: completedCount,
@@ -131,6 +216,8 @@ export const DashboardRepository = {
       isPendingToday: streakData.isPendingToday,
       roadmaps: roadmapProgress,
       learningQueue,
+      weeklyActivity,
+      recentActivity,
     };
   },
 

@@ -27,17 +27,14 @@ import Button from '../components/ui/Button';
 import EmptyState from '../components/ui/EmptyState';
 import ErrorState from '../components/ui/ErrorState';
 import { CardSkeleton } from '../components/ui/Skeleton';
+import {
+  getKolkataDateString,
+  addDaysToKolkataDate,
+  formatKolkataDate,
+} from '../utils/date.util';
 
 export default function DailyPlannerPage() {
-  const getTodayKolkata = () =>
-    new Intl.DateTimeFormat('en-CA', {
-      timeZone: 'Asia/Kolkata',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    }).format(new Date());
-
-  const [selectedDate, setSelectedDate] = useState(getTodayKolkata);
+  const [selectedDate, setSelectedDate] = useState(() => getKolkataDateString());
   const [activeTab, setActiveTab] = useState('adaptive');
   const [plannerData, setPlannerData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -93,33 +90,15 @@ export default function DailyPlannerPage() {
   }, [selectedDate]);
 
   const handlePrevDay = () => {
-    const [y, m, d] = selectedDate.split('-').map(Number);
-    const dateObj = new Date(Date.UTC(y, m - 1, d));
-    dateObj.setUTCDate(dateObj.getUTCDate() - 1);
-    const newDate = new Intl.DateTimeFormat('en-CA', {
-      timeZone: 'Asia/Kolkata',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    }).format(dateObj);
-    setSelectedDate(newDate);
+    setSelectedDate((prev) => addDaysToKolkataDate(prev, -1));
   };
 
   const handleNextDay = () => {
-    const [y, m, d] = selectedDate.split('-').map(Number);
-    const dateObj = new Date(Date.UTC(y, m - 1, d));
-    dateObj.setUTCDate(dateObj.getUTCDate() + 1);
-    const newDate = new Intl.DateTimeFormat('en-CA', {
-      timeZone: 'Asia/Kolkata',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    }).format(dateObj);
-    setSelectedDate(newDate);
+    setSelectedDate((prev) => addDaysToKolkataDate(prev, 1));
   };
 
   const handleJumpToToday = () => {
-    setSelectedDate(getTodayKolkata());
+    setSelectedDate(getKolkataDateString());
   };
 
   const handleTaskUpdated = () => {
@@ -194,20 +173,14 @@ export default function DailyPlannerPage() {
     }
   };
 
-  let formattedDateTitle = selectedDate;
-  try {
-    formattedDateTitle = new Intl.DateTimeFormat('en-IN', {
-      timeZone: 'Asia/Kolkata',
-      weekday: 'long',
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    }).format(new Date(`${selectedDate}T12:00:00Z`));
-  } catch {
-    formattedDateTitle = selectedDate;
-  }
+  const formattedDateTitle = formatKolkataDate(selectedDate, {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }) || selectedDate;
 
-  const isToday = selectedDate === getTodayKolkata();
+  const isToday = selectedDate === getKolkataDateString();
 
   const streak = plannerData?.streak || {
     currentStreak: 0,

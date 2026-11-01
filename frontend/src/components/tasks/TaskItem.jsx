@@ -109,6 +109,25 @@ export default function TaskItem({
 
             {/* Badges & Meta */}
             <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+              {/* Status Indicators */}
+              {task.isOverdue && !isCompleted && (
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30">
+                  Overdue
+                </span>
+              )}
+
+              {task.rescheduledFrom && !isCompleted && (
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30">
+                  Carried Forward
+                </span>
+              )}
+
+              {!isCompleted && finalFocusMinutes > 0 && (
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/30">
+                  In Progress
+                </span>
+              )}
+
               {task.priority && task.priority !== 'normal' && (
                 <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold capitalize ${
                   task.priority === 'urgent'

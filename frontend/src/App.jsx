@@ -20,13 +20,39 @@ const FocusTimerPage = lazy(() => import('./pages/FocusTimerPage'));
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 
-// Sleek fallback loader during chunk fetch
+// Sleek DevPath branded fallback loader during chunk fetch
 function PageLoadingFallback() {
   return (
-    <div className="min-h-[50vh] flex flex-col items-center justify-center gap-3">
-      <div className="w-9 h-9 border-3 border-indigo-600/20 border-t-indigo-600 rounded-full animate-spin dark:border-indigo-400/20 dark:border-t-indigo-400" />
-      <span className="text-xs font-medium text-slate-400 dark:text-slate-500 tracking-wide uppercase">
-        Loading view...
+    <div className="min-h-[50vh] flex flex-col items-center justify-center gap-3 animate-fade-in">
+      <div className="relative w-10 h-10 flex items-center justify-center">
+        <div className="absolute inset-0 rounded-xl bg-[#244C3B]/10 dark:bg-[#DFD0B8]/10 animate-ping" />
+        <div className="relative w-9 h-9 rounded-xl bg-[#244C3B] dark:bg-[#DFD0B8] flex items-center justify-center shadow-xs">
+          <svg
+            viewBox="0 0 32 32"
+            fill="none"
+            className="w-5 h-5 text-[#DFD0B8] dark:text-[#222831]"
+          >
+            <path
+              d="M6 23L12 17L18 20L25 9"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M20 9H25V14"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <circle cx="6" cy="23" r="2.2" fill="#10B981" />
+            <circle cx="25" cy="9" r="2.5" fill="#10B981" />
+          </svg>
+        </div>
+      </div>
+      <span className="text-xs font-mono font-medium text-[#737C74] dark:text-[#948979] tracking-wider uppercase">
+        Loading DevPath...
       </span>
     </div>
   );

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170 40" fill="none">
+  <!-- Symbol Container -->
+  <rect x="2" y="2" width="36" height="36" rx="9" fill="#244C3B" />
+  <!-- Ascending Roadmap Pathway -->
+  <path d="M10 26L16 20L22 23L29 11" stroke="#DFD0B8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M24 11H29V16" stroke="#DFD0B8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="10" cy="26" r="2.2" fill="#10B981" />
+  <circle cx="16" cy="20" r="1.8" fill="#DFD0B8" />
+  <circle cx="22" cy="23" r="1.8" fill="#DFD0B8" />
+  <circle cx="29" cy="11" r="2.5" fill="#10B981" />
+
+  <!-- Wordmark -->
+  <text x="48" y="24" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="20" font-weight="800" fill="#202A23" letter-spacing="-0.03em">Dev<tspan fill="#244C3B" font-weight="700">Path</tspan></text>
+  <text x="49" y="34" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="600" fill="#737C74" letter-spacing="0.12em">ENGINEERING TRACKER</text>
+</svg>

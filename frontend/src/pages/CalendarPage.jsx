@@ -16,6 +16,12 @@ import {
 } from 'lucide-react';
 import { calendarService } from '../services/calendarService';
 import { personalTaskService } from '../services/personalTaskService';
+import {
+  getKolkataDateString,
+  getCalendarMonthDays,
+  getCalendarWeekDays,
+  formatKolkataDate,
+} from '../utils/date.util';
 
 export default function CalendarPage() {
   const [searchParams] = useSearchParams();
@@ -33,7 +39,7 @@ export default function CalendarPage() {
   // Rest day modal
   const [isRestModalOpen, setIsRestModalOpen] = useState(false);
   const [restForm, setRestForm] = useState({
-    date: new Date().toISOString().slice(0, 10),
+    date: getKolkataDateString(),
     title: 'Planned Rest Day',
     reason: '',
   });
@@ -42,22 +48,22 @@ export default function CalendarPage() {
   const [selectedDateEvents, setSelectedDateEvents] = useState(null);
 
   const todayStr = useMemo(() => {
-    return new Intl.DateTimeFormat('en-CA', {
-      timeZone: 'Asia/Kolkata',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    }).format(new Date());
+    return getKolkataDateString();
   }, []);
 
   const loadCalendarEvents = async () => {
     try {
       setLoading(true);
-      // Fetch 60 days around current view
+      // Fetch 60 days around current view strictly in Asia/Kolkata
       const y = currentDate.getFullYear();
       const m = currentDate.getMonth();
-      const start = new Date(y, m - 1, 1).toISOString().slice(0, 10);
-      const end = new Date(y, m + 2, 0).toISOString().slice(0, 10);
+      const startMonth = m === 0 ? 11 : m - 1;
+      const startYear = m === 0 ? y - 1 : y;
+      const start = `${startYear}-${String(startMonth + 1).padStart(2, '0')}-01`;
+      const endMonth = m >= 10 ? (m + 2) % 12 : m + 2;
+      const endYear = m >= 10 ? y + 1 : y;
+      const lastDayOfEndMonth = new Date(endYear, endMonth + 1, 0).getDate();
+      const end = `${endYear}-${String(endMonth + 1).padStart(2, '0')}-${String(lastDayOfEndMonth).padStart(2, '0')}`;
 
       const res = await calendarService.getEvents(start, end);
       setEventsData(res || { eventsByDate: {}, todayStr });
@@ -106,76 +112,14 @@ export default function CalendarPage() {
   };
 
   // Month grid generator
+  // Month grid generator (Strictly safe in Asia/Kolkata without UTC day shifts)
   const monthGridDays = useMemo(() => {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-
-    const startDayOfWeek = firstDay.getDay(); // 0 (Sun) - 6 (Sat)
-    const totalDays = lastDay.getDate();
-
-    const days = [];
-
-    // Prior month overflow days
-    const prevMonthLastDay = new Date(year, month, 0).getDate();
-    for (let i = startDayOfWeek - 1; i >= 0; i--) {
-      const d = prevMonthLastDay - i;
-      const dObj = new Date(year, month - 1, d);
-      const dStr = dObj.toISOString().slice(0, 10);
-      days.push({
-        dayNumber: d,
-        dateStr: dStr,
-        isCurrentMonth: false,
-      });
-    }
-
-    // Current month days
-    for (let d = 1; d <= totalDays; d++) {
-      const dObj = new Date(year, month, d);
-      const dStr = dObj.toISOString().slice(0, 10);
-      days.push({
-        dayNumber: d,
-        dateStr: dStr,
-        isCurrentMonth: true,
-      });
-    }
-
-    // Next month overflow days
-    const remaining = (7 - (days.length % 7)) % 7;
-    for (let d = 1; d <= remaining; d++) {
-      const dObj = new Date(year, month + 1, d);
-      const dStr = dObj.toISOString().slice(0, 10);
-      days.push({
-        dayNumber: d,
-        dateStr: dStr,
-        isCurrentMonth: false,
-      });
-    }
-
-    return days;
+    return getCalendarMonthDays(currentDate.getFullYear(), currentDate.getMonth());
   }, [currentDate]);
 
-  // Week view days generator (7 days)
+  // Week view days generator (7 days strictly in Asia/Kolkata)
   const weekViewDays = useMemo(() => {
-    const curr = new Date(currentDate);
-    const dayOfWeek = curr.getDay();
-    const firstDayOfWeek = new Date(curr);
-    firstDayOfWeek.setDate(curr.getDate() - dayOfWeek);
-
-    const days = [];
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(firstDayOfWeek);
-      d.setDate(firstDayOfWeek.getDate() + i);
-      days.push({
-        dateObj: d,
-        dateStr: d.toISOString().slice(0, 10),
-        dayName: d.toLocaleDateString('en-US', { weekday: 'short' }),
-        dayNumber: d.getDate(),
-      });
-    }
-    return days;
+    return getCalendarWeekDays(currentDate);
   }, [currentDate]);
 
   // Save Rest Day

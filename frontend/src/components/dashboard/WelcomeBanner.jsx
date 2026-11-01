@@ -1,32 +1,11 @@
 import React from 'react';
-import { Flame, CheckCircle2, Trophy, Clock, ArrowRight } from 'lucide-react';
+import { Flame, CheckCircle2, Trophy, Clock, ArrowRight, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import workspaceHero from '../../assets/workspace-hero.jpg';
+import { useKolkataGreeting } from '../../utils/date.util';
 
 export default function WelcomeBanner({ stats }) {
-  const kolkataDateFormatted = new Intl.DateTimeFormat('en-IN', {
-    timeZone: 'Asia/Kolkata',
-    weekday: 'long',
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  }).format(new Date());
-
-  const kolkataHour = parseInt(
-    new Intl.DateTimeFormat('en-IN', {
-      timeZone: 'Asia/Kolkata',
-      hour: 'numeric',
-      hour12: false,
-    }).format(new Date()),
-    10
-  );
-
-  let greeting = 'Good morning';
-  if (kolkataHour >= 12 && kolkataHour < 17) {
-    greeting = 'Good afternoon';
-  } else if (kolkataHour >= 17) {
-    greeting = 'Good evening';
-  }
+  const { title: greetingTitle, subtitle: defaultSubtitle, formattedDate, period } = useKolkataGreeting();
 
   const currentStreak  = stats?.currentStreak ?? 0;
   const bestStreak     = stats?.bestStreak ?? currentStreak;
@@ -39,42 +18,50 @@ export default function WelcomeBanner({ stats }) {
 
   const streakPercent = Math.min(100, Math.round((completedToday / streakTarget) * 100));
 
+  // Dynamic contextual supporting line
+  let contextualSubtitle = defaultSubtitle;
+  if (qualifiedToday) {
+    contextualSubtitle = `Daily streak target locked in (${completedToday} tasks completed)! Excellent momentum.`;
+  } else if (completedToday > 0) {
+    contextualSubtitle = `${completedToday} of ${streakTarget} tasks completed today. Complete ${remainingToday} more to qualify your daily streak.`;
+  }
+
   return (
     <div className="relative overflow-hidden rounded-xl border border-[#E8E8DF] dark:border-[#393E46] bg-[#FFFFFF] dark:bg-[#2A303A] shadow-xs">
-      {/* Background Image */}
+      {/* Background Architectural Texture */}
       <div className="absolute inset-0 z-0">
         <img
           src={workspaceHero}
-          alt="Workspace"
+          alt="Engineering Workspace"
           className="w-full h-full object-cover object-right-top opacity-10 dark:opacity-20 filter saturate-50"
         />
-        {/* Light theme gradient overlay */}
+        {/* Light theme subtle overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-white via-white/96 to-white/70 dark:hidden" />
-        {/* Dark theme gradient overlay */}
+        {/* Dark theme subtle overlay */}
         <div className="absolute inset-0 hidden dark:block bg-gradient-to-r from-[#2A303A] via-[#2A303A]/96 to-[#2A303A]/75" />
       </div>
 
       {/* Content Container */}
       <div className="relative z-10 p-5 sm:p-6 lg:p-7 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-        {/* Left Column */}
+        {/* Left Column: Greeting, Timezone Badge, Actions */}
         <div className="max-w-xl">
           <div className="flex items-center gap-2 mb-2">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-[#F0F0EB] dark:bg-[#393E46] text-[#4A5749] dark:text-[#C8BFB0] border border-[#E8E8DF] dark:border-[#4F5561]">
               <Clock className="w-3 h-3 text-[#91A88E]" />
-              <span>{kolkataDateFormatted}</span>
+              <span>{formattedDate}</span>
             </span>
             <span className="text-xs text-[#91A88E] dark:text-[#948979] font-mono hidden sm:inline">•</span>
             <span className="text-xs text-[#737C74] dark:text-[#948979] font-medium hidden sm:inline">
-              Asia/Kolkata (IST)
+              Asia/Kolkata (IST • UTC+05:30)
             </span>
           </div>
 
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#202A23] dark:text-[#DFD0B8] mb-1.5">
-            {greeting}, Engineer
+            {greetingTitle}
           </h1>
 
           <p className="text-sm text-[#4A5749] dark:text-[#C8BFB0] leading-relaxed mb-4">
-            Adaptive placement & systems preparation. Tracking{' '}
+            {contextualSubtitle} Tracking{' '}
             <span className="font-semibold text-[#202A23] dark:text-[#DFD0B8]">
               {activeCount} active learning tracks
             </span>{' '}
@@ -82,22 +69,22 @@ export default function WelcomeBanner({ stats }) {
             <span className="font-semibold text-[#244C3B] dark:text-[#DFD0B8]">
               {overallProgress}% completion
             </span>
-            . Roadmaps advance independently based on your individual task progress.
+            . Roadmaps advance adaptively based on your individual task completions.
           </p>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <Link
               to="/planner"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium bg-[#244C3B] hover:bg-[#1A3B2C] text-white dark:bg-[#DFD0B8] dark:text-[#222831] dark:hover:bg-[#ECE3D4] transition-colors shadow-xs"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[#244C3B] hover:bg-[#1A3B2C] text-white dark:bg-[#DFD0B8] dark:text-[#222831] dark:hover:bg-[#ECE3D4] transition-colors shadow-xs"
             >
-              <span>Go to Daily Learning Queue</span>
+              <span>Daily Planner</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
             <Link
               to="/roadmaps"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium bg-[#F0F0EB] hover:bg-[#E8E8DF] dark:bg-[#393E46] dark:hover:bg-[#454B54] text-[#4A5749] dark:text-[#DFD0B8] transition-colors"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium bg-[#F0F0EB] hover:bg-[#E8E8DF] dark:bg-[#393E46] dark:hover:bg-[#454B54] text-[#4A5749] dark:text-[#DFD0B8] transition-colors border border-transparent dark:border-[#4F5561]"
             >
-              <span>Explore Roadmaps</span>
+              <span>My Roadmaps</span>
             </Link>
           </div>
         </div>
@@ -141,7 +128,7 @@ export default function WelcomeBanner({ stats }) {
           <div className="space-y-1.5 pt-1">
             <div className="flex items-center justify-between text-xs font-medium">
               <span className="text-[#4A5749] dark:text-[#C8BFB0]">
-                Today's Goal (5 tasks/day)
+                Today's Goal ({streakTarget} tasks/day)
               </span>
               <span className="font-mono text-[#202A23] dark:text-[#DFD0B8]">
                 {completedToday}/{streakTarget}
@@ -175,11 +162,11 @@ export default function WelcomeBanner({ stats }) {
                   <strong className="text-amber-600 dark:text-amber-400 font-semibold">
                     {remainingToday} more {remainingToday === 1 ? 'task' : 'tasks'}
                   </strong>{' '}
-                  today to qualify for your streak.
+                  today in Asia/Kolkata to qualify.
                 </p>
               ) : (
                 <p className="text-[#737C74] dark:text-[#948979]">
-                  Complete 5 distinct tasks in a calendar day to qualify.
+                  Complete {streakTarget} distinct tasks in a calendar day to qualify.
                 </p>
               )}
             </div>
