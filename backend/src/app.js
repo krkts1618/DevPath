@@ -82,6 +82,7 @@ app.use(requestLogger);
 app.use((req, res, next) => {
   const apiPrefixes = [
     '/health',
+    '/auth',
     '/categories',
     '/roadmaps',
     '/modules',

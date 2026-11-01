@@ -16,6 +16,7 @@ import projectRoutes from './project.routes.js';
 import studySessionRoutes from './studySession.routes.js';
 import notificationRoutes from './notification.routes.js';
 import reminderRoutes from './reminder.routes.js';
+import authRoutes from './auth.routes.js';
 
 const router = Router();
 
@@ -60,5 +61,6 @@ router.use('/projects', projectRoutes);
 router.use('/study-sessions', studySessionRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/reminders', reminderRoutes);
+router.use('/auth', authRoutes);
 
 export default router;

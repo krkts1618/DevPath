@@ -4,6 +4,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { TimerProvider } from './context/TimerContext';
 import { NotificationProvider } from './context/NotificationContext';
 import AppLayout from './components/layout/AppLayout';
+import AccessSecretModal from './components/common/AccessSecretModal';
 
 // Route-level Code Splitting for optimal production bundle size and initial load speed
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
@@ -37,6 +38,7 @@ export default function App() {
       <TimerProvider>
         <NotificationProvider>
           <BrowserRouter>
+            <AccessSecretModal />
             <Routes>
               <Route path="/" element={<AppLayout />}>
                 <Route

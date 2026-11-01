@@ -59,6 +59,49 @@ function autoInvalidateOnMutation(url, method) {
   }
 }
 
+// Access secret resolution queue for in-flight requests interrupted by 401
+let isPromptingSecret = false;
+let secretSubscribers = [];
+
+function notifySecretResolved(newSecret) {
+  isPromptingSecret = false;
+  secretSubscribers.forEach((cb) => cb(null, newSecret));
+  secretSubscribers = [];
+}
+
+function notifySecretRejected(err) {
+  isPromptingSecret = false;
+  secretSubscribers.forEach((cb) => cb(err, null));
+  secretSubscribers = [];
+}
+
+/**
+ * Triggers the Access Secret Modal and resolves with the entered secret.
+ */
+export function promptForAccessSecret() {
+  return new Promise((resolve, reject) => {
+    secretSubscribers.push((err, secret) => {
+      if (err) reject(err);
+      else resolve(secret);
+    });
+
+    if (!isPromptingSecret && typeof window !== 'undefined') {
+      isPromptingSecret = true;
+      window.dispatchEvent(
+        new CustomEvent('devpath:access-secret-needed', {
+          detail: {
+            onSuccess: (secret) => notifySecretResolved(secret),
+            onCancel: () =>
+              notifySecretRejected(
+                new Error('Action cancelled: Application access secret was not provided.')
+              ),
+          },
+        })
+      );
+    }
+  });
+}
+
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
   timeout: 25000,
@@ -69,13 +112,18 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (requestConfig) => {
-    // Attach optional single-user application access secret if configured
+    // Attach single-user application access secret if configured in localStorage or build env
     try {
       const secret =
         (typeof window !== 'undefined' ? localStorage.getItem('devpath_access_secret') : null) ||
         import.meta.env.VITE_APP_ACCESS_SECRET;
-      if (secret) {
-        requestConfig.headers['x-app-access-secret'] = secret;
+      if (secret && typeof secret === 'string' && secret.trim()) {
+        const clean = secret.trim();
+        if (requestConfig.headers.set) {
+          requestConfig.headers.set('x-app-access-secret', clean);
+        } else {
+          requestConfig.headers['x-app-access-secret'] = clean;
+        }
       }
     } catch {
       // localStorage may be unavailable in some private browsing contexts
@@ -93,7 +141,33 @@ axiosInstance.interceptors.response.use(
     // Return inner data payload if standard response wrapper is present
     return response.data?.data !== undefined ? response.data.data : response.data;
   },
-  (error) => {
+  async (error) => {
+    const isSecretAuthError =
+      error.response?.status === 401 &&
+      (error.response?.data?.details?.code === 'ACCESS_SECRET_REQUIRED' ||
+        error.response?.data?.message?.toLowerCase().includes('application access secret') ||
+        error.response?.data?.message?.toLowerCase().includes('access secret is required'));
+
+    const originalRequest = error.config;
+
+    // Auto-prompt user for access secret and replay request seamlessly
+    if (isSecretAuthError && originalRequest && !originalRequest._secretRetryAttempted) {
+      originalRequest._secretRetryAttempted = true;
+      try {
+        const newSecret = await promptForAccessSecret();
+        if (newSecret) {
+          if (originalRequest.headers.set) {
+            originalRequest.headers.set('x-app-access-secret', newSecret);
+          } else {
+            originalRequest.headers['x-app-access-secret'] = newSecret;
+          }
+          return axiosInstance(originalRequest);
+        }
+      } catch (promptErr) {
+        return Promise.reject(promptErr);
+      }
+    }
+
     const message =
       error.response?.data?.message ||
       error.response?.data?.error ||

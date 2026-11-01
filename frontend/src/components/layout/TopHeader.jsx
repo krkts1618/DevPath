@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Menu, Sun, Moon, Plus, Calendar, Timer, Play, Pause } from 'lucide-react';
+import { Menu, Sun, Moon, Plus, Calendar, Timer, Play, Pause, ShieldCheck } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { useTimer } from '../../context/TimerContext';
 import Button from '../ui/Button';
@@ -140,6 +140,16 @@ export default function TopHeader({
 
           {/* Notification Bell Dropdown */}
           <NotificationBellDropdown />
+
+          {/* Access Secret Status & Unlock Modal Trigger */}
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('devpath:open-secret-modal'))}
+            className="p-2 rounded-lg text-[#737C74] hover:text-[#202A23] dark:text-[#948979] dark:hover:text-[#DFD0B8] hover:bg-[#F0F0EB] dark:hover:bg-[#393E46] transition-colors cursor-pointer"
+            title="Configure Application Access Secret"
+            aria-label="Application Access Secret"
+          >
+            <ShieldCheck className="w-4 h-4 text-[#244C3B] dark:text-[#DFD0B8]" />
+          </button>
 
           {/* Theme Switcher */}
           <button

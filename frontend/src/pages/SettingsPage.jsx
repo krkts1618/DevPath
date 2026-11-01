@@ -13,7 +13,9 @@ export default function SettingsPage() {
   const [accessSecret, setAccessSecret] = useState(() => {
     return localStorage.getItem('devpath_access_secret') || '';
   });
-  const [secretSaved, setSecretSaved] = useState(false);
+  const [secretSaved, setSecretSaved] = useState('');
+  const [verifyingSecret, setVerifyingSecret] = useState(false);
+  const [secretError, setSecretError] = useState('');
 
   const checkHealth = async () => {
     setCheckingHealth(true);
@@ -31,14 +33,30 @@ export default function SettingsPage() {
     checkHealth();
   }, []);
 
-  const handleSaveSecret = () => {
-    if (accessSecret.trim()) {
-      localStorage.setItem('devpath_access_secret', accessSecret.trim());
-    } else {
+  const handleSaveSecret = async () => {
+    const trimmed = accessSecret.trim();
+    if (!trimmed) {
       localStorage.removeItem('devpath_access_secret');
+      setSecretSaved('Cleared');
+      setSecretError('');
+      setTimeout(() => setSecretSaved(''), 2000);
+      return;
     }
-    setSecretSaved(true);
-    setTimeout(() => setSecretSaved(false), 2000);
+
+    setVerifyingSecret(true);
+    setSecretError('');
+    try {
+      await api.post('/auth/verify', { secret: trimmed });
+      localStorage.setItem('devpath_access_secret', trimmed);
+      setSecretSaved('Verified & Saved!');
+      setTimeout(() => setSecretSaved(''), 3000);
+    } catch (err) {
+      setSecretError(
+        err.message || 'Invalid secret. Please verify with your Render dashboard value.'
+      );
+    } finally {
+      setVerifyingSecret(false);
+    }
   };
 
   return (
@@ -214,20 +232,45 @@ export default function SettingsPage() {
           If your backend deployment on Render is configured with an <code className="font-mono bg-[#E8E8DF] dark:bg-[#393E46] px-1 py-0.5 rounded text-[11px]">APP_ACCESS_SECRET</code> environment variable to protect write operations against public internet scrapers, enter it here. It is stored exclusively in your browser's local storage.
         </p>
 
-        <div className="flex items-center gap-2">
-          <input
-            type="password"
-            placeholder="Enter application access secret (optional)..."
-            value={accessSecret}
-            onChange={(e) => setAccessSecret(e.target.value)}
-            className="flex-1 px-3 py-1.5 text-xs rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46] text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-1 focus:ring-[#244C3B]"
-          />
-          <button
-            onClick={handleSaveSecret}
-            className="px-3 py-1.5 rounded-lg bg-[#244C3B] text-white text-xs font-semibold hover:bg-[#1B382B] transition cursor-pointer"
-          >
-            {secretSaved ? 'Saved!' : 'Save Secret'}
-          </button>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <input
+              type="password"
+              placeholder="Enter application access secret (optional)..."
+              value={accessSecret}
+              onChange={(e) => {
+                setAccessSecret(e.target.value);
+                setSecretError('');
+              }}
+              className="flex-1 px-3 py-1.5 text-xs rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46] text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-1 focus:ring-[#244C3B]"
+            />
+            <button
+              onClick={handleSaveSecret}
+              disabled={verifyingSecret}
+              className="px-3 py-1.5 rounded-lg bg-[#244C3B] text-white text-xs font-semibold hover:bg-[#1B382B] disabled:opacity-50 transition cursor-pointer flex items-center gap-1.5"
+            >
+              {verifyingSecret ? (
+                <>
+                  <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Verifying...
+                </>
+              ) : (
+                secretSaved || 'Verify & Save'
+              )}
+            </button>
+          </div>
+
+          {secretError && (
+            <p className="text-[11px] text-red-600 dark:text-red-400 font-medium">
+              {secretError}
+            </p>
+          )}
+
+          {secretSaved && !secretError && (
+            <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
+              ✓ {secretSaved}
+            </p>
+          )}
         </div>
       </div>
 
