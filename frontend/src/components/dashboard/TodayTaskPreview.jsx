@@ -90,7 +90,9 @@ export default function TodayTaskPreview({
                           Day {group.currentDayNumber}
                         </span>
                         <span>•</span>
-                        <span className="truncate">{group.currentDayTitle}</span>
+                        <span className="truncate">
+                          {group.currentDayTitle?.replace(new RegExp(`^Day\\s+${group.currentDayNumber}:?\\s*`, 'i'), '') || group.currentDayTitle}
+                        </span>
                       </div>
                     </div>
                   </div>

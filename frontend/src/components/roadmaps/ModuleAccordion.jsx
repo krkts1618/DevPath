@@ -217,7 +217,7 @@ export default function ModuleAccordion({
                       </span>
 
                       <h5 className="text-xs sm:text-sm font-semibold text-[#202A23] dark:text-[#DFD0B8] truncate">
-                        {day.title}
+                        {day.title?.replace(new RegExp(`^Day\\s+${day.dayNumber}:?\\s*`, 'i'), '') || day.title}
                       </h5>
 
                       {isActiveFrontier && (
