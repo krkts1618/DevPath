@@ -161,7 +161,7 @@ export function getKolkataGreeting(date = new Date()) {
 
   if (hour >= 5 && hour < 12) {
     return {
-      title: 'Good morning, Engineer',
+      title: 'Good morning',
       subtitle: 'Fresh mind for deep architecture, algorithms, and roadmap execution.',
       period: 'morning',
       hour,
@@ -170,7 +170,7 @@ export function getKolkataGreeting(date = new Date()) {
 
   if (hour >= 12 && hour < 17) {
     return {
-      title: 'Good afternoon, Engineer',
+      title: 'Good afternoon',
       subtitle: 'Keep the momentum going with structured daily milestone progression.',
       period: 'afternoon',
       hour,
@@ -179,7 +179,7 @@ export function getKolkataGreeting(date = new Date()) {
 
   if (hour >= 17 && hour < 21) {
     return {
-      title: 'Good evening, Engineer',
+      title: 'Good evening',
       subtitle: "Solidify today's engineering concepts and prepare for interview recall.",
       period: 'evening',
       hour,
@@ -188,7 +188,7 @@ export function getKolkataGreeting(date = new Date()) {
 
   // 21:00 to 04:59
   return {
-    title: 'Working late, Engineer',
+    title: 'Working late',
     subtitle: 'Late-night focus session. Pace your energy and lock in your deep work.',
     period: 'night',
     hour,

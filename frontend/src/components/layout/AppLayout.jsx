@@ -8,21 +8,11 @@ import AddRoadmapModal from '../roadmaps/AddRoadmapModal';
 import AddCategoryModal from '../roadmaps/AddCategoryModal';
 
 export default function AppLayout() {
-  const [isCollapsed, setIsCollapsed] = useState(() => {
-    // Default to true (collapsed 68px icon bar) to match IMAGE 1 specification
-    return localStorage.getItem('devpath-sidebar-collapsed') !== 'false';
-  });
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-
   const [categories, setCategories] = useState([]);
   const [roadmaps, setRoadmaps] = useState([]);
   const [isAddRoadmapOpen, setIsAddRoadmapOpen] = useState(false);
   const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
-
-  const handleToggleCollapse = (collapsed) => {
-    setIsCollapsed(collapsed);
-    localStorage.setItem('devpath-sidebar-collapsed', collapsed ? 'true' : 'false');
-  };
 
   const loadNavData = async () => {
     try {
@@ -43,29 +33,23 @@ export default function AppLayout() {
 
   return (
     <div className="min-h-screen bg-[#F4F5F2] dark:bg-[#12151A] flex text-[#202620] dark:text-[#F3F4F6]">
-      {/* Sidebar (68px in collapsed mode) */}
+      {/* Sidebar: 240px with page names */}
       <Sidebar
-        isCollapsed={isCollapsed}
-        setIsCollapsed={handleToggleCollapse}
         isMobileOpen={isMobileOpen}
         setIsMobileOpen={setIsMobileOpen}
-        categories={categories}
         roadmaps={roadmaps}
       />
 
       {/* Main Content Area */}
-      <div
-        className={`flex-1 flex flex-col min-w-0 transition-all duration-200 ${
-          isCollapsed ? 'lg:pl-[68px]' : 'lg:pl-60'
-        }`}
-      >
+      <div className="flex-1 flex flex-col min-w-0 lg:pl-60 transition-all duration-200">
         <TopHeader
           onMenuToggle={() => setIsMobileOpen(!isMobileOpen)}
           onOpenAddRoadmap={() => setIsAddRoadmapOpen(true)}
           onOpenAddCategory={() => setIsAddCategoryOpen(true)}
         />
 
-        <main className="flex-1 p-4 sm:p-5 lg:p-6 max-w-7xl w-full mx-auto">
+        {/* Structured Nice Container Layout */}
+        <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 max-w-[1440px] w-full mx-auto">
           <Outlet context={{ categories, roadmaps, refreshNavData: loadNavData }} />
         </main>
       </div>

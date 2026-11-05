@@ -124,15 +124,15 @@ export default function DashboardPage() {
       {/* 1. Atmospheric Hero Header */}
       <WelcomeBanner stats={stats} />
 
-      {/* 2. Four Compact Metric Cards from Reference */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+      {/* 2. Four Compact Metric Cards Matching IMAGE 1 Reference */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Daily Progress with Circular Ring */}
-        <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-4 sm:p-5 shadow-xs flex items-center justify-between">
+        <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-2xl p-5 shadow-xs flex items-center justify-between min-h-[105px]">
           <div>
             <span className="text-[10px] font-bold text-[#858D82] dark:text-[#7F8996] uppercase tracking-wider font-mono">
               Daily Progress
             </span>
-            <div className="text-2xl font-bold font-mono text-[#202620] dark:text-[#F3F4F6] mt-1">
+            <div className="text-2xl font-bold font-mono text-[#202620] dark:text-[#F3F4F6] mt-0.5">
               {completedToday} / {streakTarget}
             </div>
             <span className="text-xs font-mono font-semibold text-[var(--accent-primary)] mt-0.5 block">
@@ -141,36 +141,33 @@ export default function DashboardPage() {
           </div>
 
           {/* Circular Progress Ring */}
-          <div className="relative w-14 h-14 flex items-center justify-center flex-shrink-0">
-            <svg className="w-14 h-14 transform -rotate-90" viewBox="0 0 56 56">
+          <div className="relative w-12 h-12 flex items-center justify-center shrink-0">
+            <svg className="w-12 h-12 transform -rotate-90" viewBox="0 0 52 52">
               <circle
-                cx="28"
-                cy="28"
-                r={ringRadius}
+                cx="26"
+                cy="26"
+                r={20}
                 className="stroke-[#E4E7E0] dark:stroke-[#252C35]"
                 strokeWidth="4"
                 fill="none"
               />
               <circle
-                cx="28"
-                cy="28"
-                r={ringRadius}
+                cx="26"
+                cy="26"
+                r={20}
                 className="stroke-[var(--accent-primary)] transition-all duration-700 ease-out"
                 strokeWidth="4.5"
-                strokeDasharray={ringCircumference}
-                strokeDashoffset={ringOffset}
+                strokeDasharray={2 * Math.PI * 20}
+                strokeDashoffset={(2 * Math.PI * 20) * (1 - dailyProgressPercent / 100)}
                 strokeLinecap="round"
                 fill="none"
               />
             </svg>
-            <span className="absolute font-mono text-[11px] font-bold text-[#202620] dark:text-[#F3F4F6]">
-              {dailyProgressPercent}%
-            </span>
           </div>
         </div>
 
         {/* Card 2: Streak */}
-        <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-4 sm:p-5 shadow-xs flex flex-col justify-between">
+        <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-2xl p-5 shadow-xs flex flex-col justify-between min-h-[105px]">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] font-bold text-[#858D82] dark:text-[#7F8996] uppercase tracking-wider font-mono">
               Streak
@@ -188,7 +185,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Card 3: Active Roadmaps */}
-        <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-4 sm:p-5 shadow-xs flex flex-col justify-between">
+        <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-2xl p-5 shadow-xs flex flex-col justify-between min-h-[105px]">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] font-bold text-[#858D82] dark:text-[#7F8996] uppercase tracking-wider font-mono">
               Active Roadmaps
@@ -207,7 +204,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Card 4: Focus Time */}
-        <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-4 sm:p-5 shadow-xs flex flex-col justify-between">
+        <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-2xl p-5 shadow-xs flex flex-col justify-between min-h-[105px]">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] font-bold text-[#858D82] dark:text-[#7F8996] uppercase tracking-wider font-mono">
               Focus Time
