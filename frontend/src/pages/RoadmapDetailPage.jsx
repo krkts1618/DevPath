@@ -365,17 +365,17 @@ export default function RoadmapDetailPage() {
     <div className="space-y-6">
       {/* Breadcrumb Navigation & Top Action Menu */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-1.5 text-xs text-[#737C74] dark:text-[#948979]">
+        <div className="flex items-center gap-1.5 text-xs text-[#858D82] dark:text-[#7F8996]">
           <Link
             to="/roadmaps"
-            className="hover:text-[#244C3B] dark:hover:text-[#DFD0B8] transition-colors font-medium"
+            className="hover:text-[var(--accent-primary)] transition-colors font-medium"
           >
             My Roadmaps
           </Link>
           <span>/</span>
           <span className="font-mono">{roadmap.category?.name || 'Category'}</span>
           <span>/</span>
-          <span className="font-semibold text-[#202A23] dark:text-[#DFD0B8] truncate max-w-[200px]">
+          <span className="font-semibold text-[#202620] dark:text-[#F3F4F6] truncate max-w-[200px]">
             {roadmap.title}
           </span>
         </div>
@@ -413,7 +413,7 @@ export default function RoadmapDetailPage() {
               size="xs"
               icon={Play}
               onClick={handleResumeRoadmap}
-              className="bg-[#244C3B] dark:bg-[#DFD0B8] text-white dark:text-[#222831]"
+              className="bg-[var(--accent-primary)] text-[var(--accent-text)] font-semibold"
             >
               Resume Track
             </Button>

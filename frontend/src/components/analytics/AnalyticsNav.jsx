@@ -23,13 +23,13 @@ export const SECTIONS = [
 
 export default function AnalyticsNav({ activeSection, onSelectSection }) {
   return (
-    <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none border-b border-[#E8E8DF] dark:border-[#393E46]">
+    <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none border-b border-[var(--border-subtle)]">
       <button
         onClick={() => onSelectSection('all')}
         className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition cursor-pointer ${
           activeSection === 'all'
-            ? 'bg-[#244C3B] text-white shadow-xs'
-            : 'text-[#737C74] dark:text-[#948979] hover:text-[#202A23] dark:hover:text-[#DFD0B8] hover:bg-[#F0F0EB] dark:hover:bg-[#393E46]'
+            ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] shadow-xs'
+            : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-elevated)]'
         }`}
       >
         All Sections
@@ -44,11 +44,11 @@ export default function AnalyticsNav({ activeSection, onSelectSection }) {
             onClick={() => onSelectSection(sec.id)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition cursor-pointer ${
               isActive
-                ? 'bg-[#244C3B] text-white shadow-xs'
-                : 'text-[#737C74] dark:text-[#948979] hover:text-[#202A23] dark:hover:text-[#DFD0B8] hover:bg-[#F0F0EB] dark:hover:bg-[#393E46]'
+                ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] shadow-xs'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-elevated)]'
             }`}
           >
-            <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-[#737C74] dark:text-[#948979]'}`} />
+            <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[var(--accent-text)]' : 'text-[var(--text-muted)]'}`} />
             <span>{sec.label}</span>
           </button>
         );

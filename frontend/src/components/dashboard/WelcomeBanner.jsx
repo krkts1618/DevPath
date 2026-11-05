@@ -1,175 +1,82 @@
 import React from 'react';
-import { Flame, CheckCircle2, Trophy, Clock, ArrowRight, Sparkles } from 'lucide-react';
+import { Clock, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import workspaceHero from '../../assets/workspace-hero.jpg';
 import { useKolkataGreeting } from '../../utils/date.util';
 
 export default function WelcomeBanner({ stats }) {
-  const { title: greetingTitle, subtitle: defaultSubtitle, formattedDate, period } = useKolkataGreeting();
+  const { title: greetingTitle, formattedDate } = useKolkataGreeting();
 
-  const currentStreak  = stats?.currentStreak ?? 0;
-  const bestStreak     = stats?.bestStreak ?? currentStreak;
-  const completedToday = stats?.completedToday ?? 0;
-  const streakTarget   = stats?.streakTarget ?? 5;
-  const qualifiedToday = stats?.qualifiedToday ?? false;
-  const remainingToday = stats?.remainingToday ?? Math.max(0, streakTarget - completedToday);
-  const activeCount    = stats?.activeRoadmapsCount ?? 0;
+  const currentStreak   = stats?.currentStreak ?? 0;
+  const completedToday  = stats?.completedToday ?? 0;
+  const streakTarget    = stats?.streakTarget ?? 5;
+  const activeCount     = stats?.activeRoadmapsCount ?? 0;
   const overallProgress = stats?.overallProgressPercent ?? 0;
 
-  const streakPercent = Math.min(100, Math.round((completedToday / streakTarget) * 100));
-
-  // Dynamic contextual supporting line
-  let contextualSubtitle = defaultSubtitle;
-  if (qualifiedToday) {
-    contextualSubtitle = `Daily streak target locked in (${completedToday} tasks completed)! Excellent momentum.`;
-  } else if (completedToday > 0) {
-    contextualSubtitle = `${completedToday} of ${streakTarget} tasks completed today. Complete ${remainingToday} more to qualify your daily streak.`;
-  }
-
   return (
-    <div className="relative overflow-hidden rounded-xl border border-[#E8E8DF] dark:border-[#393E46] bg-[#FFFFFF] dark:bg-[#2A303A] shadow-xs">
-      {/* Background Architectural Texture */}
+    <div className="relative overflow-hidden rounded-xl border border-[#E4E7E0] dark:border-[#303945] bg-[#FFFFFF] dark:bg-[#1D232B] shadow-xs">
+      {/* Background Architectural / Atmospheric Texture */}
       <div className="absolute inset-0 z-0">
         <img
           src={workspaceHero}
           alt="Engineering Workspace"
-          className="w-full h-full object-cover object-right-top opacity-10 dark:opacity-20 filter saturate-50"
+          className="w-full h-full object-cover object-right-top opacity-15 dark:opacity-25 filter saturate-50 contrast-125"
         />
         {/* Light theme subtle overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-white via-white/96 to-white/70 dark:hidden" />
+        <div className="absolute inset-0 bg-gradient-to-r from-white via-white/95 to-white/75 dark:hidden" />
         {/* Dark theme subtle overlay */}
-        <div className="absolute inset-0 hidden dark:block bg-gradient-to-r from-[#2A303A] via-[#2A303A]/96 to-[#2A303A]/75" />
+        <div className="absolute inset-0 hidden dark:block bg-gradient-to-r from-[#1D232B] via-[#1D232B]/95 to-[#1D232B]/80" />
       </div>
 
       {/* Content Container */}
-      <div className="relative z-10 p-5 sm:p-6 lg:p-7 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-        {/* Left Column: Greeting, Timezone Badge, Actions */}
-        <div className="max-w-xl">
+      <div className="relative z-10 p-5 sm:p-6 lg:p-7 flex flex-col md:flex-row md:items-center justify-between gap-5">
+        <div className="max-w-2xl">
           <div className="flex items-center gap-2 mb-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-[#F0F0EB] dark:bg-[#393E46] text-[#4A5749] dark:text-[#C8BFB0] border border-[#E8E8DF] dark:border-[#4F5561]">
-              <Clock className="w-3 h-3 text-[#91A88E]" />
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-[#F0F2ED] dark:bg-[#252C35] text-[#596258] dark:text-[#B0B7C2] border border-[#E4E7E0] dark:border-[#3A4552]">
+              <Clock className="w-3 h-3 text-[var(--accent-primary)]" />
               <span>{formattedDate}</span>
             </span>
-            <span className="text-xs text-[#91A88E] dark:text-[#948979] font-mono hidden sm:inline">•</span>
-            <span className="text-xs text-[#737C74] dark:text-[#948979] font-medium hidden sm:inline">
+            <span className="text-xs text-[#858D82] dark:text-[#7F8996] font-mono hidden sm:inline">•</span>
+            <span className="text-xs text-[#858D82] dark:text-[#7F8996] font-medium hidden sm:inline">
               Asia/Kolkata (IST • UTC+05:30)
             </span>
           </div>
 
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#202A23] dark:text-[#DFD0B8] mb-1.5">
-            {greetingTitle}
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#202620] dark:text-[#F3F4F6] mb-1.5 flex items-center gap-2">
+            <span>{greetingTitle}, Engineer!</span>
+            <span>👋</span>
           </h1>
 
-          <p className="text-sm text-[#4A5749] dark:text-[#C8BFB0] leading-relaxed mb-4">
-            {contextualSubtitle} Tracking{' '}
-            <span className="font-semibold text-[#202A23] dark:text-[#DFD0B8]">
-              {activeCount} active learning tracks
-            </span>{' '}
-            at{' '}
-            <span className="font-semibold text-[#244C3B] dark:text-[#DFD0B8]">
-              {overallProgress}% completion
-            </span>
-            . Roadmaps advance adaptively based on your individual task completions.
+          <p className="text-xs sm:text-sm text-[#596258] dark:text-[#B0B7C2] leading-relaxed mb-4">
+            Plan your learning. Build consistency. Become a better engineer.
           </p>
 
           <div className="flex flex-wrap items-center gap-3">
             <Link
               to="/planner"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[#244C3B] hover:bg-[#1A3B2C] text-white dark:bg-[#DFD0B8] dark:text-[#222831] dark:hover:bg-[#ECE3D4] transition-colors shadow-xs"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[var(--accent-primary)] hover:bg-[var(--accent-hover)] text-[var(--accent-text)] transition-colors shadow-xs"
             >
               <span>Daily Planner</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
             <Link
               to="/roadmaps"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium bg-[#F0F0EB] hover:bg-[#E8E8DF] dark:bg-[#393E46] dark:hover:bg-[#454B54] text-[#4A5749] dark:text-[#DFD0B8] transition-colors border border-transparent dark:border-[#4F5561]"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium bg-[#F0F2ED] hover:bg-[#E4E7E0] dark:bg-[#252C35] dark:hover:bg-[#2B333D] text-[#202620] dark:text-[#F3F4F6] transition-colors border border-[#E4E7E0] dark:border-[#3A4552]"
             >
-              <span>My Roadmaps</span>
+              <span>Explore Roadmaps ({activeCount} Active)</span>
             </Link>
           </div>
         </div>
 
-        {/* Right Column: 5-Task Daily Streak Card */}
-        <div className="w-full lg:w-80 bg-[#F7F7F2]/90 dark:bg-[#222831]/80 border border-[#E8E8DF] dark:border-[#393E46] rounded-xl p-4 sm:p-5 backdrop-blur-xs flex-shrink-0">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <div
-                className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                  qualifiedToday
-                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800'
-                    : currentStreak > 0
-                    ? 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-400 border border-amber-200 dark:border-amber-800'
-                    : 'bg-[#F0F0EB] dark:bg-[#393E46] text-[#737C74] dark:text-[#948979]'
-                }`}
-              >
-                <Flame className="w-4 h-4" />
-              </div>
-              <div>
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-xl font-bold font-mono text-[#202A23] dark:text-[#DFD0B8]">
-                    {currentStreak}
-                  </span>
-                  <span className="text-xs font-semibold uppercase tracking-wider text-[#737C74] dark:text-[#948979]">
-                    Day Streak
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {bestStreak > 0 && (
-              <div className="flex items-center gap-1 text-[11px] font-mono text-[#737C74] dark:text-[#DFD0B8] bg-[#FFFFFF] dark:bg-[#393E46] px-2 py-0.5 rounded border border-[#E8E8DF] dark:border-[#4F5561]">
-                <Trophy className="w-3 h-3 text-amber-500" />
-                <span>Best: {bestStreak}d</span>
-              </div>
-            )}
+        {/* Quick Context Summary Pill on Right */}
+        <div className="hidden lg:flex flex-col items-end gap-1.5 text-right font-mono text-xs">
+          <div className="px-3 py-1.5 rounded-lg bg-[#F8F9F6] dark:bg-[#171B21] border border-[#E4E7E0] dark:border-[#303945]">
+            <span className="text-[#858D82] dark:text-[#7F8996]">Overall Progress: </span>
+            <span className="font-bold text-[var(--accent-primary)]">{overallProgress}%</span>
           </div>
-
-          {/* Today's 5-task rule meter */}
-          <div className="space-y-1.5 pt-1">
-            <div className="flex items-center justify-between text-xs font-medium">
-              <span className="text-[#4A5749] dark:text-[#C8BFB0]">
-                Today's Goal ({streakTarget} tasks/day)
-              </span>
-              <span className="font-mono text-[#202A23] dark:text-[#DFD0B8]">
-                {completedToday}/{streakTarget}
-              </span>
-            </div>
-
-            {/* Progress track */}
-            <div className="w-full h-2 bg-[#E8E8DF] dark:bg-[#393E46] rounded-full overflow-hidden">
-              <div
-                className={`h-full transition-all duration-500 rounded-full ${
-                  qualifiedToday
-                    ? 'bg-emerald-500'
-                    : completedToday > 0
-                    ? 'bg-amber-500'
-                    : 'bg-[#D4D4CA] dark:bg-[#393E46]'
-                }`}
-                style={{ width: `${streakPercent}%` }}
-              />
-            </div>
-
-            {/* Status message */}
-            <div className="text-[11px] leading-tight pt-1">
-              {qualifiedToday ? (
-                <div className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 font-medium">
-                  <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
-                  <span>Streak qualified for today!</span>
-                </div>
-              ) : remainingToday > 0 ? (
-                <p className="text-[#737C74] dark:text-[#948979]">
-                  Complete{' '}
-                  <strong className="text-amber-600 dark:text-amber-400 font-semibold">
-                    {remainingToday} more {remainingToday === 1 ? 'task' : 'tasks'}
-                  </strong>{' '}
-                  today in Asia/Kolkata to qualify.
-                </p>
-              ) : (
-                <p className="text-[#737C74] dark:text-[#948979]">
-                  Complete {streakTarget} distinct tasks in a calendar day to qualify.
-                </p>
-              )}
-            </div>
+          <div className="px-3 py-1.5 rounded-lg bg-[#F8F9F6] dark:bg-[#171B21] border border-[#E4E7E0] dark:border-[#303945]">
+            <span className="text-[#858D82] dark:text-[#7F8996]">Today's Output: </span>
+            <span className="font-bold text-[#202620] dark:text-[#F3F4F6]">{completedToday} / {streakTarget}</span>
           </div>
         </div>
       </div>

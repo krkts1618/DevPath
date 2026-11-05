@@ -2,7 +2,6 @@ import React from 'react';
 import {
   BarChart,
   Bar,
-  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -14,8 +13,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { formatKolkataDate } from '../../utils/date.util';
 
 export default function ActivityChart({ data = [] }) {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
 
   const chartData =
     data.length > 0
@@ -33,17 +31,17 @@ export default function ActivityChart({ data = [] }) {
   const totalWeeklyCompleted = chartData.reduce((acc, item) => acc + (item.completed || 0), 0);
 
   return (
-    <div className="bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl p-5 shadow-xs">
-      <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#E8E8DF] dark:border-[#393E46]">
+    <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-5 shadow-xs">
+      <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#E4E7E0] dark:border-[#303945]">
         <div className="flex items-center gap-2">
-          <Activity className="w-4 h-4 text-[#244C3B] dark:text-[#DFD0B8]" />
-          <h3 className="text-xs font-bold text-[#202A23] dark:text-[#DFD0B8] uppercase tracking-wider">
-            Weekly Learning Activity
+          <Activity className="w-4 h-4 text-[var(--accent-primary)]" />
+          <h3 className="text-xs font-bold text-[#202620] dark:text-[#F3F4F6] uppercase tracking-wider font-mono">
+            Weekly Consistency
           </h3>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded-full bg-[#E8F0EB] text-[#244C3B] dark:bg-[#393E46] dark:text-[#DFD0B8] border border-[#C5D9CB] dark:border-[#4F5561]">
-            {totalWeeklyCompleted} completed (7d)
+          <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
+            {totalWeeklyCompleted} completed
           </span>
         </div>
       </div>
@@ -52,11 +50,11 @@ export default function ActivityChart({ data = [] }) {
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={chartData}
-            margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+            margin={{ top: 10, right: 10, left: -25, bottom: 0 }}
           >
             <CartesianGrid
               strokeDasharray="3 3"
-              stroke={isDark ? '#393E46' : '#E8E8DF'}
+              stroke={isDark ? '#303945' : '#E4E7E0'}
               vertical={false}
             />
             <XAxis
@@ -64,7 +62,7 @@ export default function ActivityChart({ data = [] }) {
               tickLine={false}
               axisLine={false}
               tick={{
-                fill: isDark ? '#948979' : '#737C74',
+                fill: isDark ? '#7F8996' : '#858D82',
                 fontSize: 11,
                 fontFamily: 'monospace',
               }}
@@ -74,7 +72,7 @@ export default function ActivityChart({ data = [] }) {
               axisLine={false}
               allowDecimals={false}
               tick={{
-                fill: isDark ? '#948979' : '#737C74',
+                fill: isDark ? '#7F8996' : '#858D82',
                 fontSize: 11,
                 fontFamily: 'monospace',
               }}
@@ -87,12 +85,12 @@ export default function ActivityChart({ data = [] }) {
                     ? formatKolkataDate(item.date, { weekday: 'short', month: 'short', day: 'numeric' })
                     : item.day;
                   return (
-                    <div className="bg-[#FFFFFF] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46] p-2.5 rounded-lg shadow-md text-xs">
-                      <div className="font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-0.5">
+                    <div className="bg-[#FFFFFF] dark:bg-[#171B21] border border-[#E4E7E0] dark:border-[#303945] p-2.5 rounded-lg shadow-lg text-xs font-mono">
+                      <div className="font-semibold text-[#202620] dark:text-[#F3F4F6] mb-0.5">
                         {dateLabel} {item.isToday ? '(Today)' : ''}
                       </div>
-                      <div className="font-mono text-[#244C3B] dark:text-[#DFD0B8] flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                      <div className="text-[var(--accent-primary)] flex items-center gap-1.5 font-bold">
+                        <span className="w-2 h-2 rounded-full bg-[var(--accent-primary)]" />
                         <span>{item.completed} {item.completed === 1 ? 'task' : 'tasks'} completed</span>
                       </div>
                     </div>
@@ -103,29 +101,12 @@ export default function ActivityChart({ data = [] }) {
             />
             <Bar
               dataKey="completed"
+              fill={isDark ? '#F2A93B' : '#C77B16'}
               radius={[4, 4, 0, 0]}
-              maxBarSize={36}
-            >
-              {chartData.map((entry, index) => {
-                let barColor = isDark ? '#DFD0B8' : '#244C3B';
-                if (entry.isToday) {
-                  barColor = '#10B981'; // Vibrant emerald highlight for today
-                } else if (entry.completed >= 5) {
-                  barColor = isDark ? '#ECE3D4' : '#1A3B2C';
-                }
-                return <Cell key={`cell-${index}`} fill={barColor} />;
-              })}
-            </Bar>
+              maxBarSize={32}
+            />
           </BarChart>
         </ResponsiveContainer>
-      </div>
-
-      <div className="mt-3 pt-3 border-t border-[#E8E8DF] dark:border-[#393E46] flex items-center justify-between text-[11px] text-[#737C74] dark:text-[#948979] font-mono">
-        <span>Kolkata Standard Time (IST)</span>
-        <span className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-emerald-500" />
-          <span>Today's bar highlighted</span>
-        </span>
       </div>
     </div>
   );

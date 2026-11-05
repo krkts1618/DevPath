@@ -55,24 +55,24 @@ export default function TaskItem({
     <div
       className={`group relative rounded-xl border transition-all duration-150 p-3 sm:p-3.5 ${
         isCompleted
-          ? 'bg-[#F7F7F2]/80 dark:bg-[#222831]/60 border-[#E8E8DF]/80 dark:border-[#393E46]/60'
-          : 'bg-[#FFFFFF] dark:bg-[#2A303A] border-[#E8E8DF] dark:border-[#393E46] hover:border-[#D4D4CA] dark:hover:border-[#4F5561] shadow-2xs'
+          ? 'bg-[#F8F9F6]/80 dark:bg-[#171B21]/60 border-[#E4E7E0]/70 dark:border-[#303945]/60'
+          : 'bg-[#FFFFFF] dark:bg-[#1D232B] border-[#E4E7E0] dark:border-[#303945] hover:border-[#D5DBD1] dark:hover:border-[#3A4552] shadow-2xs'
       }`}
     >
       <div className="flex items-start gap-3">
-        {/* Custom Checkbox */}
+        {/* Custom Amber Circular Checkbox matching Reference */}
         <button
           type="button"
           disabled={isUpdating}
           onClick={handleToggle}
-          className={`mt-0.5 w-5 h-5 rounded-md flex items-center justify-center border transition-all duration-150 flex-shrink-0 cursor-pointer ${
+          className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center border transition-all duration-150 flex-shrink-0 cursor-pointer ${
             isCompleted
-              ? 'bg-emerald-600 border-emerald-600 text-white shadow-2xs'
-              : 'border-[#D4D4CA] dark:border-[#4F5561] hover:border-[#244C3B] dark:hover:border-[#DFD0B8] bg-transparent'
+              ? 'bg-[var(--accent-primary)] border-[var(--accent-primary)] text-[var(--accent-text)] shadow-xs scale-105'
+              : 'border-[#D5DBD1] dark:border-[#3A4552] hover:border-[var(--accent-primary)] bg-transparent'
           }`}
           aria-label={isCompleted ? 'Mark as incomplete' : 'Mark as complete'}
         >
-          {isCompleted && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+          {isCompleted && <Check className="w-3 h-3 stroke-[3]" />}
         </button>
 
         {/* Task Details */}
@@ -80,8 +80,8 @@ export default function TaskItem({
           <div className="flex items-start justify-between gap-2">
             <div className="flex flex-col flex-1 min-w-0">
               {showRoadmapContext && task.roadmapTitle && (
-                <div className="flex items-center gap-1.5 text-[11px] text-[#737C74] dark:text-[#948979] mb-0.5">
-                  <span className="font-semibold text-[#244C3B] dark:text-[#DFD0B8]">
+                <div className="flex items-center gap-1.5 text-[11px] text-[#858D82] dark:text-[#7F8996] mb-0.5 font-mono">
+                  <span className="font-semibold text-[var(--accent-primary)]">
                     {task.roadmapTitle}
                   </span>
                   <span>•</span>
@@ -97,161 +97,99 @@ export default function TaskItem({
 
               <span
                 onClick={() => onViewDetails?.(task)}
-                className={`text-xs sm:text-sm font-medium leading-snug transition-colors cursor-pointer hover:text-[#244C3B] dark:hover:text-[#DFD0B8] ${
+                className={`text-xs sm:text-sm font-medium leading-snug transition-colors cursor-pointer hover:text-[var(--accent-primary)] ${
                   isCompleted
-                    ? 'line-through text-[#737C74] dark:text-[#948979]'
-                    : 'text-[#202A23] dark:text-[#DFD0B8]'
+                    ? 'line-through text-[#858D82] dark:text-[#7F8996]'
+                    : 'text-[#202620] dark:text-[#F3F4F6]'
                 }`}
               >
                 {task.title}
               </span>
             </div>
 
-            {/* Badges & Meta */}
-            <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-              {/* Status Indicators */}
-              {task.isOverdue && !isCompleted && (
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30">
-                  Overdue
-                </span>
-              )}
-
-              {task.rescheduledFrom && !isCompleted && (
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30">
-                  Carried Forward
-                </span>
-              )}
-
-              {!isCompleted && finalFocusMinutes > 0 && (
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/30">
-                  In Progress
-                </span>
-              )}
-
-              {task.priority && task.priority !== 'normal' && (
-                <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold capitalize ${
-                  task.priority === 'urgent'
-                    ? 'bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30'
-                    : task.priority === 'high'
-                    ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30'
-                    : 'bg-neutral-500/15 text-neutral-600 dark:text-neutral-400 border border-neutral-500/30'
-                }`}>
-                  {task.priority}
-                </span>
-              )}
-
-              <Badge type={task.taskType} size="xs">
-                {task.taskType}
-              </Badge>
-
+            {/* Badges & Actions */}
+            <div className="flex items-center gap-1.5 flex-shrink-0">
+              {task.taskType && <Badge type={task.taskType} size="xs" />}
               {task.estimatedDuration && (
-                <span className="hidden sm:flex items-center gap-1 text-[11px] font-mono text-[#737C74] dark:text-[#948979]">
-                  <Clock className="w-3 h-3 text-[#91A88E]" />
-                  <span>Est: {task.estimatedDuration}m</span>
-                  {finalFocusMinutes > 0 && (
-                    <span className="text-[#244C3B] dark:text-[#DFD0B8] font-bold">
-                      • Focused: {finalFocusMinutes}m
-                    </span>
-                  )}
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-[#F0F2ED] dark:bg-[#252C35] text-[#596258] dark:text-[#B0B7C2] border border-[#E4E7E0] dark:border-[#303945]">
+                  <Clock className="w-2.5 h-2.5 opacity-70" />
+                  {task.estimatedDuration}m
                 </span>
               )}
+            </div>
+          </div>
 
-              {/* Quick Focus Button */}
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate(`/focus?taskId=${task.id}&title=${encodeURIComponent(task.title)}&roadmapId=${task.roadmapId || ''}`);
-                }}
-                className="p-1 rounded text-[#737C74] hover:text-[#244C3B] dark:hover:text-[#DFD0B8] hover:bg-[#F0F0EB] dark:hover:bg-[#393E46] transition-colors"
-                title="Start Focus Session on this Task"
+          {/* Description preview or expanded text */}
+          {task.description && (
+            <div className="mt-1">
+              <p
+                onClick={() => setIsExpanded(!isExpanded)}
+                className={`text-xs text-[#596258] dark:text-[#B0B7C2] leading-relaxed cursor-pointer ${
+                  isExpanded ? '' : 'line-clamp-1'
+                }`}
               >
-                <Timer className="w-3.5 h-3.5 text-[#244C3B] dark:text-[#DFD0B8]" />
-              </button>
+                {task.description}
+              </p>
+            </div>
+          )}
 
-              {/* View details */}
+          {/* Action Row */}
+          <div className="flex items-center justify-between pt-2 mt-2 border-t border-[#E4E7E0]/60 dark:border-[#303945]/60 text-[11px] text-[#858D82] dark:text-[#7F8996]">
+            <div className="flex items-center gap-3 font-mono text-[10px]">
+              {finalFocusMinutes > 0 && (
+                <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400">
+                  <Timer className="w-3 h-3" />
+                  {finalFocusMinutes}m focused
+                </span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
               {onViewDetails && (
                 <button
                   type="button"
                   onClick={() => onViewDetails(task)}
-                  className="p-1 rounded text-[#737C74] hover:text-[#244C3B] dark:hover:text-[#DFD0B8] hover:bg-[#F0F0EB] dark:hover:bg-[#393E46] transition-colors"
-                  title="View Task Details & History"
+                  className="p-1 rounded text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35] transition-colors"
+                  title="View task specifications"
                 >
                   <Eye className="w-3.5 h-3.5" />
                 </button>
               )}
 
-              {/* Expand description if inline */}
-              {task.description && (
-                <button
-                  type="button"
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  className="p-1 rounded text-[#737C74] hover:text-[#202A23] dark:hover:text-[#DFD0B8] hover:bg-[#F0F0EB] dark:hover:bg-[#393E46] transition-colors"
-                  title={isExpanded ? 'Collapse description' : 'View instructions'}
-                >
-                  {isExpanded ? (
-                    <ChevronUp className="w-3.5 h-3.5" />
-                  ) : (
-                    <ChevronDown className="w-3.5 h-3.5" />
-                  )}
-                </button>
-              )}
-
-              {/* Reassign button */}
               {onReassignClick && (
                 <button
                   type="button"
                   onClick={() => onReassignClick(task)}
-                  className="p-1 rounded text-[#737C74] hover:text-[#244C3B] dark:hover:text-[#DFD0B8] hover:bg-[#F0F0EB] dark:hover:bg-[#393E46] transition-colors"
-                  title="Reschedule / Reassign Task"
+                  className="p-1 rounded text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35] transition-colors"
+                  title="Reassign to another day"
                 >
                   <MoveRight className="w-3.5 h-3.5" />
                 </button>
               )}
 
-              {/* Edit task button */}
               {allowEdit && onEditClick && (
                 <button
                   type="button"
                   onClick={() => onEditClick(task)}
-                  className="p-1 rounded text-[#737C74] hover:text-[#202A23] dark:hover:text-[#DFD0B8] hover:bg-[#F0F0EB] dark:hover:bg-[#393E46] transition-colors"
-                  title="Edit Task"
+                  className="p-1 rounded text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35] transition-colors"
+                  title="Edit task"
                 >
                   <Edit2 className="w-3.5 h-3.5" />
                 </button>
               )}
 
-              {/* Delete task button */}
               {allowEdit && onDeleteClick && (
                 <button
                   type="button"
                   onClick={() => onDeleteClick(task)}
-                  className="p-1 rounded text-[#737C74] hover:text-rose-600 dark:hover:text-rose-400 hover:bg-[#F0F0EB] dark:hover:bg-[#393E46] transition-colors"
-                  title="Delete Task"
+                  className="p-1 rounded text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
+                  title="Delete task"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
               )}
             </div>
           </div>
-
-          {/* Inline Description */}
-          {isExpanded && task.description && (
-            <div className="mt-2.5 pt-2.5 border-t border-[#E8E8DF] dark:border-[#393E46] text-xs text-[#4A5749] dark:text-[#C8BFB0] leading-relaxed bg-[#F7F7F2] dark:bg-[#222831] p-2.5 rounded-lg whitespace-pre-wrap">
-              {task.description}
-            </div>
-          )}
-
-          {/* Reassignment audit note */}
-          {task.hasReassignment && task.reassignments?.length > 0 && (
-            <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-amber-600 dark:text-amber-400 font-mono">
-              <MoveRight className="w-3 h-3 flex-shrink-0" />
-              <span>
-                Reassigned from Day {task.reassignments[0].originalDay?.dayNumber}
-                {task.reassignments[0].reason && `: "${task.reassignments[0].reason}"`}
-              </span>
-            </div>
-          )}
         </div>
       </div>
     </div>

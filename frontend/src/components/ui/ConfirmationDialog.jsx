@@ -40,8 +40,8 @@ export default function ConfirmationDialog({
         <div
           className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
             isDestructive
-              ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400'
-              : 'bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400'
+              ? 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20'
+              : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
           }`}
         >
           {isDestructive ? (
@@ -51,17 +51,18 @@ export default function ConfirmationDialog({
           )}
         </div>
 
-        <div className="space-y-2">
-          <p className="text-sm text-[#4A5749] dark:text-[#C8BFB0] leading-relaxed">
+        <div className="space-y-2 flex-1">
+          <p className="text-sm text-[#596258] dark:text-[#B0B7C2] leading-relaxed">
             {message}
           </p>
 
           {impactDetails && (
-            <div className="p-3 rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46] text-xs text-[#4A5749] dark:text-[#C8BFB0] font-mono space-y-1">
-              <span className="font-bold text-[#202A23] dark:text-[#DFD0B8] block mb-1">
-                Affected Entities:
-              </span>
-              {impactDetails}
+            <div className="p-3 rounded-lg bg-[#F8F9F6] dark:bg-[#171B21] border border-[#E4E7E0] dark:border-[#303945] text-xs text-[#596258] dark:text-[#B0B7C2] font-mono space-y-1">
+              {Array.isArray(impactDetails) ? (
+                impactDetails.map((item, i) => <div key={i}>• {item}</div>)
+              ) : (
+                <div>{impactDetails}</div>
+              )}
             </div>
           )}
         </div>

@@ -3,14 +3,14 @@ import React from 'react';
 export function Skeleton({ className = '' }) {
   return (
     <div
-      className={`animate-pulse bg-[#E8E8DF] dark:bg-[#393E46] rounded-md ${className}`}
+      className={`animate-pulse bg-[#E4E7E0] dark:bg-[#252C35] rounded-md ${className}`}
     />
   );
 }
 
 export function CardSkeleton() {
   return (
-    <div className="bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl p-5 space-y-4">
+    <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-5 space-y-4">
       <div className="flex justify-between items-center">
         <Skeleton className="h-5 w-24" />
         <Skeleton className="h-5 w-16" />
@@ -27,7 +27,7 @@ export function CardSkeleton() {
 
 export function StatCardSkeleton() {
   return (
-    <div className="bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl p-5 space-y-3">
+    <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-5 space-y-3">
       <div className="flex justify-between items-center">
         <Skeleton className="h-3 w-20" />
         <Skeleton className="h-8 w-8 rounded-lg" />

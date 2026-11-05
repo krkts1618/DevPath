@@ -10,15 +10,15 @@ export default function EmptyState({
 }) {
   return (
     <div
-      className={`flex flex-col items-center justify-center p-12 text-center bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl ${className}`}
+      className={`flex flex-col items-center justify-center p-12 text-center bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl ${className}`}
     >
-      <div className="w-12 h-12 rounded-xl bg-[#E8F0EB] dark:bg-[#393E46] text-[#244C3B] dark:text-[#DFD0B8] flex items-center justify-center mb-4">
+      <div className="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 flex items-center justify-center mb-4">
         <Icon className="w-6 h-6" />
       </div>
-      <h3 className="text-base font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+      <h3 className="text-base font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
         {title}
       </h3>
-      <p className="text-sm text-[#737C74] dark:text-[#948979] max-w-sm mb-6">
+      <p className="text-sm text-[#858D82] dark:text-[#7F8996] max-w-sm mb-6">
         {description}
       </p>
       {action && <div>{action}</div>}

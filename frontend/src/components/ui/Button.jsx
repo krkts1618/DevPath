@@ -17,17 +17,19 @@ export default function Button({
 
   const variants = {
     primary:
-      'bg-[#244C3B] hover:bg-[#1A3B2C] active:bg-[#132D22] text-white shadow-sm focus-visible:ring-[#244C3B] dark:bg-[#DFD0B8] dark:text-[#222831] dark:hover:bg-[#ECE3D4] dark:active:bg-[#D4C3A8] dark:focus-visible:ring-[#DFD0B8]',
+      'bg-[var(--accent-primary)] hover:bg-[var(--accent-hover)] active:bg-[var(--accent-pressed)] text-[var(--accent-text)] shadow-xs focus-visible:ring-[var(--accent-primary)] dark:font-semibold',
+    amber:
+      'bg-[#F2A93B] hover:bg-[#FFC15A] active:bg-[#D98B20] text-[#12151A] font-semibold shadow-xs focus-visible:ring-[#F2A93B]',
     secondary:
-      'bg-[#F0F0EB] hover:bg-[#E8E8DF] active:bg-[#DEDED7] text-[#202A23] focus-visible:ring-[#244C3B] dark:bg-[#393E46] dark:hover:bg-[#454B54] dark:active:bg-[#30353C] dark:text-[#DFD0B8] dark:focus-visible:ring-[#DFD0B8]',
+      'bg-[#F0F2ED] hover:bg-[#E4E7E0] active:bg-[#D5DBD1] text-[#202620] border border-[#E4E7E0] focus-visible:ring-[#C77B16] dark:bg-[#252C35] dark:hover:bg-[#2B333D] dark:active:bg-[#1D232B] dark:text-[#F3F4F6] dark:border-[#303945] dark:focus-visible:ring-[#F2A93B]',
     outline:
-      'border border-[#D4D4CA] dark:border-[#4F5561] bg-transparent hover:bg-[#F0F0EB] dark:hover:bg-[#393E46] text-[#202A23] dark:text-[#DFD0B8] focus-visible:ring-[#244C3B] dark:focus-visible:ring-[#DFD0B8]',
+      'border border-[#D5DBD1] bg-transparent hover:bg-[#F0F2ED] text-[#202620] focus-visible:ring-[#C77B16] dark:border-[#3A4552] dark:hover:bg-[#252C35] dark:text-[#F3F4F6] dark:focus-visible:ring-[#F2A93B]',
     ghost:
-      'bg-transparent hover:bg-[#F0F0EB] dark:hover:bg-[#393E46] text-[#4A5749] dark:text-[#C8BFB0] focus-visible:ring-[#244C3B] dark:focus-visible:ring-[#DFD0B8]',
+      'bg-transparent hover:bg-[#F0F2ED] text-[#596258] hover:text-[#202620] focus-visible:ring-[#C77B16] dark:hover:bg-[#252C35] dark:text-[#B0B7C2] dark:hover:text-[#F3F4F6] dark:focus-visible:ring-[#F2A93B]',
     danger:
-      'bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white shadow-sm focus-visible:ring-rose-500 dark:bg-rose-700 dark:hover:bg-rose-600',
+      'bg-red-600 hover:bg-red-700 active:bg-red-800 text-white shadow-xs focus-visible:ring-red-500 dark:bg-red-600 dark:hover:bg-red-500',
     success:
-      'bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white shadow-sm focus-visible:ring-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-500',
+      'bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white shadow-xs focus-visible:ring-emerald-500 dark:bg-emerald-600 dark:hover:bg-emerald-500',
   };
 
   const sizes = {

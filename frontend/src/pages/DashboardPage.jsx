@@ -3,17 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import {
   Compass,
   CheckCircle2,
-  ListTodo,
   Flame,
   Clock,
-  History,
   Layers,
   ArrowRight,
-  TrendingUp,
   Timer,
 } from 'lucide-react';
 import { dashboardService } from '../services/dashboardService';
-import { roadmapService } from '../services/roadmapService';
 import { studySessionService } from '../services/studySessionService';
 import { useTimer } from '../context/TimerContext';
 import WelcomeBanner from '../components/dashboard/WelcomeBanner';
@@ -22,8 +18,6 @@ import ActiveRoadmapsGrid from '../components/dashboard/ActiveRoadmapsGrid';
 import ActivityChart from '../components/dashboard/ActivityChart';
 import NotificationSummaryCard from '../components/dashboard/NotificationSummaryCard';
 import RecentActivityFeed from '../components/dashboard/RecentActivityFeed';
-import StatCard from '../components/ui/StatCard';
-import Button from '../components/ui/Button';
 import { StatCardSkeleton, CardSkeleton } from '../components/ui/Skeleton';
 import ErrorState from '../components/ui/ErrorState';
 
@@ -37,14 +31,12 @@ export default function DashboardPage() {
 
   const fetchDashboardData = async (skipCache = false) => {
     try {
-      // 1. Fetch essential core stats first (unblocks hero, streaks, queue, and tracks)
       const statsPromise = dashboardService.getStats({ skipCache }).then((statsRes) => {
         setStats(statsRes);
         setLoading(false);
         return statsRes;
       });
 
-      // 2. Fetch secondary study analytics concurrently without blocking primary UI
       studySessionService
         .getAnalytics()
         .then((focusRes) => setFocusAnalytics(focusRes))
@@ -63,14 +55,13 @@ export default function DashboardPage() {
   }, []);
 
   const handleTaskUpdated = () => {
-    // Re-fetch stats immediately with skipCache=true to recalculate adaptive progression & streaks
     fetchDashboardData(true);
   };
 
   if (loading && !stats) {
     return (
       <div className="space-y-6">
-        <div className="h-44 bg-[#E8E8DF] dark:bg-[#393E46] rounded-xl animate-pulse" />
+        <div className="h-40 bg-[#E4E7E0] dark:bg-[#1D232B] rounded-xl animate-pulse" />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCardSkeleton />
           <StatCardSkeleton />
@@ -112,221 +103,151 @@ export default function DashboardPage() {
     stats?.todayScheduledTasks ||
     queueItems.reduce((acc, g) => acc + (g.activeTasks?.length || 0), 0);
 
+  // Daily Progress calculations for Ring
+  const completedToday = stats?.completedToday ?? 0;
+  const streakTarget = stats?.streakTarget ?? 5;
+  const dailyProgressPercent = Math.min(100, Math.round((completedToday / streakTarget) * 100));
+
+  // Focus time calculation
+  const totalFocusMins = focusAnalytics?.todayFocusMinutes ?? 0;
+  const focusHours = Math.floor(totalFocusMins / 60);
+  const focusMins = totalFocusMins % 60;
+  const focusTimeDisplay = totalFocusMins > 0 ? `${focusHours}h ${focusMins}m` : '0h 0m';
+
+  // SVG Circular Ring parameters
+  const ringRadius = 22;
+  const ringCircumference = 2 * Math.PI * ringRadius;
+  const ringOffset = ringCircumference - (dailyProgressPercent / 100) * ringCircumference;
+
   return (
     <div className="space-y-6">
-      {/* 1. Refined Engineering Workspace Hero Header with 5-Task Streak Meter */}
+      {/* 1. Atmospheric Hero Header */}
       <WelcomeBanner stats={stats} />
 
-      {/* 2. Compact Statistics Row */}
+      {/* 2. Four Compact Metric Cards from Reference */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-        <StatCard
-          title="Daily Streak"
-          value={`${stats?.currentStreak ?? 0} d`}
-          subtitle={
-            stats?.qualifiedToday
-              ? 'Qualified today (5+ tasks)'
-              : stats?.completedToday > 0
-              ? `${stats?.remainingToday} more to qualify today`
-              : 'Complete 5 tasks to qualify'
-          }
-          icon={Flame}
-          color={stats?.qualifiedToday ? 'emerald' : stats?.currentStreak > 0 ? 'amber' : 'slate'}
-          badgeText={stats?.bestStreak > 0 ? `Best: ${stats?.bestStreak}d` : null}
-        />
+        {/* Card 1: Daily Progress with Circular Ring */}
+        <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-4 sm:p-5 shadow-xs flex items-center justify-between">
+          <div>
+            <span className="text-[10px] font-bold text-[#858D82] dark:text-[#7F8996] uppercase tracking-wider font-mono">
+              Daily Progress
+            </span>
+            <div className="text-2xl font-bold font-mono text-[#202620] dark:text-[#F3F4F6] mt-1">
+              {completedToday} / {streakTarget}
+            </div>
+            <span className="text-xs font-mono font-semibold text-[var(--accent-primary)] mt-0.5 block">
+              {dailyProgressPercent}%
+            </span>
+          </div>
 
-        <StatCard
-          title="Active Tracks"
-          value={stats?.activeRoadmapsCount ?? 0}
-          subtitle={`Across ${stats?.totalRoadmapsCount ?? 0} total curriculum tracks`}
-          icon={Compass}
-          color="green"
-        />
+          {/* Circular Progress Ring */}
+          <div className="relative w-14 h-14 flex items-center justify-center flex-shrink-0">
+            <svg className="w-14 h-14 transform -rotate-90" viewBox="0 0 56 56">
+              <circle
+                cx="28"
+                cy="28"
+                r={ringRadius}
+                className="stroke-[#E4E7E0] dark:stroke-[#252C35]"
+                strokeWidth="4"
+                fill="none"
+              />
+              <circle
+                cx="28"
+                cy="28"
+                r={ringRadius}
+                className="stroke-[var(--accent-primary)] transition-all duration-700 ease-out"
+                strokeWidth="4.5"
+                strokeDasharray={ringCircumference}
+                strokeDashoffset={ringOffset}
+                strokeLinecap="round"
+                fill="none"
+              />
+            </svg>
+            <span className="absolute font-mono text-[11px] font-bold text-[#202620] dark:text-[#F3F4F6]">
+              {dailyProgressPercent}%
+            </span>
+          </div>
+        </div>
 
-        <StatCard
-          title="Curriculum Progress"
-          value={`${stats?.overallProgressPercent ?? 0}%`}
-          subtitle={`${stats?.completedTasks ?? 0} of ${stats?.totalTasks ?? 0} total tasks`}
-          icon={CheckCircle2}
-          color="emerald"
-        />
+        {/* Card 2: Streak */}
+        <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-4 sm:p-5 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[10px] font-bold text-[#858D82] dark:text-[#7F8996] uppercase tracking-wider font-mono">
+              Streak
+            </span>
+            <Flame className="w-4 h-4 text-amber-500 fill-amber-500/20" />
+          </div>
+          <div>
+            <div className="text-2xl font-bold font-mono text-[#202620] dark:text-[#F3F4F6]">
+              {stats?.currentStreak ?? 0} Days
+            </div>
+            <div className="text-xs text-[#596258] dark:text-[#B0B7C2] mt-0.5 flex items-center gap-1">
+              <span>{stats?.qualifiedToday ? 'Target locked today! 🎯' : 'Keep going! 🔥'}</span>
+            </div>
+          </div>
+        </div>
 
-        <StatCard
-          title="Active Learning Queue"
-          value={queueTotalTasks}
-          subtitle="Frontier tasks across active tracks"
-          icon={Layers}
-          color="sky"
-        />
+        {/* Card 3: Active Roadmaps */}
+        <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-4 sm:p-5 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[10px] font-bold text-[#858D82] dark:text-[#7F8996] uppercase tracking-wider font-mono">
+              Active Roadmaps
+            </span>
+            <Compass className="w-4 h-4 text-[var(--accent-primary)]" />
+          </div>
+          <div>
+            <div className="text-2xl font-bold font-mono text-[#202620] dark:text-[#F3F4F6]">
+              {stats?.activeRoadmapsCount ?? 0}
+            </div>
+            <div className="text-xs text-[#596258] dark:text-[#B0B7C2] mt-0.5 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <span>Learning & progressing...</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Card 4: Focus Time */}
+        <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-4 sm:p-5 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[10px] font-bold text-[#858D82] dark:text-[#7F8996] uppercase tracking-wider font-mono">
+              Focus Time
+            </span>
+            <Timer className="w-4 h-4 text-[var(--accent-primary)]" />
+          </div>
+          <div>
+            <div className="text-2xl font-bold font-mono text-[#202620] dark:text-[#F3F4F6]">
+              {focusTimeDisplay}
+            </div>
+            <div className="text-xs text-[#596258] dark:text-[#B0B7C2] mt-0.5">
+              Today's deep work
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* 3. Main Dashboard Grid */}
+      {/* 3. Main Dashboard Bento Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left 8 Columns: Adaptive Learning Queue & Active Roadmaps */}
+        {/* Left 7-8 Columns: Today's Learning Queue & Active Roadmaps */}
         <div className="lg:col-span-8 space-y-6">
-          {/* Today's Adaptive Learning Queue Grouped by Roadmap */}
           <TodayTaskPreview
             learningQueue={queueItems}
             totalTasksInQueue={queueTotalTasks}
             onTaskUpdated={handleTaskUpdated}
           />
 
-          {/* Active Roadmaps Overview */}
           <ActiveRoadmapsGrid roadmaps={stats?.roadmaps || []} />
         </div>
 
-        {/* Right 4 Columns: Weekly Velocity & Systems Portfolio */}
+        {/* Right 4-5 Columns: Weekly Consistency, Reminders & Activity */}
         <div className="lg:col-span-4 space-y-6">
-          {/* Notification & Reminders Summary Card */}
+          {/* Weekly Consistency Bar Chart */}
+          <ActivityChart data={stats?.weeklyActivity || []} />
+
+          {/* Reminders & Alerts */}
           <NotificationSummaryCard stats={stats} />
 
-          {/* Focus & Deep Work Summary Card */}
-          <div className="bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl p-5 shadow-xs">
-            <div className="flex items-center justify-between mb-3 pb-3 border-b border-[#E8E8DF] dark:border-[#393E46]">
-              <div className="flex items-center gap-2">
-                <Timer className="w-4 h-4 text-[#244C3B] dark:text-[#DFD0B8]" />
-                <h3 className="text-xs font-bold text-[#202A23] dark:text-[#DFD0B8] uppercase tracking-wider">
-                  Focus & Deep Work
-                </h3>
-              </div>
-              <button
-                onClick={() => navigate('/focus')}
-                className="text-[11px] font-semibold text-[#244C3B] dark:text-[#DFD0B8] hover:underline cursor-pointer"
-              >
-                Open Timer &rarr;
-              </button>
-            </div>
-
-            {/* Active session banner if running */}
-            {activeSession && (
-              <div
-                onClick={() => navigate('/focus')}
-                className="mb-3 p-2.5 rounded-lg bg-[#E8F0EB] text-[#244C3B] dark:bg-[#393E46] dark:text-[#DFD0B8] border border-[#244C3B]/20 dark:border-[#DFD0B8]/20 flex items-center justify-between cursor-pointer"
-              >
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                  <span className="text-xs font-bold truncate">
-                    {activeSession.title || 'Focus Session Active'}
-                  </span>
-                </div>
-                <span className="text-xs font-mono font-bold shrink-0 ml-2">
-                  {Math.floor(((remainingSeconds || elapsedSeconds) || 0) / 60)}:
-                  {(((remainingSeconds || elapsedSeconds) || 0) % 60).toString().padStart(2, '0')}
-                </span>
-              </div>
-            )}
-
-            <div className="grid grid-cols-2 gap-3 mb-3 text-xs">
-              <div className="p-2.5 rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46]">
-                <span className="text-[10px] text-[#737C74] dark:text-[#948979] uppercase font-bold block mb-0.5">
-                  Today's Focus
-                </span>
-                <span className="text-base font-bold font-mono text-[#202A23] dark:text-[#DFD0B8]">
-                  {Math.floor((focusAnalytics?.todayFocusMinutes || 0) / 60)}h {(focusAnalytics?.todayFocusMinutes || 0) % 60}m
-                </span>
-              </div>
-
-              <div className="p-2.5 rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46]">
-                <span className="text-[10px] text-[#737C74] dark:text-[#948979] uppercase font-bold block mb-0.5">
-                  Weekly Focus
-                </span>
-                <span className="text-base font-bold font-mono text-[#202A23] dark:text-[#DFD0B8]">
-                  {Math.floor((focusAnalytics?.weekFocusMinutes || 0) / 60)}h {(focusAnalytics?.weekFocusMinutes || 0) % 60}m
-                </span>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between text-xs text-[#737C74] dark:text-[#948979] mb-3">
-              <span>Completed Sessions:</span>
-              <span className="font-bold text-[#202A23] dark:text-[#DFD0B8]">
-                {focusAnalytics?.completedSessionsCount || 0}
-              </span>
-            </div>
-
-            <Button
-              variant="outline"
-              size="sm"
-              icon={Timer}
-              onClick={() => navigate('/focus')}
-              className="w-full text-xs"
-            >
-              Quick-Start Focus Session
-            </Button>
-          </div>
-
-          {/* Weekly Learning Activity */}
-          <ActivityChart data={stats?.weeklyActivity} />
-
-          {/* Recent Activity Timeline */}
-          <RecentActivityFeed activities={stats?.recentActivity} />
-
-          {/* Spaced Recall & Revisions Card */}
-          <div className="bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl p-5 shadow-xs">
-            <div className="flex items-center justify-between mb-3 pb-3 border-b border-[#E8E8DF] dark:border-[#393E46]">
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-amber-500" />
-                <h3 className="text-xs font-bold text-[#202A23] dark:text-[#DFD0B8] uppercase tracking-wider">
-                  Upcoming Spaced Recall
-                </h3>
-              </div>
-              <span className="text-[11px] text-[#737C74] dark:text-[#948979] font-mono">1, 3, 7, 14d</span>
-            </div>
-
-            <p className="text-xs text-[#737C74] dark:text-[#948979] leading-relaxed mb-3">
-              Tasks you complete automatically enter the spaced recall queue to solidify concepts before interviews.
-            </p>
-
-            <div className="p-3 rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46] text-xs">
-              <div className="flex items-center justify-between text-[#4A5749] dark:text-[#C8BFB0]">
-                <span>Active revision queue</span>
-                <span className="font-mono font-medium text-[#202A23] dark:text-[#DFD0B8]">
-                  {stats?.completedTasks > 0 ? `${stats.completedTasks} items tracking` : 'Idle'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Placement Milestone Readiness */}
-          <div className="bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl p-5 shadow-xs">
-            <div className="flex items-center justify-between mb-3 pb-3 border-b border-[#E8E8DF] dark:border-[#393E46]">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-emerald-500" />
-                <h3 className="text-xs font-bold text-[#202A23] dark:text-[#DFD0B8] uppercase tracking-wider">
-                  Readiness Overview
-                </h3>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-[#737C74] dark:text-[#948979]">Total Completed Tasks</span>
-                <span className="font-mono font-bold text-[#202A23] dark:text-[#DFD0B8]">
-                  {stats?.completedTasks ?? 0}
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-[#737C74] dark:text-[#948979]">Daily Streak Target</span>
-                <span className="font-mono font-medium text-[#244C3B] dark:text-[#DFD0B8]">
-                  5 tasks / day
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-[#737C74] dark:text-[#948979]">Placement Target</span>
-                <span className="font-semibold text-[#202A23] dark:text-[#DFD0B8]">
-                  Java Full-Stack / Software Engineer
-                </span>
-              </div>
-            </div>
-
-            <div className="pt-3 mt-3 border-t border-[#E8E8DF] dark:border-[#393E46]">
-              <button
-                onClick={() => navigate('/analytics')}
-                className="w-full text-center text-xs font-semibold text-[#244C3B] dark:text-[#DFD0B8] hover:underline flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <span>View Detailed Analytics & Insights</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
+          {/* Recent Activity Feed */}
+          <RecentActivityFeed activities={stats?.recentCompletions || []} />
         </div>
       </div>
     </div>

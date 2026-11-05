@@ -2,28 +2,29 @@ import React from 'react';
 
 const typeStyles = {
   // Task & Day types
-  learn:      'bg-[#E8F0EB] text-[#244C3B] border-[#C5D9CB] dark:bg-[#393E46] dark:text-[#DFD0B8] dark:border-[#4F5561]',
-  learning:   'bg-[#E8F0EB] text-[#244C3B] border-[#C5D9CB] dark:bg-[#393E46] dark:text-[#DFD0B8] dark:border-[#4F5561]',
-  code:       'bg-[#EBF5F0] text-[#1D5C42] border-[#BFDFCD] dark:bg-[#393E46] dark:text-[#DFD0B8] dark:border-[#4F5561]',
-  practice:   'bg-violet-50 text-violet-700 border-violet-200 dark:bg-[#393E46] dark:text-[#DFD0B8] dark:border-[#4F5561]',
-  revise:     'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900',
-  revision:   'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900',
-  project:    'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900',
-  assessment: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-900',
+  learn:      'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20',
+  learning:   'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20',
+  code:       'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20',
+  practice:   'bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20',
+  revise:     'bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/20',
+  revision:   'bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/20',
+  project:    'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20',
+  assessment: 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20',
 
   // Statuses
-  active:    'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900',
-  paused:    'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900',
-  completed: 'bg-[#E8F0EB] text-[#244C3B] border-[#C5D9CB] dark:bg-[#393E46] dark:text-[#DFD0B8] dark:border-[#4F5561]',
-  archived:  'bg-[#F0F0EB] text-[#737C74] border-[#D4D4CA] dark:bg-[#2A303A] dark:text-[#948979] dark:border-[#393E46]',
-  planned:   'bg-[#F0F0EB] text-[#737C74] border-[#D4D4CA] dark:bg-[#2A303A] dark:text-[#948979] dark:border-[#393E46]',
+  active:    'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30 font-medium',
+  paused:    'bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/30',
+  completed: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30',
+  archived:  'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20',
+  planned:   'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20',
 
   // General variants
-  primary: 'bg-[#E8F0EB] text-[#244C3B] border-[#C5D9CB] dark:bg-[#393E46] dark:text-[#DFD0B8] dark:border-[#4F5561]',
-  success: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900',
-  warning: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900',
-  danger:  'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-900',
-  neutral: 'bg-[#F0F0EB] text-[#737C74] border-[#D4D4CA] dark:bg-[#2A303A] dark:text-[#948979] dark:border-[#393E46]',
+  primary: 'bg-[var(--accent-subtle)] text-[var(--accent-primary)] border-[var(--accent-primary)]/30',
+  amber:   'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30',
+  success: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30',
+  warning: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30',
+  danger:  'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/30',
+  neutral: 'bg-[#F0F2ED] text-[#596258] border-[#E4E7E0] dark:bg-[#252C35] dark:text-[#B0B7C2] dark:border-[#303945]',
 };
 
 export default function Badge({

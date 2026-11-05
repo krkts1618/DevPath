@@ -34,8 +34,7 @@ export default function MyRoadmapsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [selectedStatus, setSelectedStatus] = useState('active'); // 'active', 'archived', 'all'
-  const [sortBy, setSortBy] = useState('default'); // 'default', 'name', 'createdAt', 'startDate', 'duration', 'progress'
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'list'
+  const [sortBy, setSortBy] = useState('default');
 
   // Modals
   const [isAddRoadmapOpen, setIsAddRoadmapOpen] = useState(false);
@@ -98,7 +97,7 @@ export default function MyRoadmapsPage() {
           fetchRoadmapsAndCategories();
           refreshNavData?.();
         } catch (err) {
-          setError(err.message || 'Archive failed');
+          alert('Failed to archive: ' + err.message);
         }
       },
     });
@@ -110,53 +109,42 @@ export default function MyRoadmapsPage() {
       fetchRoadmapsAndCategories();
       refreshNavData?.();
     } catch (err) {
-      setError(err.message || 'Restore failed');
+      alert('Failed to restore: ' + err.message);
     }
   };
 
-  const handleDeletePermanent = (roadmap) => {
+  const handleDeletePermanent = (id) => {
+    const r = roadmaps.find((item) => item.id === id);
     setConfirmDialog({
       isOpen: true,
-      title: `Permanently Delete Roadmap: ${roadmap.title}?`,
+      title: `Permanently Delete: ${r?.title || ''}?`,
       message:
-        'CRITICAL: This will permanently remove the roadmap and all its modules, roadmap days, and associated tasks from the database.',
-      impactDetails: (
-        <>
-          <div>• {roadmap.modulesCount || 0} Modules will be permanently deleted</div>
-          <div>• {roadmap.daysCount || 0} Roadmap Days will be permanently deleted</div>
-          <div>• {roadmap.totalTasks || 0} Granular Tasks will be deleted</div>
-        </>
-      ),
+        'WARNING: This will permanently delete this roadmap, all associated modules, days, tasks, and task completion records. This cannot be undone.',
       isDestructive: true,
       confirmLabel: 'Delete Permanently',
       action: async () => {
         try {
-          await roadmapService.deleteRoadmapPermanently(roadmap.id);
+          await roadmapService.permanentlyDeleteRoadmap(id);
           setConfirmDialog((prev) => ({ ...prev, isOpen: false }));
           fetchRoadmapsAndCategories();
           refreshNavData?.();
         } catch (err) {
-          setError(err.message || 'Permanent deletion failed');
+          alert('Failed to delete permanently: ' + err.message);
         }
       },
     });
   };
 
-  const handleOpenEdit = (roadmap) => {
-    setRoadmapToEdit(roadmap);
-    setIsEditRoadmapOpen(true);
-  };
-
   return (
     <div className="space-y-6">
-      {/* Header & Main Actions */}
+      {/* 1. Header (Reference Style: My Roadmaps + Amber Create Button) */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-[#202A23] dark:text-[#DFD0B8]">
-            Engineering Roadmaps & Tracks
-          </h2>
-          <p className="text-xs text-[#737C74] dark:text-[#948979] mt-1">
-            Browse, configure, and dynamically manage learning tracks across all software engineering domains.
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#202620] dark:text-[#F3F4F6]">
+            My Roadmaps
+          </h1>
+          <p className="text-xs text-[#858D82] dark:text-[#7F8996] mt-0.5">
+            Curriculum explorer and adaptive learning tracks.
           </p>
         </div>
 
@@ -166,178 +154,140 @@ export default function MyRoadmapsPage() {
             size="sm"
             icon={Settings2}
             onClick={() => setIsCategoryManagerOpen(true)}
+            className="text-xs"
           >
             Manage Categories
           </Button>
 
           <Button
-            variant="primary"
+            variant="amber"
             size="sm"
             icon={Plus}
             onClick={() => setIsAddRoadmapOpen(true)}
+            className="text-xs font-semibold"
           >
-            Add Roadmap
+            Create Roadmap
           </Button>
         </div>
       </div>
 
-      {/* Filter, Search & Sort Bar */}
-      <div className="bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl p-4 shadow-xs space-y-3">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-          {/* Search Input */}
-          <div className="relative flex-1">
-            <Search className="w-4 h-4 text-[#91A88E] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search roadmaps by title or scope..."
-              className="w-full pl-9 pr-4 py-2 bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46] rounded-lg text-xs text-[#202A23] dark:text-[#DFD0B8] placeholder-[#737C74] dark:placeholder-[#948979] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8]"
-            />
-          </div>
+      {/* 2. Category Filter Pills (Reference: All, Development, Core CS, Tools, etc.) */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+        <button
+          onClick={() => setSelectedCategory('ALL')}
+          className={`px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium transition-colors cursor-pointer flex-shrink-0 ${
+            selectedCategory === 'ALL'
+              ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] font-semibold shadow-xs'
+              : 'bg-[#FFFFFF] dark:bg-[#1D232B] text-[#596258] dark:text-[#B0B7C2] border border-[#E4E7E0] dark:border-[#303945] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35]'
+          }`}
+        >
+          All Categories
+        </button>
 
-          {/* Sort Selector */}
-          <div className="flex items-center gap-1.5 bg-[#F0F0EB] dark:bg-[#393E46] p-1 rounded-lg">
-            <ArrowUpDown className="w-3.5 h-3.5 text-[#91A88E] ml-1.5" />
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="bg-transparent text-xs text-[#202A23] dark:text-[#DFD0B8] font-medium focus:outline-none cursor-pointer pr-2"
-            >
-              <option value="default">Default Order</option>
-              <option value="name">Name (A–Z)</option>
-              <option value="progress">Progress %</option>
-              <option value="startDate">Start Date</option>
-              <option value="duration">Duration (Shortest)</option>
-              <option value="createdAt">Date Created</option>
-            </select>
-          </div>
+        {categories.map((cat) => (
+          <button
+            key={cat.id}
+            onClick={() => setSelectedCategory(cat.id)}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium transition-colors cursor-pointer flex-shrink-0 ${
+              selectedCategory === cat.id
+                ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] font-semibold shadow-xs'
+                : 'bg-[#FFFFFF] dark:bg-[#1D232B] text-[#596258] dark:text-[#B0B7C2] border border-[#E4E7E0] dark:border-[#303945] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35]'
+            }`}
+          >
+            {cat.name}
+          </button>
+        ))}
+      </div>
 
-          {/* Status Tabs */}
-          <div className="flex items-center gap-1 bg-[#F0F0EB] dark:bg-[#393E46] p-1 rounded-lg self-start md:self-auto">
+      {/* 3. Search Bar & Status Tabs */}
+      <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-3 sm:p-4 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+        {/* Search Input */}
+        <div className="relative flex-1 max-w-md">
+          <Search className="w-4 h-4 text-[#858D82] dark:text-[#7F8996] absolute left-3 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            placeholder="Search roadmaps by title or topic..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-9 pr-3 py-1.5 text-xs bg-[#F8F9F6] dark:bg-[#171B21] border border-[#E4E7E0] dark:border-[#303945] rounded-lg text-[#202620] dark:text-[#F3F4F6] placeholder-[#858D82] dark:placeholder-[#7F8996] focus:outline-none focus:border-[var(--accent-primary)]"
+          />
+        </div>
+
+        {/* Status Filter Tabs & Sort */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center bg-[#F8F9F6] dark:bg-[#171B21] rounded-lg p-0.5 border border-[#E4E7E0] dark:border-[#303945] text-xs font-mono">
             <button
               onClick={() => setSelectedStatus('active')}
-              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
+              className={`px-3 py-1 rounded-md transition-colors cursor-pointer ${
                 selectedStatus === 'active'
-                  ? 'bg-white dark:bg-[#2A303A] text-[#202A23] dark:text-[#DFD0B8] shadow-2xs'
-                  : 'text-[#737C74] dark:text-[#948979] hover:text-[#202A23] dark:hover:text-[#DFD0B8]'
+                  ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] font-semibold shadow-xs'
+                  : 'text-[#596258] dark:text-[#B0B7C2] hover:text-[#202620] dark:hover:text-[#F3F4F6]'
               }`}
             >
               Active
             </button>
             <button
               onClick={() => setSelectedStatus('archived')}
-              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
+              className={`px-3 py-1 rounded-md transition-colors cursor-pointer ${
                 selectedStatus === 'archived'
-                  ? 'bg-white dark:bg-[#2A303A] text-[#202A23] dark:text-[#DFD0B8] shadow-2xs'
-                  : 'text-[#737C74] dark:text-[#948979] hover:text-[#202A23] dark:hover:text-[#DFD0B8]'
+                  ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] font-semibold shadow-xs'
+                  : 'text-[#596258] dark:text-[#B0B7C2] hover:text-[#202620] dark:hover:text-[#F3F4F6]'
               }`}
             >
               Archived
             </button>
             <button
               onClick={() => setSelectedStatus('all')}
-              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
+              className={`px-3 py-1 rounded-md transition-colors cursor-pointer ${
                 selectedStatus === 'all'
-                  ? 'bg-white dark:bg-[#2A303A] text-[#202A23] dark:text-[#DFD0B8] shadow-2xs'
-                  : 'text-[#737C74] dark:text-[#948979] hover:text-[#202A23] dark:hover:text-[#DFD0B8]'
+                  ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] font-semibold shadow-xs'
+                  : 'text-[#596258] dark:text-[#B0B7C2] hover:text-[#202620] dark:hover:text-[#F3F4F6]'
               }`}
             >
               All
             </button>
           </div>
 
-          {/* View Mode Toggle */}
-          <div className="hidden sm:flex items-center bg-[#F0F0EB] dark:bg-[#393E46] p-1 rounded-lg">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`p-1.5 rounded-md text-xs transition-colors cursor-pointer ${
-                viewMode === 'grid'
-                  ? 'bg-white dark:bg-[#2A303A] text-[#244C3B] dark:text-[#DFD0B8] shadow-2xs'
-                  : 'text-[#737C74] hover:text-[#202A23] dark:text-[#948979] dark:hover:text-[#DFD0B8]'
-              }`}
-              title="Grid View"
+          {/* Sort selector */}
+          <div className="flex items-center gap-1.5 text-xs font-mono text-[#858D82] dark:text-[#7F8996]">
+            <ArrowUpDown className="w-3.5 h-3.5" />
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="bg-transparent text-xs text-[#202620] dark:text-[#F3F4F6] focus:outline-none cursor-pointer"
             >
-              <LayoutGrid className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`p-1.5 rounded-md text-xs transition-colors cursor-pointer ${
-                viewMode === 'list'
-                  ? 'bg-white dark:bg-[#2A303A] text-[#244C3B] dark:text-[#DFD0B8] shadow-2xs'
-                  : 'text-[#737C74] hover:text-[#202A23] dark:text-[#948979] dark:hover:text-[#DFD0B8]'
-              }`}
-              title="List View"
-            >
-              <List className="w-4 h-4" />
-            </button>
+              <option value="default">Default Order</option>
+              <option value="name">Alphabetical</option>
+              <option value="duration">Duration</option>
+              <option value="progress">Progress %</option>
+            </select>
           </div>
-        </div>
-
-        {/* Category Pill Filters */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
-          <span className="text-[#737C74] dark:text-[#948979] font-medium flex items-center gap-1 mr-1">
-            <Filter className="w-3 h-3" /> Category:
-          </span>
-
-          <button
-            onClick={() => setSelectedCategory('ALL')}
-            className={`px-2.5 py-1 rounded-md font-medium transition-colors whitespace-nowrap cursor-pointer ${
-              selectedCategory === 'ALL'
-                ? 'bg-[#244C3B] text-white dark:bg-[#DFD0B8] dark:text-[#222831]'
-                : 'bg-[#F0F0EB] dark:bg-[#393E46] text-[#4A5749] dark:text-[#DFD0B8] hover:bg-[#E8E8DF] dark:hover:bg-[#454B54]'
-            }`}
-          >
-            All Tracks
-          </button>
-
-          {categories
-            .filter((c) => c.status !== 'archived')
-            .map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`px-2.5 py-1 rounded-md font-medium transition-colors whitespace-nowrap cursor-pointer ${
-                  selectedCategory === cat.id
-                    ? 'bg-[#244C3B] text-white dark:bg-[#DFD0B8] dark:text-[#222831]'
-                    : 'bg-[#F0F0EB] dark:bg-[#393E46] text-[#4A5749] dark:text-[#DFD0B8] hover:bg-[#E8E8DF] dark:hover:bg-[#454B54]'
-                }`}
-              >
-                {cat.name}
-              </button>
-            ))}
         </div>
       </div>
 
-      {/* Roadmaps Grid / List */}
+      {/* 4. Responsive Grid of Roadmap Cards */}
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          <CardSkeleton />
-          <CardSkeleton />
-          <CardSkeleton />
           <CardSkeleton />
           <CardSkeleton />
           <CardSkeleton />
         </div>
       ) : error ? (
         <ErrorState
-          title="Failed to load roadmaps"
+          title="Failed to Load Roadmaps"
           message={error}
           onRetry={fetchRoadmapsAndCategories}
         />
       ) : roadmaps.length > 0 ? (
-        <div
-          className={
-            viewMode === 'grid'
-              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'
-              : 'space-y-4'
-          }
-        >
-          {roadmaps.map((r) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {roadmaps.map((roadmap) => (
             <RoadmapCard
-              key={r.id}
-              roadmap={r}
-              onEdit={handleOpenEdit}
+              key={roadmap.id}
+              roadmap={roadmap}
+              onEdit={(r) => {
+                setRoadmapToEdit(r);
+                setIsEditRoadmapOpen(true);
+              }}
               onArchive={handleArchive}
               onRestore={handleRestore}
               onDeletePermanent={handleDeletePermanent}
@@ -346,24 +296,21 @@ export default function MyRoadmapsPage() {
         </div>
       ) : (
         <EmptyState
-          icon={Compass}
-          title={
-            selectedStatus === 'archived'
-              ? 'No archived roadmaps found'
-              : 'No roadmaps match your criteria'
+          title="No Roadmaps Found"
+          description={
+            searchQuery
+              ? `No roadmaps match "${searchQuery}". Try adjusting your filters.`
+              : 'Create your first engineering learning roadmap to get started.'
           }
-          description="Try adjusting your filters, selecting another category, or create a brand new roadmap track."
           action={
-            selectedStatus !== 'archived' ? (
-              <Button
-                variant="primary"
-                size="sm"
-                icon={Plus}
-                onClick={() => setIsAddRoadmapOpen(true)}
-              >
-                Create New Roadmap
-              </Button>
-            ) : null
+            <Button
+              variant="amber"
+              size="sm"
+              icon={Plus}
+              onClick={() => setIsAddRoadmapOpen(true)}
+            >
+              Create Roadmap
+            </Button>
           }
         />
       )}
@@ -372,7 +319,7 @@ export default function MyRoadmapsPage() {
       <AddRoadmapModal
         isOpen={isAddRoadmapOpen}
         onClose={() => setIsAddRoadmapOpen(false)}
-        categories={categories.filter((c) => c.status !== 'archived')}
+        categories={categories}
         onSuccess={() => {
           setIsAddRoadmapOpen(false);
           fetchRoadmapsAndCategories();
@@ -380,35 +327,39 @@ export default function MyRoadmapsPage() {
         }}
       />
 
-      <EditRoadmapModal
-        isOpen={isEditRoadmapOpen}
-        onClose={() => setIsEditRoadmapOpen(false)}
-        roadmap={roadmapToEdit}
-        categories={categories.filter((c) => c.status !== 'archived')}
-        onSuccess={() => {
-          setIsEditRoadmapOpen(false);
-          fetchRoadmapsAndCategories();
-          refreshNavData?.();
-        }}
-      />
+      {roadmapToEdit && (
+        <EditRoadmapModal
+          isOpen={isEditRoadmapOpen}
+          onClose={() => {
+            setIsEditRoadmapOpen(false);
+            setRoadmapToEdit(null);
+          }}
+          roadmap={roadmapToEdit}
+          categories={categories}
+          onSuccess={() => {
+            setIsEditRoadmapOpen(false);
+            setRoadmapToEdit(null);
+            fetchRoadmapsAndCategories();
+            refreshNavData?.();
+          }}
+        />
+      )}
 
       <CategoryManagerModal
         isOpen={isCategoryManagerOpen}
         onClose={() => setIsCategoryManagerOpen(false)}
-        onCategoryChanged={() => {
+        onCategoriesUpdated={() => {
           fetchRoadmapsAndCategories();
           refreshNavData?.();
         }}
       />
 
-      {/* Confirmation Dialog */}
       <ConfirmationDialog
         isOpen={confirmDialog.isOpen}
         onClose={() => setConfirmDialog((prev) => ({ ...prev, isOpen: false }))}
         onConfirm={confirmDialog.action}
         title={confirmDialog.title}
         message={confirmDialog.message}
-        impactDetails={confirmDialog.impactDetails}
         isDestructive={confirmDialog.isDestructive}
         confirmLabel={confirmDialog.confirmLabel}
       />

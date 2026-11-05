@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Calendar, Flame, CheckCircle, Coffee, Info, ChevronRight } from 'lucide-react';
+import { Calendar, Flame, CheckCircle, Coffee, Info } from 'lucide-react';
 
 export default function ActivityHeatmap({ data, onSelectDate }) {
   const [selectedDay, setSelectedDay] = useState(null);
@@ -20,7 +20,6 @@ export default function ActivityHeatmap({ data, onSelectDate }) {
     const firstDay = new Date(`${days[0].date}T00:00:00`);
     const startDayOfWeek = firstDay.getDay(); // 0 (Sun) to 6 (Sat)
 
-    // Fill leading empty days in first week
     for (let i = 0; i < startDayOfWeek; i++) {
       currentWeek.push(null);
     }
@@ -66,22 +65,22 @@ export default function ActivityHeatmap({ data, onSelectDate }) {
   const getCellColorClass = (day) => {
     if (!day) return 'bg-transparent';
     if (day.isRestDay && day.count === 0) {
-      return 'bg-[#4338CA]/20 border border-[#818CF8]/40 dark:bg-[#6366F1]/20 dark:border-[#818CF8]/40';
+      return 'bg-indigo-500/20 border border-indigo-500/40';
     }
     if (day.count === 0) {
-      return 'bg-[#E8E8DF] dark:bg-[#2A303A] border border-[#DDDDCF] dark:border-[#393E46]/60';
+      return 'bg-[var(--border-subtle)]/60 border border-[var(--border-subtle)]';
     }
 
     switch (day.level) {
       case 1:
-        return 'bg-[#C8D7C5] dark:bg-[#324536] border border-[#91A88E]/40';
+        return 'bg-[var(--accent-primary)]/30 border border-[var(--accent-primary)]/20';
       case 2:
-        return 'bg-[#91A88E] dark:bg-[#47634D] border border-[#244C3B]/40';
+        return 'bg-[var(--accent-primary)]/55 border border-[var(--accent-primary)]/40';
       case 3:
-        return 'bg-[#496F57] dark:bg-[#6D9175] text-white border border-[#244C3B]';
+        return 'bg-[var(--accent-primary)]/80 border border-[var(--accent-primary)]/60';
       case 4:
       default:
-        return 'bg-[#244C3B] dark:bg-[#DFD0B8] border border-[#1A3B2C] dark:border-[#DFD0B8]';
+        return 'bg-[var(--accent-primary)] border border-[var(--accent-hover)] shadow-xs';
     }
   };
 
@@ -92,30 +91,30 @@ export default function ActivityHeatmap({ data, onSelectDate }) {
   };
 
   return (
-    <div className="bg-white dark:bg-[#2A303A] rounded-2xl p-5 border border-[#E8E8DF] dark:border-[#393E46] shadow-xs">
+    <div className="bg-[var(--bg-surface)] rounded-2xl p-5 border border-[var(--border-subtle)] shadow-xs">
       {/* Header with Metrics */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#E8E8DF] dark:border-[#393E46] gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[var(--border-subtle)] gap-3">
         <div>
-          <h3 className="text-base font-semibold text-[#202A23] dark:text-[#DFD0B8] flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-[#244C3B] dark:text-[#DFD0B8]" />
+          <h3 className="text-base font-semibold text-[var(--text-primary)] flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-[var(--accent-primary)]" />
             12-Month Learning Activity Heatmap
           </h3>
-          <p className="text-xs text-[#737C74] dark:text-[#948979] mt-0.5">
-            Local calendar date completions (Asia/Kolkata timezone)
+          <p className="text-xs text-[var(--text-muted)] mt-0.5">
+            Local calendar completions strictly in Asia/Kolkata timezone
           </p>
         </div>
 
         {/* Quick summary badges */}
         <div className="flex flex-wrap items-center gap-2">
-          <div className="px-3 py-1 rounded-lg bg-[#F0F0EB] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46] flex items-center gap-1.5 text-xs font-medium text-[#202A23] dark:text-[#DFD0B8]">
-            <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+          <div className="px-3 py-1 rounded-lg bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] flex items-center gap-1.5 text-xs font-medium text-[var(--text-primary)]">
+            <Flame className="w-3.5 h-3.5 text-[var(--accent-primary)] fill-[var(--accent-primary)]" />
             <span>Streak: {summary.currentStreak || 0}d</span>
           </div>
-          <div className="px-3 py-1 rounded-lg bg-[#F0F0EB] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46] flex items-center gap-1.5 text-xs font-medium text-[#202A23] dark:text-[#DFD0B8]">
-            <CheckCircle className="w-3.5 h-3.5 text-[#244C3B] dark:text-[#DFD0B8]" />
+          <div className="px-3 py-1 rounded-lg bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] flex items-center gap-1.5 text-xs font-medium text-[var(--text-primary)]">
+            <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
             <span>Total Tasks: {summary.totalCompletedTasks || 0}</span>
           </div>
-          <div className="px-3 py-1 rounded-lg bg-[#F0F0EB] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46] flex items-center gap-1.5 text-xs font-medium text-[#202A23] dark:text-[#DFD0B8]">
+          <div className="px-3 py-1 rounded-lg bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] flex items-center gap-1.5 text-xs font-medium text-[var(--text-primary)]">
             <span>Active Days: {summary.totalActiveDays || 0}</span>
           </div>
         </div>
@@ -125,7 +124,7 @@ export default function ActivityHeatmap({ data, onSelectDate }) {
       <div className="overflow-x-auto pt-5 pb-2">
         <div className="inline-block min-w-full">
           {/* Month labels */}
-          <div className="flex mb-1.5 text-[11px] text-[#737C74] dark:text-[#948979] font-medium h-4">
+          <div className="flex mb-1.5 text-[11px] text-[var(--text-muted)] font-medium h-4">
             <div className="w-7 flex-shrink-0" />
             <div className="flex-1 flex gap-1 relative">
               {monthLabels.map((m, idx) => (
@@ -143,7 +142,7 @@ export default function ActivityHeatmap({ data, onSelectDate }) {
           {/* Days Grid */}
           <div className="flex gap-1">
             {/* Weekday indicators */}
-            <div className="flex flex-col justify-between text-[9px] text-[#737C74] dark:text-[#948979] font-medium pr-1.5 w-7 text-right select-none">
+            <div className="flex flex-col justify-between text-[9px] text-[var(--text-muted)] font-medium pr-1.5 w-7 text-right select-none">
               <span className="h-3"></span>
               <span className="h-3 leading-3">Mon</span>
               <span className="h-3"></span>
@@ -183,24 +182,24 @@ export default function ActivityHeatmap({ data, onSelectDate }) {
       </div>
 
       {/* Legend & Hover Detail Info Bar */}
-      <div className="mt-4 pt-3 border-t border-[#E8E8DF] dark:border-[#393E46] flex flex-col sm:flex-row items-center justify-between text-xs text-[#737C74] dark:text-[#948979] gap-3">
+      <div className="mt-4 pt-3 border-t border-[var(--border-subtle)] flex flex-col sm:flex-row items-center justify-between text-xs text-[var(--text-muted)] gap-3">
         {/* Dynamic hover inspection */}
         <div className="flex items-center gap-2">
           {hoveredDay ? (
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-[#202A23] dark:text-[#DFD0B8]">
+              <span className="font-semibold text-[var(--text-primary)]">
                 {hoveredDay.date}:
               </span>
               <span>
                 {hoveredDay.count} task{hoveredDay.count !== 1 ? 's' : ''}
               </span>
               {hoveredDay.qualified && (
-                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-[#244C3B]/10 dark:bg-[#DFD0B8]/15 text-[#244C3B] dark:text-[#DFD0B8]">
+                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-[var(--accent-subtle)] text-[var(--accent-primary)]">
                   Streak Target Met
                 </span>
               )}
               {hoveredDay.isRestDay && (
-                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-indigo-500/10 text-indigo-500 dark:text-indigo-400">
+                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-indigo-500/10 text-indigo-400">
                   Rest Day
                 </span>
               )}
@@ -216,15 +215,15 @@ export default function ActivityHeatmap({ data, onSelectDate }) {
         {/* Legend */}
         <div className="flex items-center gap-1.5 select-none">
           <span className="text-[11px] mr-1">Less</span>
-          <div className="w-2.5 h-2.5 rounded-xs bg-[#E8E8DF] dark:bg-[#2A303A] border border-[#DDDDCF] dark:border-[#393E46]" />
-          <div className="w-2.5 h-2.5 rounded-xs bg-[#C8D7C5] dark:bg-[#324536]" />
-          <div className="w-2.5 h-2.5 rounded-xs bg-[#91A88E] dark:bg-[#47634D]" />
-          <div className="w-2.5 h-2.5 rounded-xs bg-[#496F57] dark:bg-[#6D9175]" />
-          <div className="w-2.5 h-2.5 rounded-xs bg-[#244C3B] dark:bg-[#DFD0B8]" />
+          <div className="w-2.5 h-2.5 rounded-xs bg-[var(--border-subtle)]/60" />
+          <div className="w-2.5 h-2.5 rounded-xs bg-[var(--accent-primary)]/30" />
+          <div className="w-2.5 h-2.5 rounded-xs bg-[var(--accent-primary)]/55" />
+          <div className="w-2.5 h-2.5 rounded-xs bg-[var(--accent-primary)]/80" />
+          <div className="w-2.5 h-2.5 rounded-xs bg-[var(--accent-primary)]" />
           <span className="text-[11px] ml-1">More</span>
 
-          <div className="ml-3 pl-3 border-l border-[#E8E8DF] dark:border-[#393E46] flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-xs bg-[#4338CA]/20 border border-[#818CF8]/40 dark:bg-[#6366F1]/20 dark:border-[#818CF8]/40" />
+          <div className="ml-3 pl-3 border-l border-[var(--border-subtle)] flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-xs bg-indigo-500/20 border border-indigo-500/40" />
             <span className="text-[11px] flex items-center gap-1">
               <Coffee className="w-3 h-3 text-indigo-400" /> Rest Day
             </span>

@@ -17,21 +17,26 @@ export default function SidebarItem({
       onClick={onClick}
       title={isCollapsed ? label : undefined}
       className={({ isActive }) =>
-        `group relative flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-150 ${
+        `group relative flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${
           isActive
-            ? 'bg-[#E8F0EB] text-[#244C3B] dark:bg-[#393E46] dark:text-[#DFD0B8] font-semibold'
-            : 'text-[#4A5749] hover:text-[#202A23] hover:bg-[#F0F0EB] dark:text-[#C8BFB0] dark:hover:text-[#DFD0B8] dark:hover:bg-[#393E46]'
+            ? 'bg-amber-500/10 text-[#202620] dark:text-[#F3F4F6] font-semibold'
+            : 'text-[#596258] hover:text-[#202620] hover:bg-[#F0F2ED] dark:text-[#B0B7C2] dark:hover:text-[#F3F4F6] dark:hover:bg-[#252C35]'
         }`
       }
     >
       {({ isActive }) => (
         <>
+          {/* Active left indicator */}
+          {isActive && (
+            <div className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-[var(--accent-primary)] rounded-r-md -ml-3" />
+          )}
+
           {Icon && (
             <Icon
               className={`w-4 h-4 flex-shrink-0 transition-colors ${
                 isActive
-                  ? 'text-[#244C3B] dark:text-[#DFD0B8]'
-                  : 'text-[#91A88E] group-hover:text-[#4A5749] dark:text-[#948979] dark:group-hover:text-[#DFD0B8]'
+                  ? 'text-[var(--accent-primary)]'
+                  : 'text-[#858D82] group-hover:text-[#202620] dark:text-[#7F8996] dark:group-hover:text-[#F3F4F6]'
               }`}
             />
           )}
@@ -42,17 +47,12 @@ export default function SidebarItem({
             <span
               className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-medium ${
                 isActive
-                  ? 'bg-[#C5D9CB] text-[#1A3B2C] dark:bg-[#4F5561] dark:text-[#DFD0B8]'
-                  : 'bg-[#E8E8DF] text-[#737C74] dark:bg-[#393E46] dark:text-[#948979]'
+                  ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300'
+                  : 'bg-[#E4E7E0] text-[#596258] dark:bg-[#252C35] dark:text-[#7F8996]'
               }`}
             >
               {badge}
             </span>
-          )}
-
-          {/* Active indicator bar on left */}
-          {isActive && (
-            <div className="absolute left-0 top-1.5 bottom-1.5 w-0.5 bg-[#244C3B] dark:bg-[#DFD0B8] rounded-r-md -ml-3" />
           )}
         </>
       )}

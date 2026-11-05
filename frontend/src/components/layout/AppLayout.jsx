@@ -41,7 +41,7 @@ export default function AppLayout() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F7F7F2] dark:bg-[#222831] flex">
+    <div className="min-h-screen bg-[#F4F5F2] dark:bg-[#12151A] flex text-[#202620] dark:text-[#F3F4F6]">
       {/* Sidebar */}
       <Sidebar
         isCollapsed={isCollapsed}
