@@ -89,20 +89,20 @@ export default function RescheduleMissedTaskModal({
         )}
 
         <div>
-          <span className="text-[10px] font-mono uppercase text-[#737C74] dark:text-[#948979] block mb-1">
+          <span className="text-[10px] font-mono uppercase text-[#858D82] dark:text-[#7F8996] block mb-1">
             Task To Reschedule
           </span>
-          <h4 className="text-sm font-bold text-[#202A23] dark:text-[#DFD0B8]">
+          <h4 className="text-sm font-bold text-[#202620] dark:text-[#F3F4F6]">
             {task.title}
           </h4>
-          <span className="text-xs text-[#737C74] dark:text-[#948979] font-mono">
+          <span className="text-xs text-[#858D82] dark:text-[#7F8996] font-mono">
             {task.roadmapTitle} • Original Day {task.dayNumber}
           </span>
         </div>
 
         {/* Quick Target Options */}
         <div>
-          <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-2">
+          <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-2">
             Reschedule To:
           </label>
           <div className="grid grid-cols-3 gap-2">
@@ -111,8 +111,8 @@ export default function RescheduleMissedTaskModal({
               onClick={() => setTargetOption('today')}
               className={`py-2 px-3 rounded-lg text-xs font-semibold border transition-colors cursor-pointer text-center ${
                 targetOption === 'today'
-                  ? 'bg-[#E8F0EB] border-[#244C3B] text-[#244C3B] dark:bg-[#393E46] dark:border-[#DFD0B8] dark:text-[#DFD0B8]'
-                  : 'bg-white dark:bg-[#222831] border-[#E8E8DF] dark:border-[#393E46] text-[#4A5749] dark:text-[#C8BFB0]'
+                  ? 'bg-[#E8F0EB] border-[var(--accent-primary)] text-[var(--accent-primary)] dark:bg-[#303945] dark:border-[#F3F4F6] dark:text-[#F3F4F6]'
+                  : 'bg-white dark:bg-[#222831] border-[#E4E7E0] dark:border-[#303945] text-[#596258] dark:text-[#B0B7C2]'
               }`}
             >
               Today
@@ -123,8 +123,8 @@ export default function RescheduleMissedTaskModal({
               onClick={() => setTargetOption('tomorrow')}
               className={`py-2 px-3 rounded-lg text-xs font-semibold border transition-colors cursor-pointer text-center ${
                 targetOption === 'tomorrow'
-                  ? 'bg-[#E8F0EB] border-[#244C3B] text-[#244C3B] dark:bg-[#393E46] dark:border-[#DFD0B8] dark:text-[#DFD0B8]'
-                  : 'bg-white dark:bg-[#222831] border-[#E8E8DF] dark:border-[#393E46] text-[#4A5749] dark:text-[#C8BFB0]'
+                  ? 'bg-[#E8F0EB] border-[var(--accent-primary)] text-[var(--accent-primary)] dark:bg-[#303945] dark:border-[#F3F4F6] dark:text-[#F3F4F6]'
+                  : 'bg-white dark:bg-[#222831] border-[#E4E7E0] dark:border-[#303945] text-[#596258] dark:text-[#B0B7C2]'
               }`}
             >
               Tomorrow
@@ -135,8 +135,8 @@ export default function RescheduleMissedTaskModal({
               onClick={() => setTargetOption('custom')}
               className={`py-2 px-3 rounded-lg text-xs font-semibold border transition-colors cursor-pointer text-center ${
                 targetOption === 'custom'
-                  ? 'bg-[#E8F0EB] border-[#244C3B] text-[#244C3B] dark:bg-[#393E46] dark:border-[#DFD0B8] dark:text-[#DFD0B8]'
-                  : 'bg-white dark:bg-[#222831] border-[#E8E8DF] dark:border-[#393E46] text-[#4A5749] dark:text-[#C8BFB0]'
+                  ? 'bg-[#E8F0EB] border-[var(--accent-primary)] text-[var(--accent-primary)] dark:bg-[#303945] dark:border-[#F3F4F6] dark:text-[#F3F4F6]'
+                  : 'bg-white dark:bg-[#222831] border-[#E4E7E0] dark:border-[#303945] text-[#596258] dark:text-[#B0B7C2]'
               }`}
             >
               Custom Date
@@ -146,7 +146,7 @@ export default function RescheduleMissedTaskModal({
 
         {targetOption === 'custom' && (
           <div>
-            <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+            <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
               Select Calendar Date (Asia/Kolkata) *
             </label>
             <input
@@ -154,13 +154,13 @@ export default function RescheduleMissedTaskModal({
               required
               value={customDate}
               onChange={(e) => setCustomDate(e.target.value)}
-              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-xs text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8] font-mono"
+              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-xs text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6] font-mono"
             />
           </div>
         )}
 
         <div>
-          <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+          <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
             Reason for Rescheduling
           </label>
           <textarea
@@ -168,7 +168,7 @@ export default function RescheduleMissedTaskModal({
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             placeholder="e.g. Needed additional time on PostgreSQL index tuning assignment..."
-            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-xs text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8]"
+            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-xs text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6]"
           />
         </div>
       </form>

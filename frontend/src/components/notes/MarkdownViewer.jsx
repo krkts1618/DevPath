@@ -34,7 +34,7 @@ export default function MarkdownViewer({ content = '' }) {
         pre.style.position = 'relative';
         const button = document.createElement('button');
         button.className =
-          'code-copy-btn absolute top-2 right-2 px-2 py-1 text-xs rounded bg-[#2A303A] text-[#DFD0B8] border border-[#4F5561] hover:bg-[#393E46] transition flex items-center gap-1 opacity-80 hover:opacity-100 cursor-pointer';
+          'code-copy-btn absolute top-2 right-2 px-2 py-1 text-xs rounded bg-[#1D232B] text-[#F3F4F6] border border-[#4F5561] hover:bg-[#303945] transition flex items-center gap-1 opacity-80 hover:opacity-100 cursor-pointer';
         button.innerHTML = `<span>Copy</span>`;
 
         button.addEventListener('click', (e) => {

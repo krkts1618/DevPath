@@ -103,7 +103,7 @@ export default function TaskModal({
         )}
 
         <div>
-          <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+          <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
             Task Title *
           </label>
           <input
@@ -112,12 +112,12 @@ export default function TaskModal({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g. Implement thread-safe Singleton with double-checked locking"
-            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8]"
+            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6]"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+          <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
             Instructions / Scope
           </label>
           <textarea
@@ -125,19 +125,19 @@ export default function TaskModal({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Implementation details, edge cases to verify, testing criteria..."
-            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8]"
+            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6]"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+            <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
               Task Type
             </label>
             <select
               value={taskType}
               onChange={(e) => setTaskType(e.target.value)}
-              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8] capitalize"
+              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6] capitalize"
             >
               <option value="learn">Learn</option>
               <option value="code">Code</option>
@@ -149,7 +149,7 @@ export default function TaskModal({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+            <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
               Duration (Minutes)
             </label>
             <input
@@ -158,29 +158,29 @@ export default function TaskModal({
               step={5}
               value={estimatedDuration}
               onChange={(e) => setEstimatedDuration(e.target.value)}
-              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8] font-mono"
+              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6] font-mono"
             />
           </div>
         </div>
 
         <div className="flex items-center justify-between pt-1">
-          <label className="flex items-center gap-2 cursor-pointer text-xs text-[#202A23] dark:text-[#DFD0B8] font-medium">
+          <label className="flex items-center gap-2 cursor-pointer text-xs text-[#202620] dark:text-[#F3F4F6] font-medium">
             <input
               type="checkbox"
               checked={isRequired}
               onChange={(e) => setIsRequired(e.target.checked)}
-              className="w-4 h-4 rounded accent-[#244C3B]"
+              className="w-4 h-4 rounded accent-[var(--accent-primary)]"
             />
             <span>Required Task (Mandatory for day completion)</span>
           </label>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs text-[#737C74] dark:text-[#948979]">Order:</span>
+            <span className="text-xs text-[#858D82] dark:text-[#7F8996]">Order:</span>
             <input
               type="number"
               value={displayOrder}
               onChange={(e) => setDisplayOrder(e.target.value)}
-              className="w-16 px-2 py-1 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded text-xs text-[#202A23] dark:text-[#DFD0B8] font-mono"
+              className="w-16 px-2 py-1 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded text-xs text-[#202620] dark:text-[#F3F4F6] font-mono"
             />
           </div>
         </div>

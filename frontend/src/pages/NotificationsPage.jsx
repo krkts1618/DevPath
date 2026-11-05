@@ -241,10 +241,10 @@ export default function NotificationsPage() {
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-12">
       {/* Top Header & Navigation Tabs */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E8E8DF] dark:border-[#393E46]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E4E7E0] dark:border-[#303945]">
         <div>
           <div className="flex items-center gap-2.5">
-            <h2 className="text-xl font-bold text-[#202A23] dark:text-[#DFD0B8]">
+            <h2 className="text-xl font-bold text-[#202620] dark:text-[#F3F4F6]">
               Notification Center & Reminders
             </h2>
             {unreadCount > 0 && (
@@ -253,7 +253,7 @@ export default function NotificationsPage() {
               </span>
             )}
           </div>
-          <p className="text-xs text-[#737C74] dark:text-[#948979] mt-1">
+          <p className="text-xs text-[#858D82] dark:text-[#7F8996] mt-1">
             Manage learning reminders, spaced repetition alerts, quiet hours, and daily digests in Asia/Kolkata.
           </p>
         </div>
@@ -279,13 +279,13 @@ export default function NotificationsPage() {
       </div>
 
       {/* Workspace Tabs */}
-      <div className="flex items-center gap-2 border-b border-[#E8E8DF] dark:border-[#393E46] overflow-x-auto pb-px">
+      <div className="flex items-center gap-2 border-b border-[#E4E7E0] dark:border-[#303945] overflow-x-auto pb-px">
         <button
           onClick={() => handleTabChange('notifications')}
           className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold uppercase tracking-wider border-b-2 transition cursor-pointer whitespace-nowrap ${
             activeTab === 'notifications'
-              ? 'border-[#244C3B] dark:border-[#DFD0B8] text-[#244C3B] dark:text-[#DFD0B8]'
-              : 'border-transparent text-[#737C74] dark:text-[#948979] hover:text-[#202A23] dark:hover:text-[#DFD0B8]'
+              ? 'border-[var(--accent-primary)] dark:border-[#F3F4F6] text-[var(--accent-primary)] dark:text-[#F3F4F6]'
+              : 'border-transparent text-[#858D82] dark:text-[#7F8996] hover:text-[#202620] dark:hover:text-[#F3F4F6]'
           }`}
         >
           <Bell className="w-4 h-4" />
@@ -299,8 +299,8 @@ export default function NotificationsPage() {
           onClick={() => handleTabChange('schedules')}
           className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold uppercase tracking-wider border-b-2 transition cursor-pointer whitespace-nowrap ${
             activeTab === 'schedules'
-              ? 'border-[#244C3B] dark:border-[#DFD0B8] text-[#244C3B] dark:text-[#DFD0B8]'
-              : 'border-transparent text-[#737C74] dark:text-[#948979] hover:text-[#202A23] dark:hover:text-[#DFD0B8]'
+              ? 'border-[var(--accent-primary)] dark:border-[#F3F4F6] text-[var(--accent-primary)] dark:text-[#F3F4F6]'
+              : 'border-transparent text-[#858D82] dark:text-[#7F8996] hover:text-[#202620] dark:hover:text-[#F3F4F6]'
           }`}
         >
           <Clock className="w-4 h-4" />
@@ -311,8 +311,8 @@ export default function NotificationsPage() {
           onClick={() => handleTabChange('digest')}
           className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold uppercase tracking-wider border-b-2 transition cursor-pointer whitespace-nowrap ${
             activeTab === 'digest'
-              ? 'border-[#244C3B] dark:border-[#DFD0B8] text-[#244C3B] dark:text-[#DFD0B8]'
-              : 'border-transparent text-[#737C74] dark:text-[#948979] hover:text-[#202A23] dark:hover:text-[#DFD0B8]'
+              ? 'border-[var(--accent-primary)] dark:border-[#F3F4F6] text-[var(--accent-primary)] dark:text-[#F3F4F6]'
+              : 'border-transparent text-[#858D82] dark:text-[#7F8996] hover:text-[#202620] dark:hover:text-[#F3F4F6]'
           }`}
         >
           <Sparkles className="w-4 h-4" />
@@ -323,8 +323,8 @@ export default function NotificationsPage() {
           onClick={() => handleTabChange('preferences')}
           className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold uppercase tracking-wider border-b-2 transition cursor-pointer whitespace-nowrap ${
             activeTab === 'preferences'
-              ? 'border-[#244C3B] dark:border-[#DFD0B8] text-[#244C3B] dark:text-[#DFD0B8]'
-              : 'border-transparent text-[#737C74] dark:text-[#948979] hover:text-[#202A23] dark:hover:text-[#DFD0B8]'
+              ? 'border-[var(--accent-primary)] dark:border-[#F3F4F6] text-[var(--accent-primary)] dark:text-[#F3F4F6]'
+              : 'border-transparent text-[#858D82] dark:text-[#7F8996] hover:text-[#202620] dark:hover:text-[#F3F4F6]'
           }`}
         >
           <Settings className="w-4 h-4" />
@@ -338,16 +338,16 @@ export default function NotificationsPage() {
       {activeTab === 'notifications' && (
         <div className="space-y-4">
           {/* Filter Bar */}
-          <div className="bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl p-4 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+          <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-4 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
             {/* Search */}
             <div className="relative flex-1">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#737C74] dark:text-[#948979]" />
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#858D82] dark:text-[#7F8996]" />
               <input
                 type="text"
                 placeholder="Search alerts by title or description..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46] text-[#202A23] dark:text-[#DFD0B8] focus:outline-hidden focus:border-[#244C3B] dark:focus:border-[#DFD0B8]"
+                className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E4E7E0] dark:border-[#303945] text-[#202620] dark:text-[#F3F4F6] focus:outline-hidden focus:border-[var(--accent-primary)] dark:focus:border-[#F3F4F6]"
               />
             </div>
 
@@ -359,7 +359,7 @@ export default function NotificationsPage() {
                   setTypeFilter(e.target.value);
                   setPage(1);
                 }}
-                className="px-2.5 py-1.5 text-xs rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46] text-[#202A23] dark:text-[#DFD0B8] focus:outline-hidden"
+                className="px-2.5 py-1.5 text-xs rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E4E7E0] dark:border-[#303945] text-[#202620] dark:text-[#F3F4F6] focus:outline-hidden"
               >
                 <option value="all">All Types</option>
                 <option value="learning_reminder">Learning Reminders</option>
@@ -378,7 +378,7 @@ export default function NotificationsPage() {
                   setReadFilter(e.target.value);
                   setPage(1);
                 }}
-                className="px-2.5 py-1.5 text-xs rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46] text-[#202A23] dark:text-[#DFD0B8] focus:outline-hidden"
+                className="px-2.5 py-1.5 text-xs rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E4E7E0] dark:border-[#303945] text-[#202620] dark:text-[#F3F4F6] focus:outline-hidden"
               >
                 <option value="all">All Status</option>
                 <option value="unread">Unread Only</option>
@@ -388,11 +388,11 @@ export default function NotificationsPage() {
           </div>
 
           {/* List */}
-          <div className="bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl overflow-hidden divide-y divide-[#E8E8DF] dark:divide-[#393E46] shadow-xs">
+          <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl overflow-hidden divide-y divide-[#E4E7E0] dark:divide-[#303945] shadow-xs">
             {notifications.length === 0 ? (
-              <div className="py-16 text-center text-xs text-[#737C74] dark:text-[#948979]">
+              <div className="py-16 text-center text-xs text-[#858D82] dark:text-[#7F8996]">
                 <Bell className="w-8 h-8 mx-auto mb-3 text-[#91A88E] opacity-50" />
-                <p className="text-sm font-semibold text-[#202A23] dark:text-[#DFD0B8]">
+                <p className="text-sm font-semibold text-[#202620] dark:text-[#F3F4F6]">
                   No notifications match your filters
                 </p>
                 <p className="mt-1">
@@ -427,8 +427,8 @@ export default function NotificationsPage() {
                           <h4
                             className={`text-sm ${
                               notif.isRead
-                                ? 'font-medium text-[#202A23] dark:text-[#DFD0B8]'
-                                : 'font-bold text-[#202A23] dark:text-[#DFD0B8]'
+                                ? 'font-medium text-[#202620] dark:text-[#F3F4F6]'
+                                : 'font-bold text-[#202620] dark:text-[#F3F4F6]'
                             }`}
                           >
                             {notif.title}
@@ -436,16 +436,16 @@ export default function NotificationsPage() {
                           {!notif.isRead && (
                             <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
                           )}
-                          <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#E8E8DF] text-[#4A5749] dark:bg-[#393E46] dark:text-[#DFD0B8] uppercase">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#E4E7E0] text-[#596258] dark:bg-[#303945] dark:text-[#F3F4F6] uppercase">
                             {notif.notificationType.replace('_', ' ')}
                           </span>
                         </div>
-                        <span className="text-xs text-[#737C74] dark:text-[#948979] font-mono">
+                        <span className="text-xs text-[#858D82] dark:text-[#7F8996] font-mono">
                           {formatTimeAgo(notif.createdAt)}
                         </span>
                       </div>
 
-                      <p className="text-xs text-[#4A5749] dark:text-[#C8BFB0] leading-relaxed mb-2.5">
+                      <p className="text-xs text-[#596258] dark:text-[#B0B7C2] leading-relaxed mb-2.5">
                         {notif.description}
                       </p>
 
@@ -457,7 +457,7 @@ export default function NotificationsPage() {
                               if (!notif.isRead) markAsRead(notif.id);
                               navigate(notif.actionUrl);
                             }}
-                            className="text-xs font-semibold text-[#244C3B] dark:text-[#DFD0B8] hover:underline flex items-center gap-1 cursor-pointer"
+                            className="text-xs font-semibold text-[var(--accent-primary)] dark:text-[#F3F4F6] hover:underline flex items-center gap-1 cursor-pointer"
                           >
                             <span>Open in App</span>
                             <ExternalLink className="w-3 h-3" />
@@ -467,13 +467,13 @@ export default function NotificationsPage() {
                         {!notif.isRead ? (
                           <button
                             onClick={() => markAsRead(notif.id)}
-                            className="text-xs text-[#737C74] hover:text-[#202A23] dark:text-[#948979] dark:hover:text-[#DFD0B8] flex items-center gap-1 transition cursor-pointer"
+                            className="text-xs text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] flex items-center gap-1 transition cursor-pointer"
                           >
                             <Check className="w-3.5 h-3.5" />
                             <span>Mark read</span>
                           </button>
                         ) : (
-                          <span className="text-[11px] text-[#737C74] dark:text-[#948979] flex items-center gap-1">
+                          <span className="text-[11px] text-[#858D82] dark:text-[#7F8996] flex items-center gap-1">
                             <CheckCheck className="w-3.5 h-3.5 text-emerald-500" />
                             <span>Read</span>
                           </span>
@@ -481,7 +481,7 @@ export default function NotificationsPage() {
 
                         <button
                           onClick={() => deleteNotification(notif.id)}
-                          className="text-xs text-[#737C74] hover:text-rose-500 dark:text-[#948979] dark:hover:text-rose-400 flex items-center gap-1 transition ml-auto cursor-pointer"
+                          className="text-xs text-[#858D82] hover:text-rose-500 dark:text-[#7F8996] dark:hover:text-rose-400 flex items-center gap-1 transition ml-auto cursor-pointer"
                           title="Delete"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -498,7 +498,7 @@ export default function NotificationsPage() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-2">
-              <span className="text-xs text-[#737C74] dark:text-[#948979]">
+              <span className="text-xs text-[#858D82] dark:text-[#7F8996]">
                 Page {page} of {totalPages}
               </span>
               <div className="flex items-center gap-2">
@@ -530,12 +530,12 @@ export default function NotificationsPage() {
       {/* ========================================================================= */}
       {activeTab === 'schedules' && (
         <div className="space-y-4">
-          <div className="bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl p-5 shadow-xs flex items-center justify-between">
+          <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-5 shadow-xs flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-bold text-[#202A23] dark:text-[#DFD0B8]">
+              <h3 className="text-sm font-bold text-[#202620] dark:text-[#F3F4F6]">
                 Recurring Study Schedules
               </h3>
-              <p className="text-xs text-[#737C74] dark:text-[#948979] mt-0.5">
+              <p className="text-xs text-[#858D82] dark:text-[#7F8996] mt-0.5">
                 Configure automatic study time reminders evaluated within the Asia/Kolkata timezone.
               </p>
             </div>
@@ -548,19 +548,19 @@ export default function NotificationsPage() {
             {schedules.map((s) => (
               <div
                 key={s.id}
-                className={`bg-[#FFFFFF] dark:bg-[#2A303A] border rounded-xl p-5 transition shadow-xs flex flex-col justify-between ${
+                className={`bg-[#FFFFFF] dark:bg-[#1D232B] border rounded-xl p-5 transition shadow-xs flex flex-col justify-between ${
                   s.isActive
-                    ? 'border-[#E8E8DF] dark:border-[#393E46]'
-                    : 'border-dashed border-[#E8E8DF] dark:border-[#393E46] opacity-60'
+                    ? 'border-[#E4E7E0] dark:border-[#303945]'
+                    : 'border-dashed border-[#E4E7E0] dark:border-[#303945] opacity-60'
                 }`}
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-2">
                     <div className="flex items-center gap-2">
-                      <span className="text-lg font-mono font-bold text-[#244C3B] dark:text-[#DFD0B8]">
+                      <span className="text-lg font-mono font-bold text-[var(--accent-primary)] dark:text-[#F3F4F6]">
                         {s.reminderTime}
                       </span>
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#F0F0EB] text-[#4A5749] dark:bg-[#393E46] dark:text-[#DFD0B8] uppercase">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#F0F0EB] text-[#596258] dark:bg-[#303945] dark:text-[#F3F4F6] uppercase">
                         {s.category.replace('_', ' ')}
                       </span>
                     </div>
@@ -569,7 +569,7 @@ export default function NotificationsPage() {
                     <button
                       onClick={() => handleToggleSchedule(s.id)}
                       className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${
-                        s.isActive ? 'bg-[#244C3B] dark:bg-[#DFD0B8]' : 'bg-[#E8E8DF] dark:bg-[#393E46]'
+                        s.isActive ? 'bg-[var(--accent-primary)] dark:bg-[#F3F4F6]' : 'bg-[#E4E7E0] dark:bg-[#303945]'
                       }`}
                     >
                       <span
@@ -580,11 +580,11 @@ export default function NotificationsPage() {
                     </button>
                   </div>
 
-                  <h4 className="text-sm font-bold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+                  <h4 className="text-sm font-bold text-[#202620] dark:text-[#F3F4F6] mb-1">
                     {s.title}
                   </h4>
                   {s.customMessage && (
-                    <p className="text-xs text-[#737C74] dark:text-[#948979] mb-3 line-clamp-2">
+                    <p className="text-xs text-[#858D82] dark:text-[#7F8996] mb-3 line-clamp-2">
                       "{s.customMessage}"
                     </p>
                   )}
@@ -598,8 +598,8 @@ export default function NotificationsPage() {
                           key={day}
                           className={`w-6 h-6 rounded-md text-[10px] font-bold flex items-center justify-center ${
                             isSelected
-                              ? 'bg-[#244C3B] text-white dark:bg-[#DFD0B8] dark:text-[#222831]'
-                              : 'bg-[#F0F0EB] text-[#737C74] dark:bg-[#222831] dark:text-[#948979]'
+                              ? 'bg-[var(--accent-primary)] text-white dark:bg-[#F3F4F6] dark:text-[#222831]'
+                              : 'bg-[#F0F0EB] text-[#858D82] dark:bg-[#222831] dark:text-[#7F8996]'
                           }`}
                         >
                           {label[0]}
@@ -609,14 +609,14 @@ export default function NotificationsPage() {
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-[#E8E8DF] dark:border-[#393E46] flex items-center justify-between text-[11px] text-[#737C74] dark:text-[#948979]">
+                <div className="pt-3 border-t border-[#E4E7E0] dark:border-[#303945] flex items-center justify-between text-[11px] text-[#858D82] dark:text-[#7F8996]">
                   <span>
                     Status: <strong className="capitalize">{s.lastStatus || 'active'}</strong>
                   </span>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleOpenEditSchedule(s)}
-                      className="text-[#244C3B] dark:text-[#DFD0B8] font-semibold hover:underline cursor-pointer"
+                      className="text-[var(--accent-primary)] dark:text-[#F3F4F6] font-semibold hover:underline cursor-pointer"
                     >
                       Edit
                     </button>
@@ -633,9 +633,9 @@ export default function NotificationsPage() {
           </div>
 
           {schedules.length === 0 && (
-            <div className="py-12 text-center text-xs text-[#737C74] dark:text-[#948979] bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl">
+            <div className="py-12 text-center text-xs text-[#858D82] dark:text-[#7F8996] bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl">
               <Clock className="w-8 h-8 mx-auto mb-2 text-[#91A88E] opacity-50" />
-              <p className="font-semibold text-sm text-[#202A23] dark:text-[#DFD0B8]">
+              <p className="font-semibold text-sm text-[#202620] dark:text-[#F3F4F6]">
                 No reminder schedules configured
               </p>
               <p className="mt-1">
@@ -652,26 +652,26 @@ export default function NotificationsPage() {
       {activeTab === 'digest' && (
         <div className="space-y-6">
           {digestLoading ? (
-            <div className="py-16 text-center text-xs text-[#737C74] dark:text-[#948979]">
+            <div className="py-16 text-center text-xs text-[#858D82] dark:text-[#7F8996]">
               <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-[#91A88E]" />
               Compiling daily learning digest...
             </div>
           ) : digest ? (
             <>
               {/* Digest Overview Card */}
-              <div className="bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl p-6 shadow-xs">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#E8E8DF] dark:border-[#393E46]">
+              <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-6 shadow-xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#E4E7E0] dark:border-[#303945]">
                   <div>
                     <span className="text-[11px] font-bold uppercase tracking-wider text-[#91A88E] dark:text-[#A4B99C]">
                       Engineering Daily Briefing
                     </span>
-                    <h3 className="text-lg font-bold text-[#202A23] dark:text-[#DFD0B8]">
+                    <h3 className="text-lg font-bold text-[#202620] dark:text-[#F3F4F6]">
                       Today's Learning Digest ({digest.todayStr})
                     </h3>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-[#737C74] dark:text-[#948979]">
+                    <span className="text-xs text-[#858D82] dark:text-[#7F8996]">
                       Digest Time: <strong>{preferences?.dailyDigestTime || '08:00'} IST</strong>
                     </span>
                     <Button variant="outline" size="sm" icon={RefreshCw} onClick={loadDailyDigest}>
@@ -682,17 +682,17 @@ export default function NotificationsPage() {
 
                 {/* 4-Stat Summary Bar */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-5">
-                  <div className="p-3 rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46]">
-                    <span className="text-[10px] font-bold text-[#737C74] dark:text-[#948979] uppercase block">
+                  <div className="p-3 rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E4E7E0] dark:border-[#303945]">
+                    <span className="text-[10px] font-bold text-[#858D82] dark:text-[#7F8996] uppercase block">
                       Scheduled Today
                     </span>
-                    <span className="text-lg font-mono font-bold text-[#244C3B] dark:text-[#DFD0B8]">
+                    <span className="text-lg font-mono font-bold text-[var(--accent-primary)] dark:text-[#F3F4F6]">
                       {digest.summary.scheduledTodayCount} tasks
                     </span>
                   </div>
 
-                  <div className="p-3 rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46]">
-                    <span className="text-[10px] font-bold text-[#737C74] dark:text-[#948979] uppercase block">
+                  <div className="p-3 rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E4E7E0] dark:border-[#303945]">
+                    <span className="text-[10px] font-bold text-[#858D82] dark:text-[#7F8996] uppercase block">
                       Carried Forward
                     </span>
                     <span className="text-lg font-mono font-bold text-amber-600 dark:text-amber-400">
@@ -700,8 +700,8 @@ export default function NotificationsPage() {
                     </span>
                   </div>
 
-                  <div className="p-3 rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46]">
-                    <span className="text-[10px] font-bold text-[#737C74] dark:text-[#948979] uppercase block">
+                  <div className="p-3 rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E4E7E0] dark:border-[#303945]">
+                    <span className="text-[10px] font-bold text-[#858D82] dark:text-[#7F8996] uppercase block">
                       Due Revisions
                     </span>
                     <span className="text-lg font-mono font-bold text-sky-600 dark:text-sky-400">
@@ -709,8 +709,8 @@ export default function NotificationsPage() {
                     </span>
                   </div>
 
-                  <div className="p-3 rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46]">
-                    <span className="text-[10px] font-bold text-[#737C74] dark:text-[#948979] uppercase block">
+                  <div className="p-3 rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E4E7E0] dark:border-[#303945]">
+                    <span className="text-[10px] font-bold text-[#858D82] dark:text-[#7F8996] uppercase block">
                       Recommended Focus
                     </span>
                     <span className="text-lg font-mono font-bold text-emerald-600 dark:text-emerald-400">
@@ -722,12 +722,12 @@ export default function NotificationsPage() {
                 {/* Progress Details Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Left: Active tasks in queue */}
-                  <div className="p-4 rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46]">
-                    <h4 className="text-xs font-bold text-[#202A23] dark:text-[#DFD0B8] uppercase tracking-wider mb-2.5">
+                  <div className="p-4 rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E4E7E0] dark:border-[#303945]">
+                    <h4 className="text-xs font-bold text-[#202620] dark:text-[#F3F4F6] uppercase tracking-wider mb-2.5">
                       Active Frontier Tasks ({digest.scheduledTodayTasks.length})
                     </h4>
                     {digest.scheduledTodayTasks.length === 0 ? (
-                      <p className="text-xs text-[#737C74] dark:text-[#948979]">
+                      <p className="text-xs text-[#858D82] dark:text-[#7F8996]">
                         All active learning tracks are caught up!
                       </p>
                     ) : (
@@ -735,12 +735,12 @@ export default function NotificationsPage() {
                         {digest.scheduledTodayTasks.slice(0, 5).map((t) => (
                           <li
                             key={t.id}
-                            className="text-xs flex items-center justify-between p-2 rounded bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46]"
+                            className="text-xs flex items-center justify-between p-2 rounded bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945]"
                           >
-                            <span className="truncate font-medium text-[#202A23] dark:text-[#DFD0B8]">
+                            <span className="truncate font-medium text-[#202620] dark:text-[#F3F4F6]">
                               {t.title}
                             </span>
-                            <span className="text-[10px] text-[#737C74] dark:text-[#948979] shrink-0 font-mono ml-2">
+                            <span className="text-[10px] text-[#858D82] dark:text-[#7F8996] shrink-0 font-mono ml-2">
                               Day {t.dayNumber}
                             </span>
                           </li>
@@ -750,21 +750,21 @@ export default function NotificationsPage() {
                   </div>
 
                   {/* Right: Yesterday's Achievements & Streak Status */}
-                  <div className="p-4 rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46]">
-                    <h4 className="text-xs font-bold text-[#202A23] dark:text-[#DFD0B8] uppercase tracking-wider mb-2.5">
+                  <div className="p-4 rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E4E7E0] dark:border-[#303945]">
+                    <h4 className="text-xs font-bold text-[#202620] dark:text-[#F3F4F6] uppercase tracking-wider mb-2.5">
                       Velocity & Continuity
                     </h4>
                     <div className="space-y-3 text-xs">
                       <div className="flex items-center justify-between">
-                        <span className="text-[#737C74] dark:text-[#948979]">
+                        <span className="text-[#858D82] dark:text-[#7F8996]">
                           Tasks completed yesterday ({digest.yesterdayStr}):
                         </span>
-                        <span className="font-mono font-bold text-[#202A23] dark:text-[#DFD0B8]">
+                        <span className="font-mono font-bold text-[#202620] dark:text-[#F3F4F6]">
                           {digest.summary.completedYesterdayCount}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-[#737C74] dark:text-[#948979]">
+                        <span className="text-[#858D82] dark:text-[#7F8996]">
                           Current Consecutive Streak:
                         </span>
                         <span className="font-mono font-bold text-orange-500">
@@ -772,7 +772,7 @@ export default function NotificationsPage() {
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-[#737C74] dark:text-[#948979]">
+                        <span className="text-[#858D82] dark:text-[#7F8996]">
                           Today's Qualification Status:
                         </span>
                         <span className="font-semibold text-emerald-600 dark:text-emerald-400">
@@ -794,8 +794,8 @@ export default function NotificationsPage() {
       {activeTab === 'preferences' && preferences && (
         <div className="space-y-6">
           {/* Notification Categories Grid */}
-          <div className="bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl p-5 shadow-xs">
-            <h3 className="text-xs font-bold text-[#202A23] dark:text-[#DFD0B8] uppercase tracking-wider mb-4 pb-3 border-b border-[#E8E8DF] dark:border-[#393E46]">
+          <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-5 shadow-xs">
+            <h3 className="text-xs font-bold text-[#202620] dark:text-[#F3F4F6] uppercase tracking-wider mb-4 pb-3 border-b border-[#E4E7E0] dark:border-[#303945]">
               Category Delivery Controls
             </h3>
 
@@ -839,10 +839,10 @@ export default function NotificationsPage() {
               ].map(({ id, label, desc }) => (
                 <div key={id} className="flex items-center justify-between gap-4">
                   <div>
-                    <span className="text-sm font-semibold text-[#202A23] dark:text-[#DFD0B8]">
+                    <span className="text-sm font-semibold text-[#202620] dark:text-[#F3F4F6]">
                       {label}
                     </span>
-                    <p className="text-xs text-[#737C74] dark:text-[#948979] mt-0.5">
+                    <p className="text-xs text-[#858D82] dark:text-[#7F8996] mt-0.5">
                       {desc}
                     </p>
                   </div>
@@ -850,7 +850,7 @@ export default function NotificationsPage() {
                   <button
                     onClick={() => handleTogglePreference(id, !preferences[id])}
                     className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${
-                      preferences[id] ? 'bg-[#244C3B] dark:bg-[#DFD0B8]' : 'bg-[#E8E8DF] dark:bg-[#393E46]'
+                      preferences[id] ? 'bg-[var(--accent-primary)] dark:bg-[#F3F4F6]' : 'bg-[#E4E7E0] dark:bg-[#303945]'
                     }`}
                   >
                     <span
@@ -865,11 +865,11 @@ export default function NotificationsPage() {
           </div>
 
           {/* Browser Notifications Permissions Card */}
-          <div className="bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl p-5 shadow-xs">
-            <div className="flex items-center justify-between mb-3 pb-3 border-b border-[#E8E8DF] dark:border-[#393E46]">
+          <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-5 shadow-xs">
+            <div className="flex items-center justify-between mb-3 pb-3 border-b border-[#E4E7E0] dark:border-[#303945]">
               <div className="flex items-center gap-2">
-                <Bell className="w-4 h-4 text-[#244C3B] dark:text-[#DFD0B8]" />
-                <h3 className="text-xs font-bold text-[#202A23] dark:text-[#DFD0B8] uppercase tracking-wider">
+                <Bell className="w-4 h-4 text-[var(--accent-primary)] dark:text-[#F3F4F6]" />
+                <h3 className="text-xs font-bold text-[#202620] dark:text-[#F3F4F6] uppercase tracking-wider">
                   Desktop Browser Notifications
                 </h3>
               </div>
@@ -886,7 +886,7 @@ export default function NotificationsPage() {
               </span>
             </div>
 
-            <p className="text-xs text-[#4A5749] dark:text-[#C8BFB0] leading-relaxed mb-4">
+            <p className="text-xs text-[#596258] dark:text-[#B0B7C2] leading-relaxed mb-4">
               Browser notifications allow DevPath to alert you when a focus session ends or when a scheduled study sprint kicks off, even if you are on another browser tab. Explicit browser permission is required.
             </p>
 
@@ -910,11 +910,11 @@ export default function NotificationsPage() {
           </div>
 
           {/* Quiet Hours Card */}
-          <div className="bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl p-5 shadow-xs">
-            <div className="flex items-center justify-between mb-3 pb-3 border-b border-[#E8E8DF] dark:border-[#393E46]">
+          <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-5 shadow-xs">
+            <div className="flex items-center justify-between mb-3 pb-3 border-b border-[#E4E7E0] dark:border-[#303945]">
               <div className="flex items-center gap-2">
-                <Moon className="w-4 h-4 text-[#244C3B] dark:text-[#DFD0B8]" />
-                <h3 className="text-xs font-bold text-[#202A23] dark:text-[#DFD0B8] uppercase tracking-wider">
+                <Moon className="w-4 h-4 text-[var(--accent-primary)] dark:text-[#F3F4F6]" />
+                <h3 className="text-xs font-bold text-[#202620] dark:text-[#F3F4F6] uppercase tracking-wider">
                   Quiet Hours (Asia/Kolkata)
                 </h3>
               </div>
@@ -922,7 +922,7 @@ export default function NotificationsPage() {
               <button
                 onClick={() => handleTogglePreference('quietHoursEnabled', !preferences.quietHoursEnabled)}
                 className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${
-                  preferences.quietHoursEnabled ? 'bg-[#244C3B] dark:bg-[#DFD0B8]' : 'bg-[#E8E8DF] dark:bg-[#393E46]'
+                  preferences.quietHoursEnabled ? 'bg-[var(--accent-primary)] dark:bg-[#F3F4F6]' : 'bg-[#E4E7E0] dark:bg-[#303945]'
                 }`}
               >
                 <span
@@ -933,13 +933,13 @@ export default function NotificationsPage() {
               </button>
             </div>
 
-            <p className="text-xs text-[#737C74] dark:text-[#948979] mb-4">
+            <p className="text-xs text-[#858D82] dark:text-[#7F8996] mb-4">
               During quiet hours, audible chimes and browser popups are suppressed. All alerts continue to be recorded quietly in your in-app notification center.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+                <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
                   Quiet Hours Start (HH:mm)
                 </label>
                 <input
@@ -947,12 +947,12 @@ export default function NotificationsPage() {
                   value={preferences.quietHoursStart}
                   onChange={(e) => handleTogglePreference('quietHoursStart', e.target.value)}
                   disabled={!preferences.quietHoursEnabled}
-                  className="px-3 py-1.5 text-xs rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46] text-[#202A23] dark:text-[#DFD0B8] focus:outline-hidden disabled:opacity-50"
+                  className="px-3 py-1.5 text-xs rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E4E7E0] dark:border-[#303945] text-[#202620] dark:text-[#F3F4F6] focus:outline-hidden disabled:opacity-50"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+                <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
                   Quiet Hours End (HH:mm)
                 </label>
                 <input
@@ -960,21 +960,21 @@ export default function NotificationsPage() {
                   value={preferences.quietHoursEnd}
                   onChange={(e) => handleTogglePreference('quietHoursEnd', e.target.value)}
                   disabled={!preferences.quietHoursEnabled}
-                  className="px-3 py-1.5 text-xs rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46] text-[#202A23] dark:text-[#DFD0B8] focus:outline-hidden disabled:opacity-50"
+                  className="px-3 py-1.5 text-xs rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E4E7E0] dark:border-[#303945] text-[#202620] dark:text-[#F3F4F6] focus:outline-hidden disabled:opacity-50"
                 />
               </div>
             </div>
           </div>
 
           {/* Render Cloud Deployment Architecture Card */}
-          <div className="bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl p-5 shadow-xs">
-            <div className="flex items-center gap-2 mb-2 pb-2 border-b border-[#E8E8DF] dark:border-[#393E46]">
+          <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-5 shadow-xs">
+            <div className="flex items-center gap-2 mb-2 pb-2 border-b border-[#E4E7E0] dark:border-[#303945]">
               <Info className="w-4 h-4 text-sky-500" />
-              <h3 className="text-xs font-bold text-[#202A23] dark:text-[#DFD0B8] uppercase tracking-wider">
+              <h3 className="text-xs font-bold text-[#202620] dark:text-[#F3F4F6] uppercase tracking-wider">
                 Deployment Architecture & Limitations
               </h3>
             </div>
-            <p className="text-xs text-[#737C74] dark:text-[#948979] leading-relaxed">
+            <p className="text-xs text-[#858D82] dark:text-[#7F8996] leading-relaxed">
               <strong>Render Web Service Background Engine:</strong> DevPath executes background reminder evaluations every 60 seconds on the backend. When deployed on Render free instances, the web service may spin down after 15 minutes of inactivity. When you open the application, an automatic catch-up check runs immediately. To guarantee closed-browser background delivery on Render without web traffic, a scheduled Render Cron Job invoking <code className="text-[11px] font-mono bg-black/5 dark:bg-white/5 px-1 py-0.5 rounded">POST /api/reminders/process-due</code> can be configured without paid add-ons.
             </p>
           </div>
@@ -986,15 +986,15 @@ export default function NotificationsPage() {
       {/* ========================================================================= */}
       {showScheduleModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-          <div className="bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl max-w-md w-full p-6 shadow-2xl animate-in zoom-in-95">
-            <h3 className="text-base font-bold text-[#202A23] dark:text-[#DFD0B8] mb-4">
+          <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl max-w-md w-full p-6 shadow-2xl animate-in zoom-in-95">
+            <h3 className="text-base font-bold text-[#202620] dark:text-[#F3F4F6] mb-4">
               {editingSchedule ? 'Edit Reminder Schedule' : 'Create Reminder Schedule'}
             </h3>
 
             <form onSubmit={handleSaveSchedule} className="space-y-4">
               {/* Title */}
               <div>
-                <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+                <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
                   Schedule Title *
                 </label>
                 <input
@@ -1003,14 +1003,14 @@ export default function NotificationsPage() {
                   placeholder="e.g. Morning Study Sprint"
                   value={scheduleForm.title}
                   onChange={(e) => setScheduleForm({ ...scheduleForm, title: e.target.value })}
-                  className="w-full px-3 py-1.5 text-xs rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46] text-[#202A23] dark:text-[#DFD0B8] focus:outline-hidden"
+                  className="w-full px-3 py-1.5 text-xs rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E4E7E0] dark:border-[#303945] text-[#202620] dark:text-[#F3F4F6] focus:outline-hidden"
                 />
               </div>
 
               {/* Time & Category */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+                  <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
                     Reminder Time (HH:mm) *
                   </label>
                   <input
@@ -1018,18 +1018,18 @@ export default function NotificationsPage() {
                     required
                     value={scheduleForm.reminderTime}
                     onChange={(e) => setScheduleForm({ ...scheduleForm, reminderTime: e.target.value })}
-                    className="w-full px-3 py-1.5 text-xs rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46] text-[#202A23] dark:text-[#DFD0B8] focus:outline-hidden"
+                    className="w-full px-3 py-1.5 text-xs rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E4E7E0] dark:border-[#303945] text-[#202620] dark:text-[#F3F4F6] focus:outline-hidden"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+                  <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
                     Category *
                   </label>
                   <select
                     value={scheduleForm.category}
                     onChange={(e) => setScheduleForm({ ...scheduleForm, category: e.target.value })}
-                    className="w-full px-3 py-1.5 text-xs rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46] text-[#202A23] dark:text-[#DFD0B8] focus:outline-hidden"
+                    className="w-full px-3 py-1.5 text-xs rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E4E7E0] dark:border-[#303945] text-[#202620] dark:text-[#F3F4F6] focus:outline-hidden"
                   >
                     <option value="daily_study">Daily Study Kickoff</option>
                     <option value="pending_tasks">Pending Tasks Check</option>
@@ -1042,7 +1042,7 @@ export default function NotificationsPage() {
 
               {/* Weekday Selector */}
               <div>
-                <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1.5">
+                <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1.5">
                   Selected Weekdays *
                 </label>
                 <div className="flex items-center justify-between gap-1">
@@ -1055,8 +1055,8 @@ export default function NotificationsPage() {
                         onClick={() => toggleWeekday(day)}
                         className={`w-9 h-9 rounded-lg text-xs font-bold transition cursor-pointer flex items-center justify-center ${
                           isSelected
-                            ? 'bg-[#244C3B] text-white dark:bg-[#DFD0B8] dark:text-[#222831]'
-                            : 'bg-[#F0F0EB] text-[#737C74] dark:bg-[#222831] dark:text-[#948979] hover:bg-[#E8E8DF] dark:hover:bg-[#393E46]'
+                            ? 'bg-[var(--accent-primary)] text-white dark:bg-[#F3F4F6] dark:text-[#222831]'
+                            : 'bg-[#F0F0EB] text-[#858D82] dark:bg-[#222831] dark:text-[#7F8996] hover:bg-[#E4E7E0] dark:hover:bg-[#303945]'
                         }`}
                       >
                         {label}
@@ -1068,7 +1068,7 @@ export default function NotificationsPage() {
 
               {/* Custom Message */}
               <div>
-                <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+                <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
                   Custom Reminder Message (Optional)
                 </label>
                 <textarea
@@ -1076,11 +1076,11 @@ export default function NotificationsPage() {
                   placeholder="Optional motivational or contextual message..."
                   value={scheduleForm.customMessage}
                   onChange={(e) => setScheduleForm({ ...scheduleForm, customMessage: e.target.value })}
-                  className="w-full px-3 py-1.5 text-xs rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46] text-[#202A23] dark:text-[#DFD0B8] focus:outline-hidden resize-none"
+                  className="w-full px-3 py-1.5 text-xs rounded-lg bg-[#F7F7F2] dark:bg-[#222831] border border-[#E4E7E0] dark:border-[#303945] text-[#202620] dark:text-[#F3F4F6] focus:outline-hidden resize-none"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#E8E8DF] dark:border-[#393E46]">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#E4E7E0] dark:border-[#303945]">
                 <Button
                   type="button"
                   variant="outline"

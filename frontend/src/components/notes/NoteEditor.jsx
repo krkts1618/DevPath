@@ -229,9 +229,9 @@ export default function NoteEditor({ note, onSave, onClose }) {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8.5rem)] bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl overflow-hidden shadow-sm">
+    <div className="flex flex-col h-[calc(100vh-8.5rem)] bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl overflow-hidden shadow-sm">
       {/* Top Header Bar */}
-      <div className="px-5 py-3 border-b border-[#E8E8DF] dark:border-[#393E46] flex flex-wrap items-center justify-between gap-3 bg-[#F7F7F2] dark:bg-[#222831]">
+      <div className="px-5 py-3 border-b border-[#E4E7E0] dark:border-[#303945] flex flex-wrap items-center justify-between gap-3 bg-[#F7F7F2] dark:bg-[#222831]">
         <div className="flex-1 min-w-[260px]">
           <input
             type="text"
@@ -241,7 +241,7 @@ export default function NoteEditor({ note, onSave, onClose }) {
               setTitle(e.target.value);
               setSaveStatus('unsaved');
             }}
-            className="w-full text-lg font-bold bg-transparent text-[#202A23] dark:text-[#DFD0B8] border-none outline-none focus:ring-0 placeholder:text-[#737C74] dark:placeholder:text-[#948979]"
+            className="w-full text-lg font-bold bg-transparent text-[#202620] dark:text-[#F3F4F6] border-none outline-none focus:ring-0 placeholder:text-[#858D82] dark:placeholder:text-[#7F8996]"
           />
         </div>
 
@@ -262,7 +262,7 @@ export default function NoteEditor({ note, onSave, onClose }) {
               </span>
             )}
             {saveStatus === 'unsaved' && (
-              <span className="text-[#737C74] dark:text-[#948979]">Unsaved changes</span>
+              <span className="text-[#858D82] dark:text-[#7F8996]">Unsaved changes</span>
             )}
             {saveStatus === 'error' && (
               <span className="text-red-500 font-medium">Save failed</span>
@@ -270,14 +270,14 @@ export default function NoteEditor({ note, onSave, onClose }) {
           </div>
 
           {/* Mode Switcher */}
-          <div className="flex items-center border border-[#E8E8DF] dark:border-[#393E46] rounded-lg p-0.5 bg-[#FFFFFF] dark:bg-[#2A303A]">
+          <div className="flex items-center border border-[#E4E7E0] dark:border-[#303945] rounded-lg p-0.5 bg-[#FFFFFF] dark:bg-[#1D232B]">
             <button
               onClick={() => setMode('edit')}
               title="Edit mode"
               className={`px-2.5 py-1 text-xs rounded-md font-medium transition ${
                 mode === 'edit'
-                  ? 'bg-[#244C3B] text-white dark:bg-[#DFD0B8] dark:text-[#222831]'
-                  : 'text-[#737C74] dark:text-[#948979] hover:text-[#202A23] dark:hover:text-[#DFD0B8]'
+                  ? 'bg-[var(--accent-primary)] text-white dark:bg-[#F3F4F6] dark:text-[#222831]'
+                  : 'text-[#858D82] dark:text-[#7F8996] hover:text-[#202620] dark:hover:text-[#F3F4F6]'
               }`}
             >
               <Edit3 className="w-3.5 h-3.5 inline mr-1" />
@@ -288,8 +288,8 @@ export default function NoteEditor({ note, onSave, onClose }) {
               title="Split view"
               className={`px-2.5 py-1 text-xs rounded-md font-medium transition ${
                 mode === 'split'
-                  ? 'bg-[#244C3B] text-white dark:bg-[#DFD0B8] dark:text-[#222831]'
-                  : 'text-[#737C74] dark:text-[#948979] hover:text-[#202A23] dark:hover:text-[#DFD0B8]'
+                  ? 'bg-[var(--accent-primary)] text-white dark:bg-[#F3F4F6] dark:text-[#222831]'
+                  : 'text-[#858D82] dark:text-[#7F8996] hover:text-[#202620] dark:hover:text-[#F3F4F6]'
               }`}
             >
               <Columns className="w-3.5 h-3.5 inline mr-1" />
@@ -300,8 +300,8 @@ export default function NoteEditor({ note, onSave, onClose }) {
               title="Preview mode"
               className={`px-2.5 py-1 text-xs rounded-md font-medium transition ${
                 mode === 'preview'
-                  ? 'bg-[#244C3B] text-white dark:bg-[#DFD0B8] dark:text-[#222831]'
-                  : 'text-[#737C74] dark:text-[#948979] hover:text-[#202A23] dark:hover:text-[#DFD0B8]'
+                  ? 'bg-[var(--accent-primary)] text-white dark:bg-[#F3F4F6] dark:text-[#222831]'
+                  : 'text-[#858D82] dark:text-[#7F8996] hover:text-[#202620] dark:hover:text-[#F3F4F6]'
               }`}
             >
               <Eye className="w-3.5 h-3.5 inline mr-1" />
@@ -322,7 +322,7 @@ export default function NoteEditor({ note, onSave, onClose }) {
           {onClose && (
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-[#737C74] hover:bg-[#EAEAE4] dark:hover:bg-[#393E46] transition text-[#202A23] dark:text-[#DFD0B8]"
+              className="p-1.5 rounded-lg text-[#858D82] hover:bg-[#EAEAE4] dark:hover:bg-[#303945] transition text-[#202620] dark:text-[#F3F4F6]"
             >
               <X className="w-4 h-4" />
             </button>
@@ -331,10 +331,10 @@ export default function NoteEditor({ note, onSave, onClose }) {
       </div>
 
       {/* Metadata & Associations Selector */}
-      <div className="px-5 py-2.5 bg-[#FFFFFF] dark:bg-[#2A303A] border-b border-[#E8E8DF] dark:border-[#393E46] flex flex-wrap items-center gap-3 text-xs">
+      <div className="px-5 py-2.5 bg-[#FFFFFF] dark:bg-[#1D232B] border-b border-[#E4E7E0] dark:border-[#303945] flex flex-wrap items-center gap-3 text-xs">
         {/* Roadmap Picker */}
-        <div className="flex items-center gap-1.5 text-[#737C74] dark:text-[#948979]">
-          <Layers className="w-3.5 h-3.5 text-[#244C3B] dark:text-[#DFD0B8]" />
+        <div className="flex items-center gap-1.5 text-[#858D82] dark:text-[#7F8996]">
+          <Layers className="w-3.5 h-3.5 text-[var(--accent-primary)] dark:text-[#F3F4F6]" />
           <span>Roadmap:</span>
           <select
             value={selectedRoadmapId}
@@ -344,7 +344,7 @@ export default function NoteEditor({ note, onSave, onClose }) {
               setSelectedTaskId('');
               setSaveStatus('unsaved');
             }}
-            className="bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46] rounded-md px-2 py-1 text-[#202A23] dark:text-[#DFD0B8] outline-none"
+            className="bg-[#F7F7F2] dark:bg-[#222831] border border-[#E4E7E0] dark:border-[#303945] rounded-md px-2 py-1 text-[#202620] dark:text-[#F3F4F6] outline-none"
           >
             <option value="">Standalone / Unlinked</option>
             {roadmaps.map((r) => (
@@ -357,8 +357,8 @@ export default function NoteEditor({ note, onSave, onClose }) {
 
         {/* Day Picker (Conditional) */}
         {selectedRoadmapId && availableDays.length > 0 && (
-          <div className="flex items-center gap-1.5 text-[#737C74] dark:text-[#948979]">
-            <Calendar className="w-3.5 h-3.5 text-[#244C3B] dark:text-[#DFD0B8]" />
+          <div className="flex items-center gap-1.5 text-[#858D82] dark:text-[#7F8996]">
+            <Calendar className="w-3.5 h-3.5 text-[var(--accent-primary)] dark:text-[#F3F4F6]" />
             <span>Day:</span>
             <select
               value={selectedDayId}
@@ -367,7 +367,7 @@ export default function NoteEditor({ note, onSave, onClose }) {
                 setSelectedTaskId('');
                 setSaveStatus('unsaved');
               }}
-              className="bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46] rounded-md px-2 py-1 text-[#202A23] dark:text-[#DFD0B8] outline-none max-w-[160px] truncate"
+              className="bg-[#F7F7F2] dark:bg-[#222831] border border-[#E4E7E0] dark:border-[#303945] rounded-md px-2 py-1 text-[#202620] dark:text-[#F3F4F6] outline-none max-w-[160px] truncate"
             >
               <option value="">Select Day (Optional)</option>
               {availableDays.map((d) => (
@@ -381,7 +381,7 @@ export default function NoteEditor({ note, onSave, onClose }) {
 
         {/* Task Picker (Conditional) */}
         {selectedDayId && availableTasks.length > 0 && (
-          <div className="flex items-center gap-1.5 text-[#737C74] dark:text-[#948979]">
+          <div className="flex items-center gap-1.5 text-[#858D82] dark:text-[#7F8996]">
             <span>Task:</span>
             <select
               value={selectedTaskId}
@@ -389,7 +389,7 @@ export default function NoteEditor({ note, onSave, onClose }) {
                 setSelectedTaskId(e.target.value);
                 setSaveStatus('unsaved');
               }}
-              className="bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46] rounded-md px-2 py-1 text-[#202A23] dark:text-[#DFD0B8] outline-none max-w-[160px] truncate"
+              className="bg-[#F7F7F2] dark:bg-[#222831] border border-[#E4E7E0] dark:border-[#303945] rounded-md px-2 py-1 text-[#202620] dark:text-[#F3F4F6] outline-none max-w-[160px] truncate"
             >
               <option value="">Select Task (Optional)</option>
               {availableTasks.map((t) => (
@@ -403,11 +403,11 @@ export default function NoteEditor({ note, onSave, onClose }) {
 
         {/* Tag Badges */}
         <div className="flex items-center gap-1.5 ml-auto flex-wrap">
-          <TagIcon className="w-3.5 h-3.5 text-[#737C74] dark:text-[#948979]" />
+          <TagIcon className="w-3.5 h-3.5 text-[#858D82] dark:text-[#7F8996]" />
           {selectedTagNames.map((tag) => (
             <span
               key={tag}
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#E8F0EB] text-[#244C3B] dark:bg-[#393E46] dark:text-[#DFD0B8] font-medium"
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#E8F0EB] text-[var(--accent-primary)] dark:bg-[#303945] dark:text-[#F3F4F6] font-medium"
             >
               #{tag}
               <button
@@ -425,84 +425,84 @@ export default function NoteEditor({ note, onSave, onClose }) {
             value={newTagInput}
             onChange={(e) => setNewTagInput(e.target.value)}
             onKeyDown={handleAddCustomTag}
-            className="w-20 bg-transparent text-[#202A23] dark:text-[#DFD0B8] border-b border-[#E8E8DF] dark:border-[#393E46] outline-none px-1 text-xs"
+            className="w-20 bg-transparent text-[#202620] dark:text-[#F3F4F6] border-b border-[#E4E7E0] dark:border-[#303945] outline-none px-1 text-xs"
           />
         </div>
       </div>
 
       {/* Formatting Toolbar (shown when not pure preview) */}
       {mode !== 'preview' && (
-        <div className="px-4 py-1.5 border-b border-[#E8E8DF] dark:border-[#393E46] bg-[#F7F7F2] dark:bg-[#222831] flex flex-wrap items-center gap-1 text-[#737C74] dark:text-[#948979]">
+        <div className="px-4 py-1.5 border-b border-[#E4E7E0] dark:border-[#303945] bg-[#F7F7F2] dark:bg-[#222831] flex flex-wrap items-center gap-1 text-[#858D82] dark:text-[#7F8996]">
           <button
             onClick={() => insertFormatting('**', '**', 'bold text')}
             title="Bold (Ctrl+B)"
-            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#393E46] text-[#202A23] dark:text-[#DFD0B8]"
+            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
           >
             <Bold className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => insertFormatting('*', '*', 'italic text')}
             title="Italic (Ctrl+I)"
-            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#393E46] text-[#202A23] dark:text-[#DFD0B8]"
+            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
           >
             <Italic className="w-3.5 h-3.5" />
           </button>
-          <span className="w-px h-4 bg-[#E8E8DF] dark:bg-[#393E46] mx-1" />
+          <span className="w-px h-4 bg-[#E4E7E0] dark:bg-[#303945] mx-1" />
           <button
             onClick={() => insertFormatting('# ', '', 'Heading 1')}
             title="Heading 1"
-            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#393E46] text-[#202A23] dark:text-[#DFD0B8]"
+            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
           >
             <Heading1 className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => insertFormatting('## ', '', 'Heading 2')}
             title="Heading 2"
-            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#393E46] text-[#202A23] dark:text-[#DFD0B8]"
+            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
           >
             <Heading2 className="w-3.5 h-3.5" />
           </button>
-          <span className="w-px h-4 bg-[#E8E8DF] dark:bg-[#393E46] mx-1" />
+          <span className="w-px h-4 bg-[#E4E7E0] dark:bg-[#303945] mx-1" />
           <button
             onClick={() => insertFormatting('- ', '', 'List item')}
             title="Bullet List"
-            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#393E46] text-[#202A23] dark:text-[#DFD0B8]"
+            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
           >
             <List className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => insertFormatting('1. ', '', 'Numbered item')}
             title="Numbered List"
-            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#393E46] text-[#202A23] dark:text-[#DFD0B8]"
+            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
           >
             <ListOrdered className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => insertFormatting('- [ ] ', '', 'Task to complete')}
             title="Checklist"
-            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#393E46] text-[#202A23] dark:text-[#DFD0B8]"
+            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
           >
             <CheckSquare className="w-3.5 h-3.5" />
           </button>
-          <span className="w-px h-4 bg-[#E8E8DF] dark:bg-[#393E46] mx-1" />
+          <span className="w-px h-4 bg-[#E4E7E0] dark:bg-[#303945] mx-1" />
           <button
             onClick={() => insertFormatting('`', '`', 'code')}
             title="Inline Code"
-            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#393E46] text-[#202A23] dark:text-[#DFD0B8]"
+            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
           >
             <Code className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => insertFormatting('```javascript\n', '\n```', '// Code snippet here')}
             title="Code Block"
-            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#393E46] text-[#202A23] dark:text-[#DFD0B8]"
+            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
           >
             <FileCode className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => insertFormatting('> ', '', 'Quoted thought')}
             title="Blockquote"
-            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#393E46] text-[#202A23] dark:text-[#DFD0B8]"
+            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
           >
             <Quote className="w-3.5 h-3.5" />
           </button>
@@ -515,20 +515,20 @@ export default function NoteEditor({ note, onSave, onClose }) {
               )
             }
             title="Table Template"
-            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#393E46] text-[#202A23] dark:text-[#DFD0B8]"
+            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
           >
             <TableIcon className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => insertFormatting('[', '](https://example.com)', 'Link label')}
             title="Hyperlink"
-            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#393E46] text-[#202A23] dark:text-[#DFD0B8]"
+            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
           >
             <LinkIcon className="w-3.5 h-3.5" />
           </button>
 
           {note?.id && (
-            <label className="ml-auto flex items-center gap-1.5 cursor-pointer px-2 py-1 rounded bg-[#E8F0EB] text-[#244C3B] dark:bg-[#393E46] dark:text-[#DFD0B8] hover:opacity-90 text-xs font-medium">
+            <label className="ml-auto flex items-center gap-1.5 cursor-pointer px-2 py-1 rounded bg-[#E8F0EB] text-[var(--accent-primary)] dark:bg-[#303945] dark:text-[#F3F4F6] hover:opacity-90 text-xs font-medium">
               <Paperclip className="w-3 h-3" />
               <span>Attach File</span>
               <input
@@ -548,7 +548,7 @@ export default function NoteEditor({ note, onSave, onClose }) {
         {(mode === 'edit' || mode === 'split') && (
           <div
             className={`h-full flex flex-col ${
-              mode === 'split' ? 'w-1/2 border-r border-[#E8E8DF] dark:border-[#393E46]' : 'w-full'
+              mode === 'split' ? 'w-1/2 border-r border-[#E4E7E0] dark:border-[#303945]' : 'w-full'
             }`}
           >
             <textarea
@@ -562,7 +562,7 @@ export default function NoteEditor({ note, onSave, onClose }) {
 - Use code blocks with ```javascript or ```python
 - Attach diagrams or tables
 - Reference architecture concepts"
-              className="w-full h-full p-5 bg-transparent text-[#202A23] dark:text-[#DFD0B8] font-mono text-sm resize-none outline-none focus:ring-0 leading-relaxed placeholder:text-[#737C74] dark:placeholder:text-[#948979]"
+              className="w-full h-full p-5 bg-transparent text-[#202620] dark:text-[#F3F4F6] font-mono text-sm resize-none outline-none focus:ring-0 leading-relaxed placeholder:text-[#858D82] dark:placeholder:text-[#7F8996]"
             />
           </div>
         )}
@@ -581,19 +581,19 @@ export default function NoteEditor({ note, onSave, onClose }) {
 
       {/* Attachments Drawer / Footer */}
       {attachments.length > 0 && (
-        <div className="px-5 py-2.5 bg-[#F7F7F2] dark:bg-[#222831] border-t border-[#E8E8DF] dark:border-[#393E46] flex items-center gap-3 overflow-x-auto text-xs">
-          <span className="font-semibold text-[#737C74] dark:text-[#948979] flex items-center gap-1">
+        <div className="px-5 py-2.5 bg-[#F7F7F2] dark:bg-[#222831] border-t border-[#E4E7E0] dark:border-[#303945] flex items-center gap-3 overflow-x-auto text-xs">
+          <span className="font-semibold text-[#858D82] dark:text-[#7F8996] flex items-center gap-1">
             <Paperclip className="w-3.5 h-3.5" />
             Attachments ({attachments.length}):
           </span>
           {attachments.map((att) => (
             <div
               key={att.id}
-              className="flex items-center gap-2 px-2.5 py-1 rounded bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] text-[#202A23] dark:text-[#DFD0B8]"
+              className="flex items-center gap-2 px-2.5 py-1 rounded bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] text-[#202620] dark:text-[#F3F4F6]"
             >
-              <FileText className="w-3.5 h-3.5 text-[#244C3B] dark:text-[#DFD0B8]" />
+              <FileText className="w-3.5 h-3.5 text-[var(--accent-primary)] dark:text-[#F3F4F6]" />
               <span className="max-w-[140px] truncate">{att.fileName}</span>
-              <span className="text-[10px] text-[#737C74] dark:text-[#948979]">
+              <span className="text-[10px] text-[#858D82] dark:text-[#7F8996]">
                 ({Math.round((att.fileSize || 0) / 1024)} KB)
               </span>
               <button

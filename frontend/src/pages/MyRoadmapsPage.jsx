@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import {
-  Compass,
   Search,
   Plus,
-  LayoutGrid,
-  List,
-  Filter,
   ArrowUpDown,
   Settings2,
 } from 'lucide-react';
@@ -17,7 +13,6 @@ import AddRoadmapModal from '../components/roadmaps/AddRoadmapModal';
 import EditRoadmapModal from '../components/roadmaps/EditRoadmapModal';
 import CategoryManagerModal from '../components/roadmaps/CategoryManagerModal';
 import ConfirmationDialog from '../components/ui/ConfirmationDialog';
-import Button from '../components/ui/Button';
 import EmptyState from '../components/ui/EmptyState';
 import ErrorState from '../components/ui/ErrorState';
 import { CardSkeleton } from '../components/ui/Skeleton';
@@ -33,7 +28,7 @@ export default function MyRoadmapsPage() {
   // Filters, Search & Sorting
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('ALL');
-  const [selectedStatus, setSelectedStatus] = useState('active'); // 'active', 'archived', 'all'
+  const [selectedStatus, setSelectedStatus] = useState('active');
   const [sortBy, setSortBy] = useState('default');
 
   // Modals
@@ -47,7 +42,6 @@ export default function MyRoadmapsPage() {
     isOpen: false,
     title: '',
     message: '',
-    impactDetails: null,
     isDestructive: false,
     confirmLabel: 'Confirm',
     action: null,
@@ -86,10 +80,9 @@ export default function MyRoadmapsPage() {
     setConfirmDialog({
       isOpen: true,
       title: `Archive Roadmap: ${r?.title || ''}?`,
-      message:
-        'Archiving removes this roadmap from your daily active views. You can restore it at any time from the Archived tab.',
+      message: 'Archiving removes this roadmap from your daily active views. You can restore it at any time.',
       isDestructive: false,
-      confirmLabel: 'Archive Roadmap',
+      confirmLabel: 'Archive',
       action: async () => {
         try {
           await roadmapService.archiveRoadmap(id);
@@ -118,10 +111,9 @@ export default function MyRoadmapsPage() {
     setConfirmDialog({
       isOpen: true,
       title: `Permanently Delete: ${r?.title || ''}?`,
-      message:
-        'WARNING: This will permanently delete this roadmap, all associated modules, days, tasks, and task completion records. This cannot be undone.',
+      message: 'This will permanently delete this roadmap and all its days/tasks. This cannot be undone.',
       isDestructive: true,
-      confirmLabel: 'Delete Permanently',
+      confirmLabel: 'Delete',
       action: async () => {
         try {
           await roadmapService.permanentlyDeleteRoadmap(id);
@@ -136,59 +128,50 @@ export default function MyRoadmapsPage() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* 1. Header (Reference Style: My Roadmaps + Amber Create Button) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#202620] dark:text-[#F3F4F6]">
-            My Roadmaps
-          </h1>
-          <p className="text-xs text-[#858D82] dark:text-[#7F8996] mt-0.5">
-            Curriculum explorer and adaptive learning tracks.
-          </p>
-        </div>
+    <div className="space-y-4">
+      {/* 1. Compact Header Matching IMAGE 1 Reference */}
+      <div className="flex items-center justify-between gap-4">
+        <h1 className="text-base sm:text-lg font-bold tracking-tight text-[#202620] dark:text-[#F3F4F6]">
+          My Roadmaps
+        </h1>
 
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            icon={Settings2}
+          <button
             onClick={() => setIsCategoryManagerOpen(true)}
-            className="text-xs"
+            className="p-1.5 rounded-lg border border-[#E4E7E0] dark:border-[#303945] text-[#858D82] dark:text-[#7F8996] hover:text-[#202620] dark:hover:text-[#F3F4F6] text-xs transition"
+            title="Manage Categories"
           >
-            Manage Categories
-          </Button>
+            <Settings2 className="w-3.5 h-3.5" />
+          </button>
 
-          <Button
-            variant="amber"
-            size="sm"
-            icon={Plus}
+          <button
             onClick={() => setIsAddRoadmapOpen(true)}
-            className="text-xs font-semibold"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--accent-primary)] text-[var(--accent-text)] text-xs font-semibold hover:bg-[var(--accent-hover)] transition shadow-xs cursor-pointer"
           >
-            Create Roadmap
-          </Button>
+            <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+            <span>Create Roadmap</span>
+          </button>
         </div>
       </div>
 
-      {/* 2. Category Filter Pills (Reference: All, Development, Core CS, Tools, etc.) */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+      {/* 2. Small Category Filter Tabs (IMAGE 1: All, Development, Core CS, Tools, Others) */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none">
         <button
           onClick={() => setSelectedCategory('ALL')}
-          className={`px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium transition-colors cursor-pointer flex-shrink-0 ${
+          className={`px-3 py-1 rounded-lg text-xs font-medium transition cursor-pointer shrink-0 ${
             selectedCategory === 'ALL'
               ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] font-semibold shadow-xs'
               : 'bg-[#FFFFFF] dark:bg-[#1D232B] text-[#596258] dark:text-[#B0B7C2] border border-[#E4E7E0] dark:border-[#303945] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35]'
           }`}
         >
-          All Categories
+          All
         </button>
 
         {categories.map((cat) => (
           <button
             key={cat.id}
             onClick={() => setSelectedCategory(cat.id)}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium transition-colors cursor-pointer flex-shrink-0 ${
+            className={`px-3 py-1 rounded-lg text-xs font-medium transition cursor-pointer shrink-0 ${
               selectedCategory === cat.id
                 ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] font-semibold shadow-xs'
                 : 'bg-[#FFFFFF] dark:bg-[#1D232B] text-[#596258] dark:text-[#B0B7C2] border border-[#E4E7E0] dark:border-[#303945] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35]'
@@ -199,75 +182,57 @@ export default function MyRoadmapsPage() {
         ))}
       </div>
 
-      {/* 3. Search Bar & Status Tabs */}
-      <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-3 sm:p-4 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+      {/* 3. Compact Search & Toolbar */}
+      <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-2.5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
         {/* Search Input */}
-        <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 text-[#858D82] dark:text-[#7F8996] absolute left-3 top-1/2 -translate-y-1/2" />
+        <div className="relative flex-1 max-w-sm">
+          <Search className="w-3.5 h-3.5 text-[#858D82] dark:text-[#7F8996] absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="Search roadmaps by title or topic..."
+            placeholder="Search roadmaps..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 text-xs bg-[#F8F9F6] dark:bg-[#171B21] border border-[#E4E7E0] dark:border-[#303945] rounded-lg text-[#202620] dark:text-[#F3F4F6] placeholder-[#858D82] dark:placeholder-[#7F8996] focus:outline-none focus:border-[var(--accent-primary)]"
+            className="w-full pl-8 pr-3 py-1 text-xs bg-[#F8F9F6] dark:bg-[#171B21] border border-[#E4E7E0] dark:border-[#303945] rounded-lg text-[#202620] dark:text-[#F3F4F6] placeholder-[#858D82] dark:placeholder-[#7F8996] focus:outline-none focus:border-[var(--accent-primary)]"
           />
         </div>
 
         {/* Status Filter Tabs & Sort */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center bg-[#F8F9F6] dark:bg-[#171B21] rounded-lg p-0.5 border border-[#E4E7E0] dark:border-[#303945] text-xs font-mono">
-            <button
-              onClick={() => setSelectedStatus('active')}
-              className={`px-3 py-1 rounded-md transition-colors cursor-pointer ${
-                selectedStatus === 'active'
-                  ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] font-semibold shadow-xs'
-                  : 'text-[#596258] dark:text-[#B0B7C2] hover:text-[#202620] dark:hover:text-[#F3F4F6]'
-              }`}
-            >
-              Active
-            </button>
-            <button
-              onClick={() => setSelectedStatus('archived')}
-              className={`px-3 py-1 rounded-md transition-colors cursor-pointer ${
-                selectedStatus === 'archived'
-                  ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] font-semibold shadow-xs'
-                  : 'text-[#596258] dark:text-[#B0B7C2] hover:text-[#202620] dark:hover:text-[#F3F4F6]'
-              }`}
-            >
-              Archived
-            </button>
-            <button
-              onClick={() => setSelectedStatus('all')}
-              className={`px-3 py-1 rounded-md transition-colors cursor-pointer ${
-                selectedStatus === 'all'
-                  ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] font-semibold shadow-xs'
-                  : 'text-[#596258] dark:text-[#B0B7C2] hover:text-[#202620] dark:hover:text-[#F3F4F6]'
-              }`}
-            >
-              All
-            </button>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center bg-[#F8F9F6] dark:bg-[#171B21] rounded-lg p-0.5 border border-[#E4E7E0] dark:border-[#303945] text-xs">
+            {['active', 'archived', 'all'].map((st) => (
+              <button
+                key={st}
+                onClick={() => setSelectedStatus(st)}
+                className={`px-2.5 py-0.5 rounded-md capitalize transition cursor-pointer ${
+                  selectedStatus === st
+                    ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] font-semibold shadow-xs'
+                    : 'text-[#596258] dark:text-[#B0B7C2] hover:text-[#202620] dark:hover:text-[#F3F4F6]'
+                }`}
+              >
+                {st}
+              </button>
+            ))}
           </div>
 
-          {/* Sort selector */}
-          <div className="flex items-center gap-1.5 text-xs font-mono text-[#858D82] dark:text-[#7F8996]">
-            <ArrowUpDown className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-1 text-xs text-[#858D82] dark:text-[#7F8996] border-l border-[#E4E7E0] dark:border-[#303945] pl-2">
+            <ArrowUpDown className="w-3 h-3" />
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
               className="bg-transparent text-xs text-[#202620] dark:text-[#F3F4F6] focus:outline-none cursor-pointer"
             >
-              <option value="default">Default Order</option>
-              <option value="name">Alphabetical</option>
+              <option value="default">Default</option>
+              <option value="name">A–Z</option>
               <option value="duration">Duration</option>
-              <option value="progress">Progress %</option>
+              <option value="progress">Progress</option>
             </select>
           </div>
         </div>
       </div>
 
-      {/* 4. Responsive Grid of Roadmap Cards */}
+      {/* 4. Balanced 3-Column Grid Matching IMAGE 1 Desktop Spec */}
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <CardSkeleton />
           <CardSkeleton />
           <CardSkeleton />
@@ -279,7 +244,7 @@ export default function MyRoadmapsPage() {
           onRetry={fetchRoadmapsAndCategories}
         />
       ) : roadmaps.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {roadmaps.map((roadmap) => (
             <RoadmapCard
               key={roadmap.id}
@@ -299,18 +264,16 @@ export default function MyRoadmapsPage() {
           title="No Roadmaps Found"
           description={
             searchQuery
-              ? `No roadmaps match "${searchQuery}". Try adjusting your filters.`
-              : 'Create your first engineering learning roadmap to get started.'
+              ? `No roadmaps match "${searchQuery}".`
+              : 'Create your first engineering learning roadmap.'
           }
           action={
-            <Button
-              variant="amber"
-              size="sm"
-              icon={Plus}
+            <button
               onClick={() => setIsAddRoadmapOpen(true)}
+              className="px-3 py-1.5 rounded-xl bg-[var(--accent-primary)] text-[var(--accent-text)] text-xs font-semibold hover:bg-[var(--accent-hover)] transition cursor-pointer"
             >
               Create Roadmap
-            </Button>
+            </button>
           }
         />
       )}

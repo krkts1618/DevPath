@@ -116,7 +116,7 @@ export default function ModuleModal({
         )}
 
         <div>
-          <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+          <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
             Module Title *
           </label>
           <input
@@ -125,12 +125,12 @@ export default function ModuleModal({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g. Core Java & OOP Principles"
-            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8]"
+            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6]"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+          <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
             Description
           </label>
           <textarea
@@ -138,13 +138,13 @@ export default function ModuleModal({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Key concepts, architecture patterns, and learning goals..."
-            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8]"
+            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6]"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+            <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
               Starting Day *
             </label>
             <input
@@ -154,12 +154,12 @@ export default function ModuleModal({
               required
               value={startingDay}
               onChange={(e) => setStartingDay(e.target.value)}
-              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8] font-mono"
+              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6] font-mono"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+            <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
               Ending Day *
             </label>
             <input
@@ -169,20 +169,20 @@ export default function ModuleModal({
               required
               value={endingDay}
               onChange={(e) => setEndingDay(e.target.value)}
-              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8] font-mono"
+              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6] font-mono"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+          <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
             Display Order
           </label>
           <input
             type="number"
             value={displayOrder}
             onChange={(e) => setDisplayOrder(e.target.value)}
-            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8] font-mono"
+            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6] font-mono"
           />
         </div>
       </form>

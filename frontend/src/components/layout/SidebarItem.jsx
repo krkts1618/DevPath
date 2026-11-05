@@ -15,28 +15,30 @@ export default function SidebarItem({
       to={to}
       end={end}
       onClick={onClick}
-      title={isCollapsed ? label : undefined}
       className={({ isActive }) =>
-        `group relative flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${
-          isActive
-            ? 'bg-amber-500/10 text-[#202620] dark:text-[#F3F4F6] font-semibold'
-            : 'text-[#596258] hover:text-[#202620] hover:bg-[#F0F2ED] dark:text-[#B0B7C2] dark:hover:text-[#F3F4F6] dark:hover:bg-[#252C35]'
+        `group relative flex items-center transition-all duration-150 ${
+          isCollapsed
+            ? `w-10 h-10 mx-auto justify-center rounded-xl ${
+                isActive
+                  ? 'bg-[var(--accent-subtle)] text-[var(--accent-primary)] shadow-xs border border-[var(--accent-primary)]/30'
+                  : 'text-[#858D82] dark:text-[#7F8996] hover:text-[#202620] dark:hover:text-[#F3F4F6] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35]'
+              }`
+            : `gap-3 px-3 py-2 rounded-xl text-xs font-medium ${
+                isActive
+                  ? 'bg-[var(--accent-subtle)] text-[var(--accent-primary)] font-semibold border border-[var(--accent-primary)]/20'
+                  : 'text-[#596258] dark:text-[#B0B7C2] hover:text-[#202620] dark:hover:text-[#F3F4F6] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35]'
+              }`
         }`
       }
     >
       {({ isActive }) => (
         <>
-          {/* Active left indicator */}
-          {isActive && (
-            <div className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-[var(--accent-primary)] rounded-r-md -ml-3" />
-          )}
-
           {Icon && (
             <Icon
               className={`w-4 h-4 flex-shrink-0 transition-colors ${
                 isActive
                   ? 'text-[var(--accent-primary)]'
-                  : 'text-[#858D82] group-hover:text-[#202620] dark:text-[#7F8996] dark:group-hover:text-[#F3F4F6]'
+                  : 'text-[#858D82] dark:text-[#7F8996] group-hover:text-[#202620] dark:group-hover:text-[#F3F4F6]'
               }`}
             />
           )}
@@ -45,14 +47,22 @@ export default function SidebarItem({
 
           {!isCollapsed && badge !== undefined && (
             <span
-              className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-medium ${
+              className={`text-[10px] px-1.5 py-0.2 rounded-md font-mono font-medium ${
                 isActive
-                  ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300'
-                  : 'bg-[#E4E7E0] text-[#596258] dark:bg-[#252C35] dark:text-[#7F8996]'
+                  ? 'bg-[var(--accent-primary)] text-[var(--accent-text)]'
+                  : 'bg-[#E4E7E0] dark:bg-[#252C35] text-[#596258] dark:text-[#7F8996]'
               }`}
             >
               {badge}
             </span>
+          )}
+
+          {/* Floating Tooltip in collapsed mode */}
+          {isCollapsed && (
+            <div className="absolute left-full ml-2.5 px-2.5 py-1 bg-[#1D232B] text-white text-[11px] font-medium rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-150 z-50 border border-[#303945]">
+              {label}
+              {badge !== undefined && ` (${badge})`}
+            </div>
           )}
         </>
       )}

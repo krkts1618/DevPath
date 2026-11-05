@@ -215,7 +215,7 @@ export default function CategoryManagerModal({
         )}
 
         {/* Tab switcher: Active vs Archived */}
-        <div className="flex items-center justify-between border-b border-[#E8E8DF] dark:border-[#393E46] pb-2">
+        <div className="flex items-center justify-between border-b border-[#E4E7E0] dark:border-[#303945] pb-2">
           <div className="flex items-center gap-2">
             <button
               onClick={() => {
@@ -224,8 +224,8 @@ export default function CategoryManagerModal({
               }}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
                 activeTab === 'active'
-                  ? 'bg-[#244C3B] text-white dark:bg-[#DFD0B8] dark:text-[#222831] shadow-2xs'
-                  : 'text-[#4A5749] dark:text-[#948979] hover:text-[#202A23] dark:hover:text-[#E6EDE5]'
+                  ? 'bg-[var(--accent-primary)] text-white dark:bg-[#F3F4F6] dark:text-[#222831] shadow-2xs'
+                  : 'text-[#596258] dark:text-[#7F8996] hover:text-[#202620] dark:hover:text-[#E6EDE5]'
               }`}
             >
               Active Categories ({activeCategories.length})
@@ -237,8 +237,8 @@ export default function CategoryManagerModal({
               }}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
                 activeTab === 'archived'
-                  ? 'bg-[#244C3B] text-white dark:bg-[#DFD0B8] dark:text-[#222831] shadow-2xs'
-                  : 'text-[#4A5749] dark:text-[#948979] hover:text-[#202A23] dark:hover:text-[#E6EDE5]'
+                  ? 'bg-[var(--accent-primary)] text-white dark:bg-[#F3F4F6] dark:text-[#222831] shadow-2xs'
+                  : 'text-[#596258] dark:text-[#7F8996] hover:text-[#202620] dark:hover:text-[#E6EDE5]'
               }`}
             >
               Archived Categories ({archivedCategories.length})
@@ -266,15 +266,15 @@ export default function CategoryManagerModal({
         {editingCatId && (
           <form
             onSubmit={handleSave}
-            className="p-4 bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl space-y-3"
+            className="p-4 bg-[#F7F7F2] dark:bg-[#222831] border border-[#E4E7E0] dark:border-[#303945] rounded-xl space-y-3"
           >
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[#202A23] dark:text-[#DFD0B8]">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#202620] dark:text-[#F3F4F6]">
               {editingCatId === 'NEW' ? 'Create New Category' : 'Edit Category'}
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="sm:col-span-2">
-                <label className="block text-[11px] font-semibold text-[#4A5749] dark:text-[#948979] mb-1">
+                <label className="block text-[11px] font-semibold text-[#596258] dark:text-[#7F8996] mb-1">
                   Category Name *
                 </label>
                 <input
@@ -283,25 +283,25 @@ export default function CategoryManagerModal({
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Distributed Systems"
-                  className="w-full px-3 py-1.5 bg-white dark:bg-[#2A303A] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-xs text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8]"
+                  className="w-full px-3 py-1.5 bg-white dark:bg-[#1D232B] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-xs text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6]"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-[#4A5749] dark:text-[#948979] mb-1">
+                <label className="block text-[11px] font-semibold text-[#596258] dark:text-[#7F8996] mb-1">
                   Display Order
                 </label>
                 <input
                   type="number"
                   value={displayOrder}
                   onChange={(e) => setDisplayOrder(e.target.value)}
-                  className="w-full px-3 py-1.5 bg-white dark:bg-[#2A303A] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-xs text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8] font-mono"
+                  className="w-full px-3 py-1.5 bg-white dark:bg-[#1D232B] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-xs text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6] font-mono"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-[#4A5749] dark:text-[#948979] mb-1">
+              <label className="block text-[11px] font-semibold text-[#596258] dark:text-[#7F8996] mb-1">
                 Description
               </label>
               <textarea
@@ -309,7 +309,7 @@ export default function CategoryManagerModal({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Domain scope, learning focus, and roadmap group purpose..."
-                className="w-full px-3 py-1.5 bg-white dark:bg-[#2A303A] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-xs text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8]"
+                className="w-full px-3 py-1.5 bg-white dark:bg-[#1D232B] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-xs text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6]"
               />
             </div>
 
@@ -335,7 +335,7 @@ export default function CategoryManagerModal({
                 return (
                   <div
                     key={cat.id}
-                    className="p-3 bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl flex items-start justify-between gap-3 shadow-2xs"
+                    className="p-3 bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl flex items-start justify-between gap-3 shadow-2xs"
                   >
                     <div className="flex items-start gap-2.5 flex-1 min-w-0">
                       {/* Order Controls */}
@@ -344,7 +344,7 @@ export default function CategoryManagerModal({
                           type="button"
                           disabled={idx === 0}
                           onClick={() => handleReorder(cat.id, 'up')}
-                          className="p-0.5 text-[#737C74] hover:text-[#202A23] dark:hover:text-[#E6EDE5] disabled:opacity-30 disabled:cursor-not-allowed"
+                          className="p-0.5 text-[#858D82] hover:text-[#202620] dark:hover:text-[#E6EDE5] disabled:opacity-30 disabled:cursor-not-allowed"
                         >
                           <ChevronUp className="w-3.5 h-3.5" />
                         </button>
@@ -352,7 +352,7 @@ export default function CategoryManagerModal({
                           type="button"
                           disabled={idx === activeCategories.length - 1}
                           onClick={() => handleReorder(cat.id, 'down')}
-                          className="p-0.5 text-[#737C74] hover:text-[#202A23] dark:hover:text-[#E6EDE5] disabled:opacity-30 disabled:cursor-not-allowed"
+                          className="p-0.5 text-[#858D82] hover:text-[#202620] dark:hover:text-[#E6EDE5] disabled:opacity-30 disabled:cursor-not-allowed"
                         >
                           <ChevronDown className="w-3.5 h-3.5" />
                         </button>
@@ -360,17 +360,17 @@ export default function CategoryManagerModal({
 
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <Folder className="w-3.5 h-3.5 text-[#244C3B] dark:text-[#DFD0B8] flex-shrink-0" />
-                          <h4 className="text-xs font-bold text-[#202A23] dark:text-[#DFD0B8] truncate">
+                          <Folder className="w-3.5 h-3.5 text-[var(--accent-primary)] dark:text-[#F3F4F6] flex-shrink-0" />
+                          <h4 className="text-xs font-bold text-[#202620] dark:text-[#F3F4F6] truncate">
                             {cat.name}
                           </h4>
-                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-[#E8E8DF] dark:bg-[#393E46] text-[#737C74] dark:text-[#948979]">
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-[#E4E7E0] dark:bg-[#303945] text-[#858D82] dark:text-[#7F8996]">
                             {roadmapsCount} {roadmapsCount === 1 ? 'track' : 'tracks'}
                           </span>
                         </div>
 
                         {cat.description && (
-                          <p className="text-[11px] text-[#737C74] dark:text-[#948979] mt-1 line-clamp-1">
+                          <p className="text-[11px] text-[#858D82] dark:text-[#7F8996] mt-1 line-clamp-1">
                             {cat.description}
                           </p>
                         )}
@@ -381,7 +381,7 @@ export default function CategoryManagerModal({
                             {roadmapsList.map((r) => (
                               <span
                                 key={r.id}
-                                className="text-[10px] px-1.5 py-0.5 rounded bg-[#F0F0EB] dark:bg-[#393E46] text-[#4A5749] dark:text-[#C8BFB0] font-mono truncate max-w-[140px]"
+                                className="text-[10px] px-1.5 py-0.5 rounded bg-[#F0F0EB] dark:bg-[#303945] text-[#596258] dark:text-[#B0B7C2] font-mono truncate max-w-[140px]"
                               >
                                 {r.title}
                               </span>
@@ -395,14 +395,14 @@ export default function CategoryManagerModal({
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => startEdit(cat)}
-                        className="p-1.5 rounded-lg text-[#737C74] hover:text-[#202A23] dark:hover:text-[#E6EDE5] hover:bg-[#F0F0EB] dark:hover:bg-[#393E46] transition-colors"
+                        className="p-1.5 rounded-lg text-[#858D82] hover:text-[#202620] dark:hover:text-[#E6EDE5] hover:bg-[#F0F0EB] dark:hover:bg-[#303945] transition-colors"
                         title="Edit Category"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => handleInitiateArchive(cat)}
-                        className="p-1.5 rounded-lg text-[#737C74] hover:text-amber-600 dark:hover:text-amber-400 hover:bg-[#F0F0EB] dark:hover:bg-[#393E46] transition-colors"
+                        className="p-1.5 rounded-lg text-[#858D82] hover:text-amber-600 dark:hover:text-amber-400 hover:bg-[#F0F0EB] dark:hover:bg-[#303945] transition-colors"
                         title="Archive Category"
                       >
                         <Archive className="w-3.5 h-3.5" />
@@ -412,7 +412,7 @@ export default function CategoryManagerModal({
                 );
               })
             ) : (
-              <div className="p-8 text-center text-xs text-[#737C74] dark:text-[#948979] italic">
+              <div className="p-8 text-center text-xs text-[#858D82] dark:text-[#7F8996] italic">
                 No active categories. Create your first category above!
               </div>
             )
@@ -420,12 +420,12 @@ export default function CategoryManagerModal({
             archivedCategories.map((cat) => (
               <div
                 key={cat.id}
-                className="p-3 bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl flex items-center justify-between gap-3 opacity-75"
+                className="p-3 bg-[#F7F7F2] dark:bg-[#222831] border border-[#E4E7E0] dark:border-[#303945] rounded-xl flex items-center justify-between gap-3 opacity-75"
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <Folder className="w-3.5 h-3.5 text-[#737C74]" />
-                    <span className="text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8]">
+                    <Folder className="w-3.5 h-3.5 text-[#858D82]" />
+                    <span className="text-xs font-semibold text-[#202620] dark:text-[#F3F4F6]">
                       {cat.name}
                     </span>
                     <Badge type="archived" size="xs">
@@ -433,7 +433,7 @@ export default function CategoryManagerModal({
                     </Badge>
                   </div>
                   {cat.description && (
-                    <p className="text-[11px] text-[#737C74] mt-0.5 line-clamp-1">
+                    <p className="text-[11px] text-[#858D82] mt-0.5 line-clamp-1">
                       {cat.description}
                     </p>
                   )}
@@ -450,7 +450,7 @@ export default function CategoryManagerModal({
               </div>
             ))
           ) : (
-            <div className="p-8 text-center text-xs text-[#737C74] dark:text-[#948979] italic">
+            <div className="p-8 text-center text-xs text-[#858D82] dark:text-[#7F8996] italic">
               No archived categories found.
             </div>
           )}
@@ -461,37 +461,37 @@ export default function CategoryManagerModal({
       {showArchiveConfirm && targetCategory && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
-            className="fixed inset-0 bg-[#202A23]/50 dark:bg-black/80 backdrop-blur-xs"
+            className="fixed inset-0 bg-[#202620]/50 dark:bg-black/80 backdrop-blur-xs"
             onClick={() => setShowArchiveConfirm(false)}
           />
 
-          <div className="relative bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl p-5 max-w-md w-full shadow-2xl z-10 space-y-4">
+          <div className="relative bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-5 max-w-md w-full shadow-2xl z-10 space-y-4">
             <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
               <AlertCircle className="w-5 h-5 flex-shrink-0" />
-              <h4 className="text-sm font-bold text-[#202A23] dark:text-[#DFD0B8]">
+              <h4 className="text-sm font-bold text-[#202620] dark:text-[#F3F4F6]">
                 Archive Category: {targetCategory.name}
               </h4>
             </div>
 
             {(targetCategory._count?.roadmaps || 0) > 0 ? (
-              <div className="space-y-3 text-xs text-[#4A5749] dark:text-[#C8BFB0]">
+              <div className="space-y-3 text-xs text-[#596258] dark:text-[#B0B7C2]">
                 <p>
                   This category currently contains{' '}
-                  <strong className="text-[#202A23] dark:text-[#DFD0B8]">
+                  <strong className="text-[#202620] dark:text-[#F3F4F6]">
                     {targetCategory._count.roadmaps} active roadmap(s)
                   </strong>
                   . Roadmaps cannot be orphaned or deleted when a category is archived.
                 </p>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+                  <label className="block text-[11px] font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
                     Select Category to Reassign Roadmaps To *
                   </label>
                   <select
                     required
                     value={reassignCategoryChoice}
                     onChange={(e) => setReassignCategoryChoice(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-xs text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8]"
+                    className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-xs text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6]"
                   >
                     {otherActiveCategories.map((c) => (
                       <option key={c.id} value={c.id}>
@@ -502,12 +502,12 @@ export default function CategoryManagerModal({
                 </div>
               </div>
             ) : (
-              <p className="text-xs text-[#4A5749] dark:text-[#C8BFB0]">
+              <p className="text-xs text-[#596258] dark:text-[#B0B7C2]">
                 Are you sure you want to archive <strong>{targetCategory.name}</strong>? It has no active roadmaps and can be restored anytime from the Archived Categories tab.
               </p>
             )}
 
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E8E8DF] dark:border-[#393E46]">
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E4E7E0] dark:border-[#303945]">
               <Button
                 variant="ghost"
                 size="xs"

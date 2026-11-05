@@ -104,14 +104,14 @@ export default function AddRoadmapModal({
 
         {/* Category Selection */}
         <div>
-          <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+          <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
             Category *
           </label>
           <select
             required
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
-            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8]"
+            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6]"
           >
             <option value="">-- Select a Category --</option>
             {categories.map((c) => (
@@ -124,7 +124,7 @@ export default function AddRoadmapModal({
 
         {/* Title */}
         <div>
-          <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+          <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
             Roadmap Title *
           </label>
           <input
@@ -133,13 +133,13 @@ export default function AddRoadmapModal({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g. Distributed Systems & Microservices"
-            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202A23] dark:text-[#DFD0B8] placeholder-[#737C74] dark:placeholder-[#948979] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8]"
+            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202620] dark:text-[#F3F4F6] placeholder-[#858D82] dark:placeholder-[#7F8996] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6]"
           />
         </div>
 
         {/* Description */}
         <div>
-          <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+          <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
             Description
           </label>
           <textarea
@@ -147,14 +147,14 @@ export default function AddRoadmapModal({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Key outcomes, technologies, and target proficiency..."
-            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202A23] dark:text-[#DFD0B8] placeholder-[#737C74] dark:placeholder-[#948979] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8]"
+            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202620] dark:text-[#F3F4F6] placeholder-[#858D82] dark:placeholder-[#7F8996] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6]"
           />
         </div>
 
         {/* Duration & Daily Target */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+            <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
               Duration (Days) *
             </label>
             <input
@@ -164,12 +164,12 @@ export default function AddRoadmapModal({
               required
               value={duration}
               onChange={(e) => setDuration(e.target.value)}
-              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8] font-mono"
+              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6] font-mono"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+            <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
               Daily Study Target (Minutes)
             </label>
             <input
@@ -179,7 +179,7 @@ export default function AddRoadmapModal({
               step={15}
               value={targetDailyStudyTime}
               onChange={(e) => setTargetDailyStudyTime(e.target.value)}
-              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8] font-mono"
+              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6] font-mono"
             />
           </div>
         </div>
@@ -187,25 +187,25 @@ export default function AddRoadmapModal({
         {/* Start Date & Theme */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+            <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
               Start Date (Asia/Kolkata)
             </label>
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8] font-mono"
+              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6] font-mono"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+            <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
               Theme Accent
             </label>
             <select
               value={themeIdentifier}
               onChange={(e) => setThemeIdentifier(e.target.value)}
-              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8]"
+              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6]"
             >
               <option value="green">Forest Green (Default)</option>
               <option value="emerald">Emerald</option>

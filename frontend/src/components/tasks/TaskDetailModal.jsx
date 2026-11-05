@@ -130,7 +130,7 @@ export default function TaskDetailModal({
       }
     >
       {loading || !task ? (
-        <div className="py-8 text-center text-xs text-[#737C74] dark:text-[#948979]">
+        <div className="py-8 text-center text-xs text-[#858D82] dark:text-[#7F8996]">
           Loading task details...
         </div>
       ) : (
@@ -144,11 +144,11 @@ export default function TaskDetailModal({
           {/* Header Metadata */}
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-xs font-bold uppercase font-mono tracking-wider text-[#244C3B] dark:text-[#DFD0B8]">
+              <span className="text-xs font-bold uppercase font-mono tracking-wider text-[var(--accent-primary)] dark:text-[#F3F4F6]">
                 {task.roadmapDay?.roadmap?.title}
               </span>
               <span className="text-[#D4D4CA] dark:text-[#4F5561]">•</span>
-              <span className="text-xs font-mono text-[#737C74] dark:text-[#948979]">
+              <span className="text-xs font-mono text-[#858D82] dark:text-[#7F8996]">
                 Day {task.roadmapDay?.dayNumber}: {task.roadmapDay?.title}
               </span>
               <span className="text-[#D4D4CA] dark:text-[#4F5561]">•</span>
@@ -157,15 +157,15 @@ export default function TaskDetailModal({
               </Badge>
             </div>
 
-            <h3 className="text-base font-bold text-[#202A23] dark:text-[#DFD0B8] leading-snug">
+            <h3 className="text-base font-bold text-[#202620] dark:text-[#F3F4F6] leading-snug">
               {task.title}
             </h3>
           </div>
 
           {/* Status & Timing Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            <div className="p-3 rounded-xl bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46]">
-              <span className="text-[10px] uppercase font-mono text-[#737C74] dark:text-[#948979] block mb-1">
+            <div className="p-3 rounded-xl bg-[#F7F7F2] dark:bg-[#222831] border border-[#E4E7E0] dark:border-[#303945]">
+              <span className="text-[10px] uppercase font-mono text-[#858D82] dark:text-[#7F8996] block mb-1">
                 Completion Status
               </span>
               <div className="flex items-center gap-1.5">
@@ -181,20 +181,20 @@ export default function TaskDetailModal({
               </div>
             </div>
 
-            <div className="p-3 rounded-xl bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46]">
-              <span className="text-[10px] uppercase font-mono text-[#737C74] dark:text-[#948979] block mb-1">
+            <div className="p-3 rounded-xl bg-[#F7F7F2] dark:bg-[#222831] border border-[#E4E7E0] dark:border-[#303945]">
+              <span className="text-[10px] uppercase font-mono text-[#858D82] dark:text-[#7F8996] block mb-1">
                 Estimated Duration
               </span>
-              <span className="text-xs font-bold text-[#202A23] dark:text-[#DFD0B8] font-mono">
+              <span className="text-xs font-bold text-[#202620] dark:text-[#F3F4F6] font-mono">
                 {task.estimatedDuration} minutes
               </span>
             </div>
 
-            <div className="p-3 rounded-xl bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46]">
-              <span className="text-[10px] uppercase font-mono text-[#737C74] dark:text-[#948979] block mb-1">
+            <div className="p-3 rounded-xl bg-[#F7F7F2] dark:bg-[#222831] border border-[#E4E7E0] dark:border-[#303945]">
+              <span className="text-[10px] uppercase font-mono text-[#858D82] dark:text-[#7F8996] block mb-1">
                 Requirement
               </span>
-              <span className="text-xs font-bold text-[#202A23] dark:text-[#DFD0B8]">
+              <span className="text-xs font-bold text-[#202620] dark:text-[#F3F4F6]">
                 {task.isRequired ? 'Mandatory' : 'Optional'}
               </span>
             </div>
@@ -211,10 +211,10 @@ export default function TaskDetailModal({
           {/* Description / Instructions */}
           {task.description && (
             <div>
-              <span className="text-[11px] font-semibold text-[#4A5749] dark:text-[#C8BFB0] uppercase tracking-wider block mb-1.5">
+              <span className="text-[11px] font-semibold text-[#596258] dark:text-[#B0B7C2] uppercase tracking-wider block mb-1.5">
                 Instructions & Implementation Scope
               </span>
-              <div className="p-3 rounded-xl bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46] text-xs text-[#202A23] dark:text-[#DFD0B8] leading-relaxed whitespace-pre-wrap">
+              <div className="p-3 rounded-xl bg-[#F7F7F2] dark:bg-[#222831] border border-[#E4E7E0] dark:border-[#303945] text-xs text-[#202620] dark:text-[#F3F4F6] leading-relaxed whitespace-pre-wrap">
                 {task.description}
               </div>
             </div>
@@ -223,8 +223,8 @@ export default function TaskDetailModal({
           {/* Reassignment / Reschedule Audit History */}
           {task.reassignments && task.reassignments.length > 0 && (
             <div>
-              <div className="flex items-center gap-1.5 text-xs font-bold text-[#202A23] dark:text-[#DFD0B8] uppercase tracking-wider mb-2">
-                <History className="w-3.5 h-3.5 text-[#244C3B] dark:text-[#DFD0B8]" />
+              <div className="flex items-center gap-1.5 text-xs font-bold text-[#202620] dark:text-[#F3F4F6] uppercase tracking-wider mb-2">
+                <History className="w-3.5 h-3.5 text-[var(--accent-primary)] dark:text-[#F3F4F6]" />
                 <span>Reschedule History</span>
               </div>
 
@@ -247,7 +247,7 @@ export default function TaskDetailModal({
                       </span>
                     </div>
                     {r.reason && (
-                      <p className="text-[#4A5749] dark:text-[#C8BFB0] italic">
+                      <p className="text-[#596258] dark:text-[#B0B7C2] italic">
                         Reason: "{r.reason}"
                       </p>
                     )}

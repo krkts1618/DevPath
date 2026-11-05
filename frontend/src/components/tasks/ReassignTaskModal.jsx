@@ -67,23 +67,23 @@ export default function ReassignTaskModal({
         )}
 
         <div>
-          <span className="block text-xs font-semibold text-[#737C74] dark:text-[#948979] uppercase tracking-wider mb-1">
+          <span className="block text-xs font-semibold text-[#858D82] dark:text-[#7F8996] uppercase tracking-wider mb-1">
             Current Task
           </span>
-          <p className="text-sm font-medium text-[#202A23] dark:text-[#DFD0B8]">
+          <p className="text-sm font-medium text-[#202620] dark:text-[#F3F4F6]">
             {task.title}
           </p>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+          <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
             Target Roadmap Day *
           </label>
           <select
             required
             value={newRoadmapDayId}
             onChange={(e) => setNewRoadmapDayId(e.target.value)}
-            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8]"
+            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6]"
           >
             <option value="">-- Select Target Day --</option>
             {availableDays.map((d) => (
@@ -95,7 +95,7 @@ export default function ReassignTaskModal({
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+          <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
             Reason for Rescheduling
           </label>
           <textarea
@@ -103,7 +103,7 @@ export default function ReassignTaskModal({
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             placeholder="e.g. Needed extra time to complete Spring Security JWT assignment..."
-            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202A23] dark:text-[#DFD0B8] placeholder-[#737C74] dark:placeholder-[#948979] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8]"
+            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202620] dark:text-[#F3F4F6] placeholder-[#858D82] dark:placeholder-[#7F8996] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6]"
           />
         </div>
       </form>

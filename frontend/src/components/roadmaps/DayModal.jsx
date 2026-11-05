@@ -133,7 +133,7 @@ export default function DayModal({
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+            <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
               Day Number *
             </label>
             <input
@@ -143,18 +143,18 @@ export default function DayModal({
               required
               value={dayNumber}
               onChange={(e) => setDayNumber(e.target.value)}
-              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8] font-mono"
+              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6] font-mono"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+            <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
               Day Type
             </label>
             <select
               value={dayType}
               onChange={(e) => setDayType(e.target.value)}
-              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8] capitalize"
+              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6] capitalize"
             >
               <option value="learning">Learning</option>
               <option value="practice">Practice</option>
@@ -167,14 +167,14 @@ export default function DayModal({
 
         {/* Live Projected Date */}
         {calculatedScheduledDate && (
-          <div className="p-2.5 rounded-lg bg-[#E8F0EB] dark:bg-[#393E46] border border-[#C5D9CB] dark:border-[#4F5561] text-xs text-[#244C3B] dark:text-[#DFD0B8] flex items-center justify-between font-mono">
+          <div className="p-2.5 rounded-lg bg-[#E8F0EB] dark:bg-[#303945] border border-[#C5D9CB] dark:border-[#4F5561] text-xs text-[var(--accent-primary)] dark:text-[#F3F4F6] flex items-center justify-between font-mono">
             <span>Scheduled Date (Asia/Kolkata):</span>
             <span className="font-bold">{calculatedScheduledDate}</span>
           </div>
         )}
 
         <div>
-          <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+          <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
             Day Title *
           </label>
           <input
@@ -183,12 +183,12 @@ export default function DayModal({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g. JVM Memory Architecture & Stack vs Heap"
-            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8]"
+            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6]"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+          <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
             Learning Objective
           </label>
           <textarea
@@ -196,13 +196,13 @@ export default function DayModal({
             value={objective}
             onChange={(e) => setObjective(e.target.value)}
             placeholder="What will be mastered, implemented, or tested today..."
-            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8]"
+            className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6]"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+            <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
               Estimated Study Time (m)
             </label>
             <input
@@ -211,18 +211,18 @@ export default function DayModal({
               step={15}
               value={estimatedStudyTime}
               onChange={(e) => setEstimatedStudyTime(e.target.value)}
-              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8] font-mono"
+              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6] font-mono"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8] mb-1">
+            <label className="block text-xs font-semibold text-[#202620] dark:text-[#F3F4F6] mb-1">
               Assign to Module
             </label>
             <select
               value={moduleId}
               onChange={(e) => setModuleId(e.target.value)}
-              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-2 focus:ring-[#244C3B] dark:focus:ring-[#DFD0B8]"
+              className="w-full px-3 py-2 bg-white dark:bg-[#222831] border border-[#D4D4CA] dark:border-[#4F5561] rounded-lg text-sm text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] dark:focus:ring-[#F3F4F6]"
             >
               <option value="">-- No Module (Standalone) --</option>
               {modules.map((m) => (

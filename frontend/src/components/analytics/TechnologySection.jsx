@@ -56,12 +56,12 @@ export default function TechnologySection({ roadmaps = [], consistency }) {
   return (
     <div className="space-y-4">
       {/* Header & Filters */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E8E8DF] dark:border-[#393E46]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E4E7E0] dark:border-[#303945]">
         <div>
-          <h2 className="text-sm font-bold uppercase tracking-wider text-[#202A23] dark:text-[#DFD0B8]">
+          <h2 className="text-sm font-bold uppercase tracking-wider text-[#202620] dark:text-[#F3F4F6]">
             Roadmap & Technology Performance
           </h2>
-          <p className="text-xs text-[#737C74] dark:text-[#948979] mt-0.5">
+          <p className="text-xs text-[#858D82] dark:text-[#7F8996] mt-0.5">
             Independent curriculum progression across active engineering tracks
           </p>
         </div>
@@ -69,13 +69,13 @@ export default function TechnologySection({ roadmaps = [], consistency }) {
         <div className="flex flex-wrap items-center gap-2">
           {/* Search */}
           <div className="relative min-w-[160px]">
-            <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[#737C74] dark:text-[#948979]" />
+            <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[#858D82] dark:text-[#7F8996]" />
             <input
               type="text"
               placeholder="Search tracks..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-1 focus:ring-[#244C3B]"
+              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-1 focus:ring-[var(--accent-primary)]"
             />
           </div>
 
@@ -83,7 +83,7 @@ export default function TechnologySection({ roadmaps = [], consistency }) {
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-2.5 py-1.5 text-xs rounded-lg bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-1 focus:ring-[#244C3B]"
+            className="px-2.5 py-1.5 text-xs rounded-lg bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-1 focus:ring-[var(--accent-primary)]"
           >
             <option value="all">All Categories</option>
             {categories.map((c) => (
@@ -97,7 +97,7 @@ export default function TechnologySection({ roadmaps = [], consistency }) {
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="px-2.5 py-1.5 text-xs rounded-lg bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] text-[#202A23] dark:text-[#DFD0B8] focus:outline-none focus:ring-1 focus:ring-[#244C3B]"
+            className="px-2.5 py-1.5 text-xs rounded-lg bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] text-[#202620] dark:text-[#F3F4F6] focus:outline-none focus:ring-1 focus:ring-[var(--accent-primary)]"
           >
             <option value="active">Active Tracks</option>
             <option value="all">All Tracks</option>
@@ -109,12 +109,12 @@ export default function TechnologySection({ roadmaps = [], consistency }) {
 
       {/* Roadmaps Grid */}
       {filteredRoadmaps.length === 0 ? (
-        <div className="py-12 text-center bg-[#FFFFFF] dark:bg-[#2A303A] rounded-xl border border-[#E8E8DF] dark:border-[#393E46] p-6">
-          <Compass className="w-8 h-8 text-[#737C74] dark:text-[#948979] mx-auto mb-2 opacity-50" />
-          <p className="text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8]">
+        <div className="py-12 text-center bg-[#FFFFFF] dark:bg-[#1D232B] rounded-xl border border-[#E4E7E0] dark:border-[#303945] p-6">
+          <Compass className="w-8 h-8 text-[#858D82] dark:text-[#7F8996] mx-auto mb-2 opacity-50" />
+          <p className="text-xs font-semibold text-[#202620] dark:text-[#F3F4F6]">
             No roadmaps match the selected filters.
           </p>
-          <p className="text-[11px] text-[#737C74] dark:text-[#948979] mt-0.5">
+          <p className="text-[11px] text-[#858D82] dark:text-[#7F8996] mt-0.5">
             Try adjusting your search criteria or filter status.
           </p>
         </div>
@@ -127,15 +127,15 @@ export default function TechnologySection({ roadmaps = [], consistency }) {
               <div
                 key={rm.id}
                 onClick={() => setInspectingRoadmap(rm)}
-                className="bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] rounded-xl p-4 shadow-xs hover:border-[#244C3B]/40 dark:hover:border-[#DFD0B8]/40 transition cursor-pointer flex flex-col justify-between"
+                className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-4 shadow-xs hover:border-[var(--accent-primary)]/40 dark:hover:border-[#F3F4F6]/40 transition cursor-pointer flex flex-col justify-between"
               >
                 <div>
                   {/* Top: Category pill + status */}
                   <div className="flex items-center justify-between mb-2">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#E8F0EB] dark:bg-[#393E46] text-[#244C3B] dark:text-[#DFD0B8]">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#E8F0EB] dark:bg-[#303945] text-[var(--accent-primary)] dark:text-[#F3F4F6]">
                       {rm.categoryName}
                     </span>
-                    <span className="text-[11px] font-mono text-[#737C74] dark:text-[#948979] capitalize">
+                    <span className="text-[11px] font-mono text-[#858D82] dark:text-[#7F8996] capitalize">
                       {rm.status}
                     </span>
                   </div>
@@ -143,11 +143,11 @@ export default function TechnologySection({ roadmaps = [], consistency }) {
                   {/* Title & Frontier Day */}
                   <div className="flex items-start justify-between gap-2 mb-3">
                     <div>
-                      <h3 className="text-sm font-bold text-[#202A23] dark:text-[#DFD0B8] hover:text-[#244C3B] dark:hover:text-[#DFD0B8] transition">
+                      <h3 className="text-sm font-bold text-[#202620] dark:text-[#F3F4F6] hover:text-[var(--accent-primary)] dark:hover:text-[#F3F4F6] transition">
                         {rm.title}
                       </h3>
-                      <div className="text-[11px] text-[#737C74] dark:text-[#948979] mt-0.5">
-                        Current: <span className="font-semibold text-[#202A23] dark:text-[#DFD0B8]">Day {rm.currentDayNumber}</span> ({rm.currentDayTitle})
+                      <div className="text-[11px] text-[#858D82] dark:text-[#7F8996] mt-0.5">
+                        Current: <span className="font-semibold text-[#202620] dark:text-[#F3F4F6]">Day {rm.currentDayNumber}</span> ({rm.currentDayTitle})
                       </div>
                     </div>
 
@@ -163,16 +163,16 @@ export default function TechnologySection({ roadmaps = [], consistency }) {
                   {/* Horizontal Progress Bar */}
                   <div className="space-y-1.5 mb-3.5">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="font-semibold text-[#737C74] dark:text-[#948979]">
+                      <span className="font-semibold text-[#858D82] dark:text-[#7F8996]">
                         Progress
                       </span>
-                      <span className="font-mono font-bold text-[#244C3B] dark:text-[#DFD0B8]">
+                      <span className="font-mono font-bold text-[var(--accent-primary)] dark:text-[#F3F4F6]">
                         {rm.progressPercent}% ({rm.completedTasks} / {rm.totalTasks})
                       </span>
                     </div>
-                    <div className="w-full bg-[#E8E8DF] dark:bg-[#393E46] rounded-full h-2 overflow-hidden">
+                    <div className="w-full bg-[#E4E7E0] dark:bg-[#303945] rounded-full h-2 overflow-hidden">
                       <div
-                        className="bg-[#244C3B] dark:bg-[#91A88E] h-2 rounded-full transition-all duration-300"
+                        className="bg-[var(--accent-primary)] dark:bg-[#91A88E] h-2 rounded-full transition-all duration-300"
                         style={{ width: `${rm.progressPercent}%` }}
                       />
                     </div>
@@ -180,22 +180,22 @@ export default function TechnologySection({ roadmaps = [], consistency }) {
                 </div>
 
                 {/* Bottom stats row */}
-                <div className="pt-3 border-t border-[#E8E8DF] dark:border-[#393E46] grid grid-cols-3 gap-2 text-center text-xs">
+                <div className="pt-3 border-t border-[#E4E7E0] dark:border-[#303945] grid grid-cols-3 gap-2 text-center text-xs">
                   <div>
-                    <div className="text-[10px] text-[#737C74] dark:text-[#948979]">Pending</div>
-                    <div className="font-mono font-bold text-[#202A23] dark:text-[#DFD0B8] mt-0.5">
+                    <div className="text-[10px] text-[#858D82] dark:text-[#7F8996]">Pending</div>
+                    <div className="font-mono font-bold text-[#202620] dark:text-[#F3F4F6] mt-0.5">
                       {rm.pendingTasks}
                     </div>
                   </div>
                   <div>
-                    <div className="text-[10px] text-[#737C74] dark:text-[#948979]">Focused Time</div>
-                    <div className="font-mono font-bold text-[#202A23] dark:text-[#DFD0B8] mt-0.5">
+                    <div className="text-[10px] text-[#858D82] dark:text-[#7F8996]">Focused Time</div>
+                    <div className="font-mono font-bold text-[#202620] dark:text-[#F3F4F6] mt-0.5">
                       {rm.totalStudyHours}h
                     </div>
                   </div>
                   <div>
-                    <div className="text-[10px] text-[#737C74] dark:text-[#948979]">Est. Remaining</div>
-                    <div className="font-mono font-bold text-[#202A23] dark:text-[#DFD0B8] mt-0.5">
+                    <div className="text-[10px] text-[#858D82] dark:text-[#7F8996]">Est. Remaining</div>
+                    <div className="font-mono font-bold text-[#202620] dark:text-[#F3F4F6] mt-0.5">
                       {rm.estimatedRemainingHours}h
                     </div>
                   </div>

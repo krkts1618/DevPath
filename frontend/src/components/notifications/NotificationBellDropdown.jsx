@@ -34,7 +34,7 @@ export function getNotificationMeta(type) {
     case 'project_deadline':
       return { icon: FolderGit2, color: 'text-purple-500 bg-purple-50 dark:bg-purple-950/40 border-purple-200 dark:border-purple-800' };
     default:
-      return { icon: Bell, color: 'text-[#4A5749] bg-[#F0F0EB] dark:text-[#DFD0B8] dark:bg-[#393E46] border-[#E8E8DF] dark:border-[#393E46]' };
+      return { icon: Bell, color: 'text-[#596258] bg-[#F0F0EB] dark:text-[#F3F4F6] dark:bg-[#303945] border-[#E4E7E0] dark:border-[#303945]' };
   }
 }
 
@@ -110,11 +110,11 @@ export default function NotificationBellDropdown() {
       <button
         type="button"
         onClick={handleToggle}
-        className="relative p-2 rounded-lg text-[#737C74] hover:text-[#202A23] dark:text-[#948979] dark:hover:text-[#DFD0B8] hover:bg-[#F0F0EB] dark:hover:bg-[#393E46] transition-colors cursor-pointer"
+        className="relative p-2 rounded-lg text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] hover:bg-[#F0F0EB] dark:hover:bg-[#303945] transition-colors cursor-pointer"
         aria-label="Open notifications"
         title="Notifications"
       >
-        <Bell className="w-4 h-4 text-[#4A5749] dark:text-[#DFD0B8]" />
+        <Bell className="w-4 h-4 text-[#596258] dark:text-[#F3F4F6]" />
         {unreadCount > 0 && (
           <span className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white font-mono text-[10px] font-bold flex items-center justify-center border-2 border-[#F7F7F2] dark:border-[#222831] shadow-xs animate-in zoom-in-75">
             {unreadCount > 99 ? '99+' : unreadCount}
@@ -124,15 +124,15 @@ export default function NotificationBellDropdown() {
 
       {/* Popover Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-xl bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] shadow-xl z-50 overflow-hidden animate-in fade-in-50 slide-in-from-top-2 duration-150">
+        <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-xl bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] shadow-xl z-50 overflow-hidden animate-in fade-in-50 slide-in-from-top-2 duration-150">
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-[#E8E8DF] dark:border-[#393E46] bg-[#F7F7F2] dark:bg-[#222831]">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-[#E4E7E0] dark:border-[#303945] bg-[#F7F7F2] dark:bg-[#222831]">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-[#202A23] dark:text-[#DFD0B8] uppercase tracking-wider">
+              <span className="text-xs font-bold text-[#202620] dark:text-[#F3F4F6] uppercase tracking-wider">
                 Notifications
               </span>
               {unreadCount > 0 && (
-                <span className="px-1.5 py-0.5 rounded-full bg-[#244C3B]/10 dark:bg-[#DFD0B8]/10 text-[#244C3B] dark:text-[#DFD0B8] text-[10px] font-bold">
+                <span className="px-1.5 py-0.5 rounded-full bg-[var(--accent-primary)]/10 dark:bg-[#F3F4F6]/10 text-[var(--accent-primary)] dark:text-[#F3F4F6] text-[10px] font-bold">
                   {unreadCount} unread
                 </span>
               )}
@@ -142,7 +142,7 @@ export default function NotificationBellDropdown() {
               {unreadCount > 0 && (
                 <button
                   onClick={markAllAsRead}
-                  className="flex items-center gap-1 text-[11px] font-medium text-[#737C74] hover:text-[#202A23] dark:text-[#948979] dark:hover:text-[#DFD0B8] p-1 rounded hover:bg-[#E8E8DF] dark:hover:bg-[#393E46] transition"
+                  className="flex items-center gap-1 text-[11px] font-medium text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] p-1 rounded hover:bg-[#E4E7E0] dark:hover:bg-[#303945] transition"
                   title="Mark all as read"
                 >
                   <CheckCheck className="w-3.5 h-3.5" />
@@ -154,7 +154,7 @@ export default function NotificationBellDropdown() {
                   setIsOpen(false);
                   navigate('/notifications?tab=preferences');
                 }}
-                className="p-1 text-[#737C74] hover:text-[#202A23] dark:text-[#948979] dark:hover:text-[#DFD0B8] rounded hover:bg-[#E8E8DF] dark:hover:bg-[#393E46] transition"
+                className="p-1 text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] rounded hover:bg-[#E4E7E0] dark:hover:bg-[#303945] transition"
                 title="Notification preferences"
               >
                 <Settings className="w-3.5 h-3.5" />
@@ -163,13 +163,13 @@ export default function NotificationBellDropdown() {
           </div>
 
           {/* Filter Pills */}
-          <div className="flex items-center gap-2 px-4 py-2 border-b border-[#E8E8DF] dark:border-[#393E46] bg-[#FFFFFF] dark:bg-[#2A303A] text-xs">
+          <div className="flex items-center gap-2 px-4 py-2 border-b border-[#E4E7E0] dark:border-[#303945] bg-[#FFFFFF] dark:bg-[#1D232B] text-xs">
             <button
               onClick={() => setFilter('all')}
               className={`px-2.5 py-1 rounded-md font-medium transition cursor-pointer ${
                 filter === 'all'
-                  ? 'bg-[#244C3B] text-white dark:bg-[#DFD0B8] dark:text-[#222831]'
-                  : 'text-[#737C74] dark:text-[#948979] hover:bg-[#F0F0EB] dark:hover:bg-[#393E46]'
+                  ? 'bg-[var(--accent-primary)] text-white dark:bg-[#F3F4F6] dark:text-[#222831]'
+                  : 'text-[#858D82] dark:text-[#7F8996] hover:bg-[#F0F0EB] dark:hover:bg-[#303945]'
               }`}
             >
               All
@@ -178,8 +178,8 @@ export default function NotificationBellDropdown() {
               onClick={() => setFilter('unread')}
               className={`px-2.5 py-1 rounded-md font-medium transition cursor-pointer flex items-center gap-1.5 ${
                 filter === 'unread'
-                  ? 'bg-[#244C3B] text-white dark:bg-[#DFD0B8] dark:text-[#222831]'
-                  : 'text-[#737C74] dark:text-[#948979] hover:bg-[#F0F0EB] dark:hover:bg-[#393E46]'
+                  ? 'bg-[var(--accent-primary)] text-white dark:bg-[#F3F4F6] dark:text-[#222831]'
+                  : 'text-[#858D82] dark:text-[#7F8996] hover:bg-[#F0F0EB] dark:hover:bg-[#303945]'
               }`}
             >
               <span>Unread</span>
@@ -190,9 +190,9 @@ export default function NotificationBellDropdown() {
           </div>
 
           {/* Notifications List */}
-          <div className="max-h-80 overflow-y-auto divide-y divide-[#E8E8DF] dark:divide-[#393E46]">
+          <div className="max-h-80 overflow-y-auto divide-y divide-[#E4E7E0] dark:divide-[#303945]">
             {displayedNotifications.length === 0 ? (
-              <div className="py-8 text-center text-xs text-[#737C74] dark:text-[#948979]">
+              <div className="py-8 text-center text-xs text-[#858D82] dark:text-[#7F8996]">
                 <Bell className="w-6 h-6 mx-auto mb-2 text-[#91A88E] opacity-50" />
                 <p className="font-medium">No notifications</p>
                 <p className="text-[11px] mt-0.5 opacity-75">
@@ -227,18 +227,18 @@ export default function NotificationBellDropdown() {
                         <h4
                           className={`text-xs truncate ${
                             notif.isRead
-                              ? 'font-medium text-[#4A5749] dark:text-[#C8BFB0]'
-                              : 'font-bold text-[#202A23] dark:text-[#DFD0B8]'
+                              ? 'font-medium text-[#596258] dark:text-[#B0B7C2]'
+                              : 'font-bold text-[#202620] dark:text-[#F3F4F6]'
                           }`}
                         >
                           {notif.title}
                         </h4>
-                        <span className="text-[10px] text-[#737C74] dark:text-[#948979] shrink-0 font-mono">
+                        <span className="text-[10px] text-[#858D82] dark:text-[#7F8996] shrink-0 font-mono">
                           {formatTimeAgo(notif.createdAt)}
                         </span>
                       </div>
 
-                      <p className="text-[11px] text-[#737C74] dark:text-[#948979] line-clamp-2 leading-relaxed">
+                      <p className="text-[11px] text-[#858D82] dark:text-[#7F8996] line-clamp-2 leading-relaxed">
                         {notif.description}
                       </p>
                     </div>
@@ -246,7 +246,7 @@ export default function NotificationBellDropdown() {
                     {/* Right action dots / delete */}
                     <div className="shrink-0 flex items-center gap-1 mt-1">
                       {!notif.isRead && (
-                        <span className="w-2 h-2 rounded-full bg-[#244C3B] dark:bg-[#DFD0B8] shrink-0" />
+                        <span className="w-2 h-2 rounded-full bg-[var(--accent-primary)] dark:bg-[#F3F4F6] shrink-0" />
                       )}
                       <button
                         type="button"
@@ -254,7 +254,7 @@ export default function NotificationBellDropdown() {
                           e.stopPropagation();
                           deleteNotification(notif.id);
                         }}
-                        className="opacity-0 group-hover:opacity-100 p-1 text-[#737C74] hover:text-rose-500 rounded transition"
+                        className="opacity-0 group-hover:opacity-100 p-1 text-[#858D82] hover:text-rose-500 rounded transition"
                         title="Delete notification"
                       >
                         <Trash2 className="w-3 h-3" />
@@ -267,13 +267,13 @@ export default function NotificationBellDropdown() {
           </div>
 
           {/* Footer */}
-          <div className="p-2 border-t border-[#E8E8DF] dark:border-[#393E46] bg-[#F7F7F2] dark:bg-[#222831] text-center">
+          <div className="p-2 border-t border-[#E4E7E0] dark:border-[#303945] bg-[#F7F7F2] dark:bg-[#222831] text-center">
             <button
               onClick={() => {
                 setIsOpen(false);
                 navigate('/notifications');
               }}
-              className="w-full py-1.5 text-xs font-semibold text-[#244C3B] dark:text-[#DFD0B8] hover:underline cursor-pointer"
+              className="w-full py-1.5 text-xs font-semibold text-[var(--accent-primary)] dark:text-[#F3F4F6] hover:underline cursor-pointer"
             >
               View All Notifications &rarr;
             </button>

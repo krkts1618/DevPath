@@ -44,19 +44,19 @@ export default function RoadmapDetailModal({ roadmap, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-      <div className="w-full max-w-2xl max-h-[85vh] flex flex-col rounded-xl bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      <div className="w-full max-w-2xl max-h-[85vh] flex flex-col rounded-xl bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-[#E8E8DF] dark:border-[#393E46]">
+        <div className="flex items-center justify-between p-5 border-b border-[#E4E7E0] dark:border-[#303945]">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-[#E8F0EB] dark:bg-[#393E46] flex items-center justify-center text-[#244C3B] dark:text-[#DFD0B8]">
+            <div className="w-9 h-9 rounded-lg bg-[#E8F0EB] dark:bg-[#303945] flex items-center justify-center text-[var(--accent-primary)] dark:text-[#F3F4F6]">
               <Compass className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-[#202A23] dark:text-[#DFD0B8]">
+              <h3 className="text-base font-bold text-[#202620] dark:text-[#F3F4F6]">
                 {roadmap.title}
               </h3>
-              <div className="flex items-center gap-2 mt-0.5 text-xs text-[#737C74] dark:text-[#948979]">
-                <span className="font-semibold text-[#244C3B] dark:text-[#DFD0B8]">
+              <div className="flex items-center gap-2 mt-0.5 text-xs text-[#858D82] dark:text-[#7F8996]">
+                <span className="font-semibold text-[var(--accent-primary)] dark:text-[#F3F4F6]">
                   {roadmap.categoryName}
                 </span>
                 <span>&bull;</span>
@@ -71,14 +71,14 @@ export default function RoadmapDetailModal({ roadmap, onClose }) {
                 onClose();
                 navigate(`/roadmaps/${roadmap.id}`);
               }}
-              className="p-1.5 rounded-lg text-[#737C74] hover:text-[#202A23] dark:text-[#948979] dark:hover:text-[#DFD0B8] hover:bg-[#F0F0EB] dark:hover:bg-[#393E46] transition cursor-pointer"
+              className="p-1.5 rounded-lg text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] hover:bg-[#F0F0EB] dark:hover:bg-[#303945] transition cursor-pointer"
               title="Open full roadmap page"
             >
               <ExternalLink className="w-4 h-4" />
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-[#737C74] hover:text-[#202A23] dark:text-[#948979] dark:hover:text-[#DFD0B8] hover:bg-[#F0F0EB] dark:hover:bg-[#393E46] transition cursor-pointer"
+              className="p-1.5 rounded-lg text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] hover:bg-[#F0F0EB] dark:hover:bg-[#303945] transition cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -88,44 +88,44 @@ export default function RoadmapDetailModal({ roadmap, onClose }) {
         {/* Content body */}
         <div className="flex-1 overflow-y-auto p-5 space-y-5">
           {/* Progress overview banner */}
-          <div className="p-4 rounded-xl bg-[#F7F7F2] dark:bg-[#222831] border border-[#E8E8DF] dark:border-[#393E46]">
+          <div className="p-4 rounded-xl bg-[#F7F7F2] dark:bg-[#222831] border border-[#E4E7E0] dark:border-[#303945]">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-[#737C74] dark:text-[#948979]">
+              <span className="text-xs font-semibold text-[#858D82] dark:text-[#7F8996]">
                 Adaptive Mastery Progress
               </span>
-              <span className="text-xs font-bold font-mono text-[#244C3B] dark:text-[#DFD0B8]">
+              <span className="text-xs font-bold font-mono text-[var(--accent-primary)] dark:text-[#F3F4F6]">
                 {roadmap.progressPercent}% ({roadmap.completedTasks} / {roadmap.totalTasks} tasks)
               </span>
             </div>
-            <div className="w-full bg-[#E8E8DF] dark:bg-[#393E46] rounded-full h-2 overflow-hidden">
+            <div className="w-full bg-[#E4E7E0] dark:bg-[#303945] rounded-full h-2 overflow-hidden">
               <div
-                className="bg-[#244C3B] dark:bg-[#91A88E] h-2 rounded-full transition-all duration-300"
+                className="bg-[var(--accent-primary)] dark:bg-[#91A88E] h-2 rounded-full transition-all duration-300"
                 style={{ width: `${roadmap.progressPercent}%` }}
               />
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-4 border-t border-[#E8E8DF] dark:border-[#393E46]/60">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-4 border-t border-[#E4E7E0] dark:border-[#303945]/60">
               <div>
-                <div className="text-[10px] uppercase font-bold text-[#737C74] dark:text-[#948979]">Current Day</div>
-                <div className="text-sm font-bold font-mono text-[#202A23] dark:text-[#DFD0B8] mt-0.5">
+                <div className="text-[10px] uppercase font-bold text-[#858D82] dark:text-[#7F8996]">Current Day</div>
+                <div className="text-sm font-bold font-mono text-[#202620] dark:text-[#F3F4F6] mt-0.5">
                   Day {roadmap.currentDayNumber}
                 </div>
               </div>
               <div>
-                <div className="text-[10px] uppercase font-bold text-[#737C74] dark:text-[#948979]">Pending Tasks</div>
-                <div className="text-sm font-bold font-mono text-[#202A23] dark:text-[#DFD0B8] mt-0.5">
+                <div className="text-[10px] uppercase font-bold text-[#858D82] dark:text-[#7F8996]">Pending Tasks</div>
+                <div className="text-sm font-bold font-mono text-[#202620] dark:text-[#F3F4F6] mt-0.5">
                   {roadmap.pendingTasks}
                 </div>
               </div>
               <div>
-                <div className="text-[10px] uppercase font-bold text-[#737C74] dark:text-[#948979]">Recorded Focus</div>
-                <div className="text-sm font-bold font-mono text-[#202A23] dark:text-[#DFD0B8] mt-0.5">
+                <div className="text-[10px] uppercase font-bold text-[#858D82] dark:text-[#7F8996]">Recorded Focus</div>
+                <div className="text-sm font-bold font-mono text-[#202620] dark:text-[#F3F4F6] mt-0.5">
                   {roadmap.totalStudyHours}h
                 </div>
               </div>
               <div>
-                <div className="text-[10px] uppercase font-bold text-[#737C74] dark:text-[#948979]">Remaining Est.</div>
-                <div className="text-sm font-bold font-mono text-[#202A23] dark:text-[#DFD0B8] mt-0.5">
+                <div className="text-[10px] uppercase font-bold text-[#858D82] dark:text-[#7F8996]">Remaining Est.</div>
+                <div className="text-sm font-bold font-mono text-[#202620] dark:text-[#F3F4F6] mt-0.5">
                   {roadmap.estimatedRemainingHours}h
                 </div>
               </div>
@@ -134,15 +134,15 @@ export default function RoadmapDetailModal({ roadmap, onClose }) {
 
           {/* Curriculum Days Breakdown */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[#202A23] dark:text-[#DFD0B8] mb-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#202620] dark:text-[#F3F4F6] mb-3">
               Curriculum Days & Task Status
             </h4>
 
             {loading ? (
               <div className="space-y-2">
-                <div className="h-10 bg-[#E8E8DF] dark:bg-[#393E46] rounded-lg animate-pulse" />
-                <div className="h-10 bg-[#E8E8DF] dark:bg-[#393E46] rounded-lg animate-pulse" />
-                <div className="h-10 bg-[#E8E8DF] dark:bg-[#393E46] rounded-lg animate-pulse" />
+                <div className="h-10 bg-[#E4E7E0] dark:bg-[#303945] rounded-lg animate-pulse" />
+                <div className="h-10 bg-[#E4E7E0] dark:bg-[#303945] rounded-lg animate-pulse" />
+                <div className="h-10 bg-[#E4E7E0] dark:bg-[#303945] rounded-lg animate-pulse" />
               </div>
             ) : (
               <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
@@ -157,10 +157,10 @@ export default function RoadmapDetailModal({ roadmap, onClose }) {
                       key={day.id}
                       className={`p-3 rounded-lg border flex items-center justify-between text-xs transition ${
                         isCurrent
-                          ? 'bg-[#E8F0EB]/60 dark:bg-[#393E46]/60 border-[#244C3B]/40 dark:border-[#DFD0B8]/40'
+                          ? 'bg-[#E8F0EB]/60 dark:bg-[#303945]/60 border-[var(--accent-primary)]/40 dark:border-[#F3F4F6]/40'
                           : isDayDone
-                          ? 'bg-[#F7F7F2] dark:bg-[#222831] border-[#E8E8DF] dark:border-[#393E46] opacity-80'
-                          : 'bg-[#FFFFFF] dark:bg-[#2A303A] border-[#E8E8DF] dark:border-[#393E46]'
+                          ? 'bg-[#F7F7F2] dark:bg-[#222831] border-[#E4E7E0] dark:border-[#303945] opacity-80'
+                          : 'bg-[#FFFFFF] dark:bg-[#1D232B] border-[#E4E7E0] dark:border-[#303945]'
                       }`}
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
@@ -169,25 +169,25 @@ export default function RoadmapDetailModal({ roadmap, onClose }) {
                             isDayDone
                               ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400'
                               : isCurrent
-                              ? 'bg-[#244C3B] text-white'
-                              : 'bg-[#E8E8DF] dark:bg-[#393E46] text-[#737C74] dark:text-[#948979]'
+                              ? 'bg-[var(--accent-primary)] text-white'
+                              : 'bg-[#E4E7E0] dark:bg-[#303945] text-[#858D82] dark:text-[#7F8996]'
                           }`}
                         >
                           {isDayDone ? <CheckCircle2 className="w-3.5 h-3.5" /> : day.dayNumber}
                         </div>
                         <div className="truncate">
-                          <span className="font-semibold text-[#202A23] dark:text-[#DFD0B8]">
+                          <span className="font-semibold text-[#202620] dark:text-[#F3F4F6]">
                             {day.title}
                           </span>
                           {isCurrent && (
-                            <span className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#244C3B] text-white">
+                            <span className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold bg-[var(--accent-primary)] text-white">
                               Current Frontier
                             </span>
                           )}
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3 shrink-0 font-mono text-[11px] text-[#737C74] dark:text-[#948979]">
+                      <div className="flex items-center gap-3 shrink-0 font-mono text-[11px] text-[#858D82] dark:text-[#7F8996]">
                         <span>
                           {doneCount} / {dayTasks.length} tasks
                         </span>
@@ -202,8 +202,8 @@ export default function RoadmapDetailModal({ roadmap, onClose }) {
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-[#E8E8DF] dark:border-[#393E46] flex items-center justify-between bg-[#F7F7F2] dark:bg-[#222831]">
-          <div className="text-[11px] text-[#737C74] dark:text-[#948979]">
+        <div className="p-4 border-t border-[#E4E7E0] dark:border-[#303945] flex items-center justify-between bg-[#F7F7F2] dark:bg-[#222831]">
+          <div className="text-[11px] text-[#858D82] dark:text-[#7F8996]">
             Last Activity: {roadmap.lastActivityDate ? new Date(roadmap.lastActivityDate).toLocaleDateString() : 'None logged yet'}
           </div>
           <button
@@ -211,7 +211,7 @@ export default function RoadmapDetailModal({ roadmap, onClose }) {
               onClose();
               navigate(`/roadmaps/${roadmap.id}`);
             }}
-            className="px-3 py-1.5 rounded-lg bg-[#244C3B] text-white text-xs font-semibold hover:bg-[#1B382B] transition cursor-pointer flex items-center gap-1.5"
+            className="px-3 py-1.5 rounded-lg bg-[var(--accent-primary)] text-white text-xs font-semibold hover:bg-[#1B382B] transition cursor-pointer flex items-center gap-1.5"
           >
             <span>Open Roadmap View</span>
             <ChevronRight className="w-3.5 h-3.5" />

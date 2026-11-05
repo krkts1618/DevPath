@@ -28,7 +28,7 @@ export function getInsightCategoryMeta(type) {
     case 'project':
       return { icon: FolderGit2, color: 'text-indigo-500 bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-800' };
     default:
-      return { icon: Sparkles, color: 'text-[#244C3B] bg-[#E8F0EB] dark:text-[#DFD0B8] dark:bg-[#393E46] border-[#244C3B]/20 dark:border-[#DFD0B8]/20' };
+      return { icon: Sparkles, color: 'text-[var(--accent-primary)] bg-[#E8F0EB] dark:text-[#F3F4F6] dark:bg-[#303945] border-[var(--accent-primary)]/20 dark:border-[#F3F4F6]/20' };
   }
 }
 
@@ -68,15 +68,15 @@ export default function EngineeringInsightsSection({ insights = [] }) {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E8E8DF] dark:border-[#393E46]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E4E7E0] dark:border-[#303945]">
         <div>
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-[#244C3B] dark:text-[#DFD0B8]" />
-            <h2 className="text-sm font-bold uppercase tracking-wider text-[#202A23] dark:text-[#DFD0B8]">
+            <Sparkles className="w-4 h-4 text-[var(--accent-primary)] dark:text-[#F3F4F6]" />
+            <h2 className="text-sm font-bold uppercase tracking-wider text-[#202620] dark:text-[#F3F4F6]">
               Deterministic Engineering Insights
             </h2>
           </div>
-          <p className="text-xs text-[#737C74] dark:text-[#948979] mt-0.5">
+          <p className="text-xs text-[#858D82] dark:text-[#7F8996] mt-0.5">
             Rule-based evaluations derived strictly from your persisted learning and execution data
           </p>
         </div>
@@ -84,7 +84,7 @@ export default function EngineeringInsightsSection({ insights = [] }) {
         {dismissedIds.length > 0 && (
           <button
             onClick={handleRestoreAll}
-            className="text-xs text-[#737C74] dark:text-[#948979] hover:text-[#202A23] dark:hover:text-[#DFD0B8] hover:underline cursor-pointer"
+            className="text-xs text-[#858D82] dark:text-[#7F8996] hover:text-[#202620] dark:hover:text-[#F3F4F6] hover:underline cursor-pointer"
           >
             Restore {dismissedIds.length} dismissed
           </button>
@@ -93,12 +93,12 @@ export default function EngineeringInsightsSection({ insights = [] }) {
 
       {/* Insights Cards Grid */}
       {activeInsights.length === 0 ? (
-        <div className="py-10 text-center bg-[#FFFFFF] dark:bg-[#2A303A] rounded-xl border border-[#E8E8DF] dark:border-[#393E46] p-6">
+        <div className="py-10 text-center bg-[#FFFFFF] dark:bg-[#1D232B] rounded-xl border border-[#E4E7E0] dark:border-[#303945] p-6">
           <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto mb-2 opacity-60" />
-          <p className="text-xs font-semibold text-[#202A23] dark:text-[#DFD0B8]">
+          <p className="text-xs font-semibold text-[#202620] dark:text-[#F3F4F6]">
             All current insights acknowledged.
           </p>
-          <p className="text-[11px] text-[#737C74] dark:text-[#948979] mt-0.5">
+          <p className="text-[11px] text-[#858D82] dark:text-[#7F8996] mt-0.5">
             New insights will trigger automatically as curriculum tasks and focus sessions are logged.
           </p>
         </div>
@@ -111,7 +111,7 @@ export default function EngineeringInsightsSection({ insights = [] }) {
             return (
               <div
                 key={insight.id}
-                className="p-4 rounded-xl bg-[#FFFFFF] dark:bg-[#2A303A] border border-[#E8E8DF] dark:border-[#393E46] shadow-xs flex flex-col justify-between hover:border-[#244C3B]/40 dark:hover:border-[#DFD0B8]/40 transition group relative"
+                className="p-4 rounded-xl bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] shadow-xs flex flex-col justify-between hover:border-[var(--accent-primary)]/40 dark:hover:border-[#F3F4F6]/40 transition group relative"
               >
                 <div>
                   {/* Category Pill + Dismiss Button */}
@@ -120,14 +120,14 @@ export default function EngineeringInsightsSection({ insights = [] }) {
                       <div className={`p-1 rounded-md border ${meta.color}`}>
                         <Icon className="w-3.5 h-3.5" />
                       </div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#737C74] dark:text-[#948979]">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#858D82] dark:text-[#7F8996]">
                         {insight.category}
                       </span>
                     </div>
 
                     <button
                       onClick={(e) => handleDismiss(insight.id, e)}
-                      className="text-[#737C74] hover:text-[#202A23] dark:text-[#948979] dark:hover:text-[#DFD0B8] p-1 rounded hover:bg-[#F0F0EB] dark:hover:bg-[#393E46] transition opacity-70 group-hover:opacity-100 cursor-pointer"
+                      className="text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] p-1 rounded hover:bg-[#F0F0EB] dark:hover:bg-[#303945] transition opacity-70 group-hover:opacity-100 cursor-pointer"
                       title="Dismiss insight"
                     >
                       <X className="w-3.5 h-3.5" />
@@ -135,23 +135,23 @@ export default function EngineeringInsightsSection({ insights = [] }) {
                   </div>
 
                   {/* Title & Description */}
-                  <h3 className="text-sm font-bold text-[#202A23] dark:text-[#DFD0B8] mb-1.5">
+                  <h3 className="text-sm font-bold text-[#202620] dark:text-[#F3F4F6] mb-1.5">
                     {insight.title}
                   </h3>
-                  <p className="text-xs text-[#737C74] dark:text-[#948979] leading-relaxed">
+                  <p className="text-xs text-[#858D82] dark:text-[#7F8996] leading-relaxed">
                     {insight.description}
                   </p>
                 </div>
 
                 {/* Action Link */}
                 {insight.actionUrl && (
-                  <div className="mt-4 pt-3 border-t border-[#E8E8DF] dark:border-[#393E46] flex items-center justify-between">
-                    <span className="text-[10px] text-[#737C74] dark:text-[#948979]">
+                  <div className="mt-4 pt-3 border-t border-[#E4E7E0] dark:border-[#303945] flex items-center justify-between">
+                    <span className="text-[10px] text-[#858D82] dark:text-[#7F8996]">
                       Source: Database Metrics
                     </span>
                     <button
                       onClick={() => navigate(insight.actionUrl)}
-                      className="text-xs font-semibold text-[#244C3B] dark:text-[#DFD0B8] hover:underline flex items-center gap-1 cursor-pointer"
+                      className="text-xs font-semibold text-[var(--accent-primary)] dark:text-[#F3F4F6] hover:underline flex items-center gap-1 cursor-pointer"
                     >
                       <span>{insight.actionText || 'Take Action'}</span>
                       <ArrowRight className="w-3 h-3" />
