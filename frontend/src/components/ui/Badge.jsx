@@ -36,7 +36,7 @@ export default function Badge({
 }) {
   const key = (type || variant || 'neutral').toLowerCase();
   const colorClass = typeStyles[key] || typeStyles.neutral;
-  const sizeClass = size === 'xs' ? 'px-1.5 py-0.5 text-[10px]' : 'px-2.5 py-0.5 text-xs';
+  const sizeClass = size === 'xs' ? 'px-2 py-0.5 text-[10px]' : 'px-3 py-1 text-xs font-semibold';
 
   return (
     <span

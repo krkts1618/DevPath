@@ -149,7 +149,7 @@ export default function TaskItem({
                 <button
                   type="button"
                   onClick={() => onViewDetails(task)}
-                  className="p-1 rounded text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35] transition-colors"
+                  className="p-1.5 rounded-lg text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35] transition-colors"
                   title="View task specifications"
                 >
                   <Eye className="w-3.5 h-3.5" />
@@ -160,7 +160,7 @@ export default function TaskItem({
                 <button
                   type="button"
                   onClick={() => onReassignClick(task)}
-                  className="p-1 rounded text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35] transition-colors"
+                  className="p-1.5 rounded-lg text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35] transition-colors"
                   title="Reassign to another day"
                 >
                   <MoveRight className="w-3.5 h-3.5" />
@@ -171,7 +171,7 @@ export default function TaskItem({
                 <button
                   type="button"
                   onClick={() => onEditClick(task)}
-                  className="p-1 rounded text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35] transition-colors"
+                  className="p-1.5 rounded-lg text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35] transition-colors"
                   title="Edit task"
                 >
                   <Edit2 className="w-3.5 h-3.5" />
@@ -182,7 +182,7 @@ export default function TaskItem({
                 <button
                   type="button"
                   onClick={() => onDeleteClick(task)}
-                  className="p-1 rounded text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
+                  className="p-1.5 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
                   title="Delete task"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -195,3 +195,4 @@ export default function TaskItem({
     </div>
   );
 }
+

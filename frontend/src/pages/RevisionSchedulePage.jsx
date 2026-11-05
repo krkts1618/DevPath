@@ -217,7 +217,7 @@ export default function RevisionSchedulePage() {
 
         <button
           onClick={() => setIsCreateModalOpen(true)}
-          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[var(--accent-primary)] text-[var(--accent-text)] text-xs font-semibold hover:bg-[var(--accent-hover)] transition shadow-xs cursor-pointer self-start sm:self-auto"
+          className="flex items-center gap-2 px-4.5 py-2.5 rounded-xl bg-[var(--accent-primary)] hover:brightness-105 active:scale-[0.98] text-[var(--accent-text)] text-xs sm:text-sm font-semibold transition-all shadow-sm cursor-pointer self-start sm:self-auto"
         >
           <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
           <span>Add Revision</span>
@@ -225,7 +225,7 @@ export default function RevisionSchedulePage() {
       </div>
 
       {/* 2. Segmented Tabs Matching Reference Screen 6 */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 overflow-x-auto pb-0.5 scrollbar-none">
         {[
           { id: 'upcoming', label: `Upcoming (${upcomingCount})` },
           { id: 'overdue', label: `Overdue (${overdueCount})` },
@@ -236,7 +236,7 @@ export default function RevisionSchedulePage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
+              className={`px-4.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 isActive
                   ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] shadow-xs'
                   : 'bg-[var(--bg-surface)] text-[var(--text-secondary)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)]'
@@ -349,7 +349,7 @@ export default function RevisionSchedulePage() {
 
           <button
             onClick={() => navigate('/calendar')}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--accent-primary)] text-[var(--accent-text)] text-xs font-semibold hover:bg-[var(--accent-hover)] transition shadow-xs cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--accent-primary)] hover:brightness-105 active:scale-[0.98] text-[var(--accent-text)] text-xs sm:text-sm font-semibold transition-all shadow-sm cursor-pointer"
           >
             <span>View Calendar</span>
             <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />

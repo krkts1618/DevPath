@@ -138,7 +138,7 @@ export default function MyRoadmapsPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIsCategoryManagerOpen(true)}
-            className="p-1.5 rounded-lg border border-[#E4E7E0] dark:border-[#303945] text-[#858D82] dark:text-[#7F8996] hover:text-[#202620] dark:hover:text-[#F3F4F6] text-xs transition"
+            className="p-2 rounded-xl border border-[#E4E7E0] dark:border-[#303945] text-[#858D82] dark:text-[#7F8996] hover:text-[#202620] dark:hover:text-[#F3F4F6] text-xs transition cursor-pointer"
             title="Manage Categories"
           >
             <Settings2 className="w-3.5 h-3.5" />
@@ -146,7 +146,7 @@ export default function MyRoadmapsPage() {
 
           <button
             onClick={() => setIsAddRoadmapOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--accent-primary)] text-[var(--accent-text)] text-xs font-semibold hover:bg-[var(--accent-hover)] transition shadow-xs cursor-pointer"
+            className="flex items-center gap-2 px-4.5 py-2 rounded-xl bg-[var(--accent-primary)] text-[var(--accent-text)] text-xs sm:text-sm font-semibold hover:brightness-105 active:scale-[0.98] transition shadow-sm cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>Create Roadmap</span>
@@ -155,12 +155,12 @@ export default function MyRoadmapsPage() {
       </div>
 
       {/* 2. Small Category Filter Tabs (IMAGE 1: All, Development, Core CS, Tools, Others) */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none">
+      <div className="flex items-center gap-2 overflow-x-auto pb-0.5 scrollbar-none">
         <button
           onClick={() => setSelectedCategory('ALL')}
-          className={`px-3 py-1 rounded-lg text-xs font-medium transition cursor-pointer shrink-0 ${
+          className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition cursor-pointer shrink-0 ${
             selectedCategory === 'ALL'
-              ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] font-semibold shadow-xs'
+              ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] shadow-xs'
               : 'bg-[#FFFFFF] dark:bg-[#1D232B] text-[#596258] dark:text-[#B0B7C2] border border-[#E4E7E0] dark:border-[#303945] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35]'
           }`}
         >
@@ -171,9 +171,9 @@ export default function MyRoadmapsPage() {
           <button
             key={cat.id}
             onClick={() => setSelectedCategory(cat.id)}
-            className={`px-3 py-1 rounded-lg text-xs font-medium transition cursor-pointer shrink-0 ${
+            className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition cursor-pointer shrink-0 ${
               selectedCategory === cat.id
-                ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] font-semibold shadow-xs'
+                ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] shadow-xs'
                 : 'bg-[#FFFFFF] dark:bg-[#1D232B] text-[#596258] dark:text-[#B0B7C2] border border-[#E4E7E0] dark:border-[#303945] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35]'
             }`}
           >
@@ -192,18 +192,18 @@ export default function MyRoadmapsPage() {
             placeholder="Search roadmaps..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-8 pr-3 py-1 text-xs bg-[#F8F9F6] dark:bg-[#171B21] border border-[#E4E7E0] dark:border-[#303945] rounded-lg text-[#202620] dark:text-[#F3F4F6] placeholder-[#858D82] dark:placeholder-[#7F8996] focus:outline-none focus:border-[var(--accent-primary)]"
+            className="w-full pl-8 pr-3 py-1.5 text-xs bg-[#F8F9F6] dark:bg-[#171B21] border border-[#E4E7E0] dark:border-[#303945] rounded-xl text-[#202620] dark:text-[#F3F4F6] placeholder-[#858D82] dark:placeholder-[#7F8996] focus:outline-none focus:border-[var(--accent-primary)]"
           />
         </div>
 
         {/* Status Filter Tabs & Sort */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center bg-[#F8F9F6] dark:bg-[#171B21] rounded-lg p-0.5 border border-[#E4E7E0] dark:border-[#303945] text-xs">
+          <div className="flex items-center bg-[#F8F9F6] dark:bg-[#171B21] rounded-xl p-1 border border-[#E4E7E0] dark:border-[#303945] text-xs">
             {['active', 'archived', 'all'].map((st) => (
               <button
                 key={st}
                 onClick={() => setSelectedStatus(st)}
-                className={`px-2.5 py-0.5 rounded-md capitalize transition cursor-pointer ${
+                className={`px-3 py-1 rounded-lg capitalize transition cursor-pointer font-medium ${
                   selectedStatus === st
                     ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] font-semibold shadow-xs'
                     : 'text-[#596258] dark:text-[#B0B7C2] hover:text-[#202620] dark:hover:text-[#F3F4F6]'

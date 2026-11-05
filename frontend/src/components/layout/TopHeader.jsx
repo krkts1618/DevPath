@@ -83,11 +83,11 @@ export default function TopHeader({
         {/* Center: Sleek Quick Search Bar (visible on md+) */}
         <div
           onClick={() => navigate('/roadmaps')}
-          className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#F8F9F6] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] text-xs text-[#858D82] dark:text-[#7F8996] w-64 lg:w-72 cursor-pointer hover:border-[var(--accent-primary)]/50 transition shadow-2xs"
+          className="hidden md:flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-[#F8F9F6] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] text-xs text-[#858D82] dark:text-[#7F8996] w-64 lg:w-72 cursor-pointer hover:border-[var(--accent-primary)]/50 transition shadow-2xs"
         >
           <Search className="w-3.5 h-3.5 text-[#858D82] dark:text-[#7F8996]" />
           <span className="flex-1 truncate">Search roadmaps, notes...</span>
-          <kbd className="font-mono text-[10px] bg-[#E4E7E0] dark:bg-[#252C35] px-1.5 py-0.5 rounded text-[#596258] dark:text-[#B0B7C2]">
+          <kbd className="font-mono text-[10px] bg-[#E4E7E0] dark:bg-[#252C35] px-1.5 py-0.5 rounded-md text-[#596258] dark:text-[#B0B7C2]">
             ⌘K
           </kbd>
         </div>
@@ -98,7 +98,7 @@ export default function TopHeader({
           {activeSession ? (
             <div
               onClick={() => navigate('/focus')}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-xs font-mono font-semibold cursor-pointer transition hover:opacity-90 shadow-2xs"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-xs font-mono font-semibold cursor-pointer transition hover:opacity-90 shadow-2xs"
               title="Click to open Focus Workspace"
             >
               <span
@@ -116,7 +116,7 @@ export default function TopHeader({
           ) : null}
 
           {/* Date Badge */}
-          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#F8F9F6] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] text-xs text-[#596258] dark:text-[#B0B7C2] font-mono shadow-2xs">
+          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#F8F9F6] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] text-xs text-[#596258] dark:text-[#B0B7C2] font-mono shadow-2xs">
             <Calendar className="w-3.5 h-3.5 text-[var(--accent-primary)] opacity-80" />
             <span>{todayFormatted}</span>
           </div>
@@ -142,7 +142,7 @@ export default function TopHeader({
           {onOpenAddRoadmap && (
             <button
               onClick={onOpenAddRoadmap}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[var(--accent-primary)] text-[var(--accent-text)] text-xs font-semibold hover:bg-[var(--accent-hover)] transition shadow-xs cursor-pointer"
+              className="flex items-center gap-2 px-4.5 py-2 rounded-xl bg-[var(--accent-primary)] hover:brightness-105 active:scale-[0.98] text-[var(--accent-text)] text-xs sm:text-sm font-semibold transition-all shadow-sm cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
               <span className="hidden sm:inline">Add Roadmap</span>

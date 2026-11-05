@@ -204,14 +204,14 @@ export default function ProjectsPage() {
     switch (status) {
       case 'completed':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
             Completed
           </span>
         );
       case 'active':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-amber-500/10 text-[var(--accent-primary)] border border-amber-500/20">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-[var(--accent-primary)] border border-amber-500/20">
             <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-primary)]" />
             In Progress
           </span>
@@ -219,7 +219,7 @@ export default function ProjectsPage() {
       case 'planned':
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-orange-500/10 text-orange-400 border border-orange-500/20">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-orange-500/10 text-orange-400 border border-orange-500/20">
             <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />
             Planning
           </span>
@@ -242,7 +242,7 @@ export default function ProjectsPage() {
 
         <button
           onClick={handleOpenCreate}
-          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[var(--accent-primary)] text-[var(--accent-text)] text-xs font-semibold hover:bg-[var(--accent-hover)] transition shadow-xs cursor-pointer self-start sm:self-auto"
+          className="flex items-center gap-2 px-4.5 py-2.5 rounded-xl bg-[var(--accent-primary)] hover:brightness-105 active:scale-[0.98] text-[var(--accent-text)] text-xs sm:text-sm font-semibold transition-all shadow-sm cursor-pointer self-start sm:self-auto"
         >
           <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
           <span>Add Project</span>
@@ -302,7 +302,7 @@ export default function ProjectsPage() {
                       {project.techStack.split(',').map((tech, tIdx) => (
                         <span
                           key={tIdx}
-                          className="px-2 py-0.5 rounded-md bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] text-[10px] font-mono text-[var(--text-secondary)]"
+                          className="px-2.5 py-1 rounded-lg bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] text-[10px] font-mono text-[var(--text-secondary)]"
                         >
                           {tech.trim()}
                         </span>

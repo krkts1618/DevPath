@@ -130,7 +130,7 @@ export default function RoadmapCard({
                   e.stopPropagation();
                   onEdit(roadmap);
                 }}
-                className="p-1 rounded hover:bg-[#F0F2ED] dark:hover:bg-[#252C35] text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] transition"
+                className="p-1.5 rounded-lg hover:bg-[#F0F2ED] dark:hover:bg-[#252C35] text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] transition"
                 title="Edit"
               >
                 <Edit2 className="w-3 h-3" />
@@ -145,7 +145,7 @@ export default function RoadmapCard({
                     e.stopPropagation();
                     onRestore(roadmap.id);
                   }}
-                  className="p-1 rounded hover:bg-[#F0F2ED] dark:hover:bg-[#252C35] text-amber-500 transition"
+                  className="p-1.5 rounded-lg hover:bg-[#F0F2ED] dark:hover:bg-[#252C35] text-amber-500 transition"
                   title="Restore"
                 >
                   <RotateCcw className="w-3 h-3" />
@@ -159,7 +159,7 @@ export default function RoadmapCard({
                     e.stopPropagation();
                     onArchive(roadmap.id);
                   }}
-                  className="p-1 rounded hover:bg-[#F0F2ED] dark:hover:bg-[#252C35] text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] transition"
+                  className="p-1.5 rounded-lg hover:bg-[#F0F2ED] dark:hover:bg-[#252C35] text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] transition"
                   title="Archive"
                 >
                   <Archive className="w-3 h-3" />
@@ -174,7 +174,7 @@ export default function RoadmapCard({
                   e.stopPropagation();
                   onDeletePermanent(roadmap.id);
                 }}
-                className="p-1 rounded hover:bg-red-50 dark:hover:bg-red-950/40 text-red-500 transition"
+                className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 text-red-500 transition"
                 title="Delete"
               >
                 <Trash2 className="w-3 h-3" />
@@ -186,3 +186,4 @@ export default function RoadmapCard({
     </div>
   );
 }
+

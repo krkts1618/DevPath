@@ -26,7 +26,7 @@ export default function AnalyticsNav({ activeSection, onSelectSection }) {
     <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none border-b border-[var(--border-subtle)]">
       <button
         onClick={() => onSelectSection('all')}
-        className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition cursor-pointer ${
+        className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer ${
           activeSection === 'all'
             ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] shadow-xs'
             : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-elevated)]'
@@ -42,7 +42,7 @@ export default function AnalyticsNav({ activeSection, onSelectSection }) {
           <button
             key={sec.id}
             onClick={() => onSelectSection(sec.id)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer ${
               isActive
                 ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] shadow-xs'
                 : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-elevated)]'

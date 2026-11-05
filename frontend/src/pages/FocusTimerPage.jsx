@@ -192,7 +192,7 @@ export default function FocusTimerPage() {
           <div className="flex items-center gap-3 mt-8">
             <button
               onClick={handleToggleTimer}
-              className="px-8 py-2.5 rounded-full bg-[var(--accent-primary)] text-[var(--accent-text)] text-sm font-bold hover:bg-[var(--accent-hover)] transition shadow-md cursor-pointer flex items-center gap-2"
+              className="px-9 py-3 rounded-full bg-[var(--accent-primary)] hover:brightness-105 active:scale-[0.98] text-[var(--accent-text)] text-sm font-bold transition-all shadow-md cursor-pointer flex items-center gap-2"
             >
               {isRunning ? (
                 <>
@@ -210,7 +210,7 @@ export default function FocusTimerPage() {
             <button
               onClick={handleResetTimer}
               title="Reset Session"
-              className="p-2.5 rounded-full bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition cursor-pointer"
+              className="p-3 rounded-full bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" />
             </button>
@@ -219,7 +219,7 @@ export default function FocusTimerPage() {
               <button
                 onClick={() => completeTimer()}
                 title="Mark Completed"
-                className="p-2.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 transition cursor-pointer"
+                className="p-3 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 transition cursor-pointer"
               >
                 <CheckCircle2 className="w-4 h-4" />
               </button>
@@ -239,7 +239,7 @@ export default function FocusTimerPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => handleAdjustFocus(-5)}
-                className="w-7 h-7 rounded-lg bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
+                className="w-8 h-8 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer transition active:scale-95"
               >
                 <Minus className="w-3 h-3" />
               </button>
@@ -248,7 +248,7 @@ export default function FocusTimerPage() {
               </span>
               <button
                 onClick={() => handleAdjustFocus(5)}
-                className="w-7 h-7 rounded-lg bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
+                className="w-8 h-8 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer transition active:scale-95"
               >
                 <Plus className="w-3 h-3" />
               </button>
@@ -261,7 +261,7 @@ export default function FocusTimerPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => handleAdjustBreak(-1)}
-                className="w-7 h-7 rounded-lg bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
+                className="w-8 h-8 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer transition active:scale-95"
               >
                 <Minus className="w-3 h-3" />
               </button>
@@ -270,7 +270,7 @@ export default function FocusTimerPage() {
               </span>
               <button
                 onClick={() => handleAdjustBreak(1)}
-                className="w-7 h-7 rounded-lg bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
+                className="w-8 h-8 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer transition active:scale-95"
               >
                 <Plus className="w-3 h-3" />
               </button>

@@ -112,20 +112,20 @@ export default function CalendarPage() {
 
         {/* Month Selector & View Toggle Pills */}
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 bg-[var(--bg-surface)] border border-[var(--border-subtle)] px-3 py-1.5 rounded-xl">
+          <div className="flex items-center gap-2 bg-[var(--bg-surface)] border border-[var(--border-subtle)] px-3.5 py-2 rounded-xl">
             <span className="text-xs font-bold font-mono text-[var(--text-primary)]">
               {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
             </span>
             <div className="flex items-center gap-1 ml-1">
               <button
                 onClick={handlePrev}
-                className="p-1 rounded text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
+                className="p-1 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer hover:bg-[var(--bg-surface-elevated)] transition"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={handleNext}
-                className="p-1 rounded text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
+                className="p-1 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer hover:bg-[var(--bg-surface-elevated)] transition"
               >
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
@@ -140,7 +140,7 @@ export default function CalendarPage() {
                 <button
                   key={mode}
                   onClick={() => setViewMode(mode)}
-                  className={`px-3 py-1 text-xs font-semibold rounded-lg capitalize transition cursor-pointer ${
+                  className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg capitalize transition cursor-pointer ${
                     active
                       ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] shadow-xs'
                       : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'

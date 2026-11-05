@@ -47,7 +47,7 @@ export default function Modal({
 
       {/* Modal Dialog Card */}
       <div
-        className={`relative w-full ${maxWidthStyles[maxWidth] || maxWidthStyles.md} bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl shadow-2xl z-10 overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-150`}
+        className={`relative w-full ${maxWidthStyles[maxWidth] || maxWidthStyles.md} bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-2xl shadow-2xl z-10 overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-150`}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#E4E7E0] dark:border-[#303945]">
@@ -56,7 +56,7 @@ export default function Modal({
           </h3>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35] transition-colors"
+            className="p-2 rounded-xl text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35] transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>

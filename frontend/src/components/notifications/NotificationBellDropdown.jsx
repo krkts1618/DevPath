@@ -110,7 +110,7 @@ export default function NotificationBellDropdown() {
       <button
         type="button"
         onClick={handleToggle}
-        className="relative p-2 rounded-lg text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] hover:bg-[#F0F0EB] dark:hover:bg-[#303945] transition-colors cursor-pointer"
+        className="relative p-2 rounded-xl text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] hover:bg-[#F0F0EB] dark:hover:bg-[#303945] transition-colors cursor-pointer"
         aria-label="Open notifications"
         title="Notifications"
       >

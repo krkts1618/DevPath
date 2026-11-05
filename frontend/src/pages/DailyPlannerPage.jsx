@@ -202,17 +202,17 @@ export default function DailyPlannerPage() {
       <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-4 sm:p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Left: Title & Date Selector */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center bg-[#F8F9F6] dark:bg-[#171B21] rounded-lg p-0.5 border border-[#E4E7E0] dark:border-[#303945]">
+          <div className="flex items-center bg-[#F8F9F6] dark:bg-[#171B21] rounded-xl p-1 border border-[#E4E7E0] dark:border-[#303945]">
             <button
               onClick={handlePrevDay}
-              className="p-1.5 rounded-md text-[#596258] hover:text-[#202620] dark:text-[#B0B7C2] dark:hover:text-[#F3F4F6] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35] transition-colors cursor-pointer"
+              className="p-2 rounded-lg text-[#596258] hover:text-[#202620] dark:text-[#B0B7C2] dark:hover:text-[#F3F4F6] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35] transition-colors cursor-pointer"
               title="Previous Day"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={handleNextDay}
-              className="p-1.5 rounded-md text-[#596258] hover:text-[#202620] dark:text-[#B0B7C2] dark:hover:text-[#F3F4F6] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35] transition-colors cursor-pointer"
+              className="p-2 rounded-lg text-[#596258] hover:text-[#202620] dark:text-[#B0B7C2] dark:hover:text-[#F3F4F6] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35] transition-colors cursor-pointer"
               title="Next Day"
             >
               <ChevronRight className="w-4 h-4" />
@@ -224,7 +224,7 @@ export default function DailyPlannerPage() {
               {formattedDateTitle}
             </h1>
             {isToday && (
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/10 text-[var(--accent-primary)] border border-amber-500/20">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/10 text-[var(--accent-primary)] border border-amber-500/20">
                 Today
               </span>
             )}
@@ -233,14 +233,14 @@ export default function DailyPlannerPage() {
 
         {/* Right: Date Picker, Jump to Today & Progress Pill */}
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#F8F9F6] dark:bg-[#171B21] border border-[#E4E7E0] dark:border-[#303945] font-mono text-xs">
+          <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#F8F9F6] dark:bg-[#171B21] border border-[#E4E7E0] dark:border-[#303945] font-mono text-xs">
             <span className="text-[#858D82] dark:text-[#7F8996]">Completed:</span>
             <span className="font-bold text-[var(--accent-primary)]">
               {completedCount} / {targetCount}
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5 bg-[#F8F9F6] dark:bg-[#171B21] border border-[#E4E7E0] dark:border-[#303945] rounded-lg px-2.5 py-1.5">
+          <div className="flex items-center gap-2 bg-[#F8F9F6] dark:bg-[#171B21] border border-[#E4E7E0] dark:border-[#303945] rounded-xl px-3 py-2">
             <Calendar className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
             <input
               type="date"
@@ -262,7 +262,7 @@ export default function DailyPlannerPage() {
           <Button
             size="sm"
             onClick={() => setIsAddPersonalOpen(true)}
-            className="flex items-center gap-1.5 text-xs"
+            className="flex items-center gap-2"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Personal</span>
@@ -279,10 +279,10 @@ export default function DailyPlannerPage() {
       </div>
 
       {/* 3. Segmented Filter Tabs (Reference Style) */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2.5 overflow-x-auto pb-0.5 scrollbar-none">
         <button
           onClick={() => setActiveTab('pending')}
-          className={`px-4 py-2 text-xs font-semibold rounded-lg transition-colors cursor-pointer font-mono ${
+          className={`px-4.5 py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer font-mono ${
             activeTab === 'pending'
               ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] shadow-xs'
               : 'bg-[#FFFFFF] dark:bg-[#1D232B] text-[#596258] dark:text-[#B0B7C2] border border-[#E4E7E0] dark:border-[#303945] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35]'
@@ -293,7 +293,7 @@ export default function DailyPlannerPage() {
 
         <button
           onClick={() => setActiveTab('completed')}
-          className={`px-4 py-2 text-xs font-semibold rounded-lg transition-colors cursor-pointer font-mono ${
+          className={`px-4.5 py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer font-mono ${
             activeTab === 'completed'
               ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] shadow-xs'
               : 'bg-[#FFFFFF] dark:bg-[#1D232B] text-[#596258] dark:text-[#B0B7C2] border border-[#E4E7E0] dark:border-[#303945] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35]'
@@ -304,7 +304,7 @@ export default function DailyPlannerPage() {
 
         <button
           onClick={() => setActiveTab('personal')}
-          className={`px-4 py-2 text-xs font-semibold rounded-lg transition-colors cursor-pointer font-mono ${
+          className={`px-4.5 py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer font-mono ${
             activeTab === 'personal'
               ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] shadow-xs'
               : 'bg-[#FFFFFF] dark:bg-[#1D232B] text-[#596258] dark:text-[#B0B7C2] border border-[#E4E7E0] dark:border-[#303945] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35]'
@@ -316,7 +316,7 @@ export default function DailyPlannerPage() {
         {rescheduledTasks.length > 0 && (
           <button
             onClick={() => setActiveTab('rescheduled')}
-            className={`px-4 py-2 text-xs font-semibold rounded-lg transition-colors cursor-pointer font-mono ${
+            className={`px-4.5 py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer font-mono ${
               activeTab === 'rescheduled'
                 ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] shadow-xs'
                 : 'bg-[#FFFFFF] dark:bg-[#1D232B] text-[#596258] dark:text-[#B0B7C2] border border-[#E4E7E0] dark:border-[#303945] hover:bg-[#F0F2ED] dark:hover:bg-[#252C35]'

@@ -66,7 +66,7 @@ export default function AnalyticsHeader({
               <button
                 key={tf.id}
                 onClick={() => setTimeframe(tf.id)}
-                className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
                   active
                     ? 'bg-[var(--accent-primary)] text-[var(--accent-text)] shadow-xs'
                     : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
@@ -83,7 +83,7 @@ export default function AnalyticsHeader({
         <div className="relative">
           <button
             onClick={() => setIsExportOpen(!isExportOpen)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--bg-surface)] text-[var(--text-primary)] text-xs font-semibold border border-[var(--border-subtle)] hover:border-[var(--border-strong)] transition shadow-xs cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[var(--bg-surface)] text-[var(--text-primary)] text-xs font-semibold border border-[var(--border-subtle)] hover:border-[var(--border-strong)] transition shadow-xs cursor-pointer"
           >
             <Download className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
             <span>Export</span>

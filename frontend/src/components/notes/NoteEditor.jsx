@@ -270,11 +270,11 @@ export default function NoteEditor({ note, onSave, onClose }) {
           </div>
 
           {/* Mode Switcher */}
-          <div className="flex items-center border border-[#E4E7E0] dark:border-[#303945] rounded-lg p-0.5 bg-[#FFFFFF] dark:bg-[#1D232B]">
+          <div className="flex items-center border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-1 bg-[#FFFFFF] dark:bg-[#1D232B]">
             <button
               onClick={() => setMode('edit')}
               title="Edit mode"
-              className={`px-2.5 py-1 text-xs rounded-md font-medium transition ${
+              className={`px-3 py-1.5 text-xs rounded-lg font-medium transition ${
                 mode === 'edit'
                   ? 'bg-[var(--accent-primary)] text-white dark:bg-[#F3F4F6] dark:text-[#222831]'
                   : 'text-[#858D82] dark:text-[#7F8996] hover:text-[#202620] dark:hover:text-[#F3F4F6]'
@@ -286,7 +286,7 @@ export default function NoteEditor({ note, onSave, onClose }) {
             <button
               onClick={() => setMode('split')}
               title="Split view"
-              className={`px-2.5 py-1 text-xs rounded-md font-medium transition ${
+              className={`px-3 py-1.5 text-xs rounded-lg font-medium transition ${
                 mode === 'split'
                   ? 'bg-[var(--accent-primary)] text-white dark:bg-[#F3F4F6] dark:text-[#222831]'
                   : 'text-[#858D82] dark:text-[#7F8996] hover:text-[#202620] dark:hover:text-[#F3F4F6]'
@@ -298,7 +298,7 @@ export default function NoteEditor({ note, onSave, onClose }) {
             <button
               onClick={() => setMode('preview')}
               title="Preview mode"
-              className={`px-2.5 py-1 text-xs rounded-md font-medium transition ${
+              className={`px-3 py-1.5 text-xs rounded-lg font-medium transition ${
                 mode === 'preview'
                   ? 'bg-[var(--accent-primary)] text-white dark:bg-[#F3F4F6] dark:text-[#222831]'
                   : 'text-[#858D82] dark:text-[#7F8996] hover:text-[#202620] dark:hover:text-[#F3F4F6]'
@@ -436,14 +436,14 @@ export default function NoteEditor({ note, onSave, onClose }) {
           <button
             onClick={() => insertFormatting('**', '**', 'bold text')}
             title="Bold (Ctrl+B)"
-            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
+            className="p-2 rounded-lg hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
           >
             <Bold className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => insertFormatting('*', '*', 'italic text')}
             title="Italic (Ctrl+I)"
-            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
+            className="p-2 rounded-lg hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
           >
             <Italic className="w-3.5 h-3.5" />
           </button>
@@ -451,14 +451,14 @@ export default function NoteEditor({ note, onSave, onClose }) {
           <button
             onClick={() => insertFormatting('# ', '', 'Heading 1')}
             title="Heading 1"
-            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
+            className="p-2 rounded-lg hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
           >
             <Heading1 className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => insertFormatting('## ', '', 'Heading 2')}
             title="Heading 2"
-            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
+            className="p-2 rounded-lg hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
           >
             <Heading2 className="w-3.5 h-3.5" />
           </button>
@@ -466,21 +466,21 @@ export default function NoteEditor({ note, onSave, onClose }) {
           <button
             onClick={() => insertFormatting('- ', '', 'List item')}
             title="Bullet List"
-            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
+            className="p-2 rounded-lg hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
           >
             <List className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => insertFormatting('1. ', '', 'Numbered item')}
             title="Numbered List"
-            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
+            className="p-2 rounded-lg hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
           >
             <ListOrdered className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => insertFormatting('- [ ] ', '', 'Task to complete')}
             title="Checklist"
-            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
+            className="p-2 rounded-lg hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
           >
             <CheckSquare className="w-3.5 h-3.5" />
           </button>
@@ -488,21 +488,21 @@ export default function NoteEditor({ note, onSave, onClose }) {
           <button
             onClick={() => insertFormatting('`', '`', 'code')}
             title="Inline Code"
-            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
+            className="p-2 rounded-lg hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
           >
             <Code className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => insertFormatting('```javascript\n', '\n```', '// Code snippet here')}
             title="Code Block"
-            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
+            className="p-2 rounded-lg hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
           >
             <FileCode className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => insertFormatting('> ', '', 'Quoted thought')}
             title="Blockquote"
-            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
+            className="p-2 rounded-lg hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
           >
             <Quote className="w-3.5 h-3.5" />
           </button>
@@ -515,14 +515,14 @@ export default function NoteEditor({ note, onSave, onClose }) {
               )
             }
             title="Table Template"
-            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
+            className="p-2 rounded-lg hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
           >
             <TableIcon className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => insertFormatting('[', '](https://example.com)', 'Link label')}
             title="Hyperlink"
-            className="p-1.5 rounded hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
+            className="p-2 rounded-lg hover:bg-[#EAEAE4] dark:hover:bg-[#303945] text-[#202620] dark:text-[#F3F4F6]"
           >
             <LinkIcon className="w-3.5 h-3.5" />
           </button>
@@ -611,3 +611,4 @@ export default function NoteEditor({ note, onSave, onClose }) {
     </div>
   );
 }
+

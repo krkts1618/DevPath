@@ -109,7 +109,7 @@ export default function ModuleAccordion({
               <button
                 type="button"
                 onClick={() => onAddDayToModule(module)}
-                className="p-1.5 rounded-md hover:bg-[#F0F2ED] dark:hover:bg-[#252C35] text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] transition"
+                className="p-2 rounded-xl hover:bg-[#F0F2ED] dark:hover:bg-[#252C35] text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] transition"
                 title="Add Day to Module"
               >
                 <Plus className="w-4 h-4" />
@@ -120,7 +120,7 @@ export default function ModuleAccordion({
               <button
                 type="button"
                 onClick={() => onEditModule(module)}
-                className="p-1.5 rounded-md hover:bg-[#F0F2ED] dark:hover:bg-[#252C35] text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] transition"
+                className="p-2 rounded-xl hover:bg-[#F0F2ED] dark:hover:bg-[#252C35] text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] transition"
                 title="Edit Module"
               >
                 <Edit2 className="w-4 h-4" />
@@ -131,7 +131,7 @@ export default function ModuleAccordion({
               <button
                 type="button"
                 onClick={() => onDeleteModule(module.id)}
-                className="p-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-950/40 text-red-500 transition"
+                className="p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/40 text-red-500 transition"
                 title="Delete Module"
               >
                 <Trash2 className="w-4 h-4" />
@@ -213,7 +213,7 @@ export default function ModuleAccordion({
                             e.stopPropagation();
                             onAddTask(day.id);
                           }}
-                          className="p-1 rounded text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] transition"
+                          className="p-1.5 rounded-lg text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] transition"
                           title="Add Task to Day"
                         >
                           <Plus className="w-3.5 h-3.5" />
@@ -227,7 +227,7 @@ export default function ModuleAccordion({
                             e.stopPropagation();
                             onEditDay(day);
                           }}
-                          className="p-1 rounded text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] transition"
+                          className="p-1.5 rounded-lg text-[#858D82] hover:text-[#202620] dark:text-[#7F8996] dark:hover:text-[#F3F4F6] transition"
                           title="Edit Day"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
@@ -241,7 +241,7 @@ export default function ModuleAccordion({
                             e.stopPropagation();
                             onDeleteDay(day.id);
                           }}
-                          className="p-1 rounded text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition"
+                          className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition"
                           title="Delete Day"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -287,3 +287,4 @@ export default function ModuleAccordion({
     </div>
   );
 }
+

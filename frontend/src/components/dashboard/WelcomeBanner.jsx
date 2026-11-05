@@ -54,14 +54,14 @@ export default function WelcomeBanner({ stats }) {
           <div className="flex flex-wrap items-center gap-3">
             <Link
               to="/planner"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[var(--accent-primary)] hover:bg-[var(--accent-hover)] text-[var(--accent-text)] transition-colors shadow-xs"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[var(--accent-primary)] hover:brightness-105 active:scale-[0.98] text-[var(--accent-text)] transition-all shadow-sm"
             >
               <span>Daily Planner</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
             <Link
               to="/roadmaps"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium bg-[#F0F2ED] hover:bg-[#E4E7E0] dark:bg-[#252C35] dark:hover:bg-[#2B333D] text-[#202620] dark:text-[#F3F4F6] transition-colors border border-[#E4E7E0] dark:border-[#3A4552]"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-[#F0F2ED] hover:bg-[#E4E7E0] dark:bg-[#252C35] dark:hover:bg-[#2B333D] active:scale-[0.98] text-[#202620] dark:text-[#F3F4F6] transition-all border border-[#E4E7E0] dark:border-[#3A4552] shadow-xs"
             >
               <span>Explore Roadmaps ({activeCount} Active)</span>
             </Link>
@@ -70,11 +70,11 @@ export default function WelcomeBanner({ stats }) {
 
         {/* Quick Context Summary Pill on Right */}
         <div className="hidden lg:flex flex-col items-end gap-1.5 text-right font-mono text-xs">
-          <div className="px-3 py-1.5 rounded-lg bg-[#F8F9F6] dark:bg-[#171B21] border border-[#E4E7E0] dark:border-[#303945]">
+          <div className="px-3.5 py-1.5 rounded-xl bg-[#F8F9F6] dark:bg-[#171B21] border border-[#E4E7E0] dark:border-[#303945]">
             <span className="text-[#858D82] dark:text-[#7F8996]">Overall Progress: </span>
             <span className="font-bold text-[var(--accent-primary)]">{overallProgress}%</span>
           </div>
-          <div className="px-3 py-1.5 rounded-lg bg-[#F8F9F6] dark:bg-[#171B21] border border-[#E4E7E0] dark:border-[#303945]">
+          <div className="px-3.5 py-1.5 rounded-xl bg-[#F8F9F6] dark:bg-[#171B21] border border-[#E4E7E0] dark:border-[#303945]">
             <span className="text-[#858D82] dark:text-[#7F8996]">Today's Output: </span>
             <span className="font-bold text-[#202620] dark:text-[#F3F4F6]">{completedToday} / {streakTarget}</span>
           </div>
