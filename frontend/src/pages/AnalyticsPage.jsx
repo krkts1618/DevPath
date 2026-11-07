@@ -10,6 +10,7 @@ import TaskPerformanceSection from '../components/analytics/TaskPerformanceSecti
 import RevisionPerformanceSection from '../components/analytics/RevisionPerformanceSection';
 import ProjectPerformanceSection from '../components/analytics/ProjectPerformanceSection';
 import EngineeringInsightsSection from '../components/analytics/EngineeringInsightsSection';
+import WeeklyEngineeringReport from '../components/analytics/WeeklyEngineeringReport';
 import ErrorState from '../components/ui/ErrorState';
 
 export default function AnalyticsPage() {
@@ -133,6 +134,10 @@ export default function AnalyticsPage() {
       />
 
       {/* 3. Render Sections based on activeSection */}
+      {(activeSection === 'all' || activeSection === 'weekly-report') && (
+        <WeeklyEngineeringReport />
+      )}
+
       {(activeSection === 'all' || activeSection === 'overview') && (
         <OverviewSection overview={data?.overview} />
       )}

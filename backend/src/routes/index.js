@@ -17,6 +17,7 @@ import studySessionRoutes from './studySession.routes.js';
 import notificationRoutes from './notification.routes.js';
 import reminderRoutes from './reminder.routes.js';
 import authRoutes from './auth.routes.js';
+import weekendReviewRoutes from './weekendReview.routes.js';
 
 const router = Router();
 
@@ -62,5 +63,6 @@ router.use('/study-sessions', studySessionRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/reminders', reminderRoutes);
 router.use('/auth', authRoutes);
+router.use('/weekend-reviews', weekendReviewRoutes);
 
 export default router;

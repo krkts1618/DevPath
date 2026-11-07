@@ -3,6 +3,9 @@ import {
   getKolkataDateString,
   addDaysToKolkataDate,
   calculateScheduledDate,
+  isKolkataWeekend,
+  getKolkataDayOfWeek,
+  getKolkataYearMonth,
 } from '../utils/date.util.js';
 
 export const LifecycleService = {
@@ -137,6 +140,9 @@ export const LifecycleService = {
       description,
       scheduledDate,
       dueDate,
+      startTime = null,
+      endTime = null,
+      taskType = 'custom',
       priority = 'normal',
       estimatedDuration = 30,
       category = 'Personal Learning',
@@ -160,6 +166,9 @@ export const LifecycleService = {
         description: description ? description.trim() : null,
         scheduledDate: schedDate,
         dueDate: dueDate || null,
+        startTime: startTime || null,
+        endTime: endTime || null,
+        taskType: taskType || 'custom',
         priority: assignedPriority,
         estimatedDuration: Number(estimatedDuration) || 30,
         category: category || 'Personal Learning',
@@ -179,6 +188,9 @@ export const LifecycleService = {
       description,
       scheduledDate,
       dueDate,
+      startTime,
+      endTime,
+      taskType,
       priority,
       estimatedDuration,
       category,
@@ -190,6 +202,9 @@ export const LifecycleService = {
     if (description !== undefined) updatePayload.description = description;
     if (scheduledDate !== undefined) updatePayload.scheduledDate = scheduledDate;
     if (dueDate !== undefined) updatePayload.dueDate = dueDate;
+    if (startTime !== undefined) updatePayload.startTime = startTime || null;
+    if (endTime !== undefined) updatePayload.endTime = endTime || null;
+    if (taskType !== undefined) updatePayload.taskType = taskType || 'custom';
     if (priority !== undefined) {
       const validPriorities = ['low', 'normal', 'high', 'urgent'];
       if (validPriorities.includes(priority.toLowerCase())) {
@@ -271,9 +286,10 @@ export const LifecycleService = {
     const todayStr = getKolkataDateString();
     const queryStart = startStr || addDaysToKolkataDate(todayStr, -15);
     const queryEnd = endStr || addDaysToKolkataDate(todayStr, 45);
+    const yearMonth = getKolkataYearMonth();
 
-    // Fetch active & paused roadmaps, rest days, personal tasks, and revision items
-    const [roadmaps, restDays, personalTasks, revisions] = await Promise.all([
+    // Fetch active & paused roadmaps, rest days, personal tasks, revision items, and freezes
+    const [roadmaps, restDays, personalTasks, revisions, freezes] = await Promise.all([
       prisma.roadmap.findMany({
         where: {
           status: { in: ['active', 'paused'] },
@@ -315,6 +331,10 @@ export const LifecycleService = {
           roadmap: { select: { id: true, title: true } },
           task: { select: { id: true, title: true } },
         },
+      }),
+      prisma.streakFreeze.findMany({
+        where: { yearMonth },
+        orderBy: { date: 'asc' },
       }),
     ]);
 
@@ -380,17 +400,21 @@ export const LifecycleService = {
       });
     });
 
-    // 3. Personal Tasks
+    // 3. Personal Tasks with full time & type sync
     personalTasks.forEach((pt) => {
       addEvent(pt.scheduledDate, {
         id: `personal_${pt.id}`,
         type: 'personal_task',
         personalTaskId: pt.id,
         title: pt.title,
+        description: pt.description,
         priority: pt.priority,
         estimatedDuration: pt.estimatedDuration,
         completed: pt.completed,
         dueDate: pt.dueDate,
+        startTime: pt.startTime,
+        endTime: pt.endTime,
+        taskType: pt.taskType || 'custom',
         roadmapId: pt.roadmapId,
         roadmapTitle: pt.roadmap?.title || null,
         category: pt.category,
@@ -414,11 +438,53 @@ export const LifecycleService = {
       }
     });
 
+    // 5. Annotate weekends and compute workload metrics per date
+    let cursor = queryStart;
+    const dayWorkload = {};
+    while (cursor <= queryEnd) {
+      const isWeekend = isKolkataWeekend(cursor);
+      const dow = getKolkataDayOfWeek(cursor);
+
+      if (isWeekend) {
+        addEvent(cursor, {
+          id: `weekend_rev_${cursor}`,
+          type: 'weekend_revision',
+          title: dow === 6 ? 'Saturday Recollection' : 'Sunday Assessment',
+          reviewType: dow === 6 ? 'recollection' : 'assessment',
+          date: cursor,
+          isNeutral: true,
+        });
+      }
+
+      const dateEvents = eventsByDate[cursor] || [];
+      const scheduledCount = dateEvents.reduce((sum, e) => {
+        if (e.type === 'personal_task') return sum + 1;
+        if (e.type === 'roadmap_day') return sum + (e.tasks?.length || 0);
+        return sum;
+      }, 0);
+
+      dayWorkload[cursor] = {
+        date: cursor,
+        scheduledCount,
+        isOverloaded: scheduledCount > 7,
+        isWeekend,
+      };
+
+      cursor = addDaysToKolkataDate(cursor, 1);
+    }
+
     return {
       queryStart,
       queryEnd,
       todayStr,
       eventsByDate,
+      dayWorkload,
+      streakFreezes: {
+        monthlyAllowance: 4,
+        freezesUsed: freezes.length,
+        freezesRemaining: Math.max(0, 4 - freezes.length),
+        history: freezes,
+      },
     };
   },
 };

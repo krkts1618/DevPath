@@ -8,10 +8,12 @@ import {
   RotateCcw,
   FolderGit2,
   Sparkles,
+  BarChart2,
 } from 'lucide-react';
 
 export const SECTIONS = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+  { id: 'weekly-report', label: 'Weekly Report', icon: BarChart2 },
   { id: 'technology', label: 'Technology Tracks', icon: Compass },
   { id: 'study-time', label: 'Study Time', icon: Clock },
   { id: 'consistency', label: 'Consistency & Streaks', icon: Flame },

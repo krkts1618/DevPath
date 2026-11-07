@@ -172,14 +172,17 @@ export default function DashboardPage() {
             <span className="text-[10px] font-bold text-[#858D82] dark:text-[#7F8996] uppercase tracking-wider font-mono">
               Streak
             </span>
-            <Flame className="w-4 h-4 text-amber-500 fill-amber-500/20" />
+            <span className="text-[11px] font-mono font-medium text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20">
+              ❄️ {stats?.streakFreezes?.freezesRemaining ?? stats?.freezes?.remaining ?? 4}/4 Freezes
+            </span>
           </div>
           <div>
             <div className="text-2xl font-bold font-mono text-[#202620] dark:text-[#F3F4F6]">
               {stats?.currentStreak ?? 0} Days
             </div>
-            <div className="text-xs text-[#596258] dark:text-[#B0B7C2] mt-0.5 flex items-center gap-1">
-              <span>{stats?.qualifiedToday ? 'Target locked today! 🎯' : 'Keep going! 🔥'}</span>
+            <div className="text-xs text-[#596258] dark:text-[#B0B7C2] mt-0.5 flex items-center justify-between">
+              <span>{stats?.qualifiedToday ? 'Target locked today! 🎯' : (stats?.isTodayWeekend ? 'Weekend revision day 📚' : 'Keep going! 🔥')}</span>
+              <span className="text-[10px] text-[#858D82] dark:text-[#7F8996] font-mono">5-day week</span>
             </div>
           </div>
         </div>

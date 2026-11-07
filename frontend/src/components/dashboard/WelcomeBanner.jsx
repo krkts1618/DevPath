@@ -13,6 +13,19 @@ export default function WelcomeBanner({ stats }) {
   const activeCount     = stats?.activeRoadmapsCount ?? 0;
   const overallProgress = stats?.overallProgressPercent ?? 0;
 
+  // Streak freezes metadata
+  const freezes = stats?.streakFreezes || stats?.freezes;
+  const freezesRemaining = freezes?.freezesRemaining ?? freezes?.remaining ?? 4;
+  const freezesAllowance = freezes?.monthlyAllowance ?? freezes?.allowance ?? 4;
+
+  // Weekend Revision status
+  const isWeekend = stats?.isTodayWeekend || stats?.isWeekendRevisionDay;
+
+  // Prevent duplicate names like "Good morning, Engineer, Engineer!"
+  const cleanGreeting = greetingTitle.toLowerCase().includes('engineer')
+    ? greetingTitle
+    : `${greetingTitle}, Engineer!`;
+
   return (
     <div className="relative overflow-hidden rounded-xl border border-[#E4E7E0] dark:border-[#303945] bg-[#FFFFFF] dark:bg-[#1D232B] shadow-xs">
       {/* Background Architectural / Atmospheric Texture */}
@@ -31,11 +44,19 @@ export default function WelcomeBanner({ stats }) {
       {/* Content Container */}
       <div className="relative z-10 p-5 sm:p-6 lg:p-7 flex flex-col md:flex-row md:items-center justify-between gap-5">
         <div className="max-w-2xl">
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex flex-wrap items-center gap-2 mb-2.5">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-[#F0F2ED] dark:bg-[#252C35] text-[#596258] dark:text-[#B0B7C2] border border-[#E4E7E0] dark:border-[#3A4552]">
               <Clock className="w-3 h-3 text-[var(--accent-primary)]" />
               <span>{formattedDate}</span>
             </span>
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30">
+              <span>❄️ {freezesRemaining}/{freezesAllowance} Freezes</span>
+            </span>
+            {isWeekend && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/30">
+                <span>🎯 Weekend Revision Mode</span>
+              </span>
+            )}
             <span className="text-xs text-[#858D82] dark:text-[#7F8996] font-mono hidden sm:inline">•</span>
             <span className="text-xs text-[#858D82] dark:text-[#7F8996] font-medium hidden sm:inline">
               Asia/Kolkata (IST • UTC+05:30)
@@ -43,7 +64,7 @@ export default function WelcomeBanner({ stats }) {
           </div>
 
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#202620] dark:text-[#F3F4F6] mb-1.5 flex items-center gap-2">
-            <span>{greetingTitle}, Engineer!</span>
+            <span>{cleanGreeting}</span>
             <span>👋</span>
           </h1>
 

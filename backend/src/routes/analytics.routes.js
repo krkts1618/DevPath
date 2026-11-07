@@ -12,5 +12,6 @@ router.get('/heatmap', AnalyticsController.getActivityHeatmap);
 router.get('/history', AnalyticsController.getLearningHistory);
 router.get('/streak-target', AnalyticsController.getStreakTarget);
 router.post('/streak-target', AnalyticsController.updateStreakTarget);
+router.get('/weekly-report', AnalyticsController.getWeeklyReport);
 
 export default router;

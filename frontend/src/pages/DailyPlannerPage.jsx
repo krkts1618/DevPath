@@ -16,6 +16,9 @@ import {
   Check,
   Trophy,
   ArrowRight,
+  AlertTriangle,
+  Sparkles,
+  BarChart2,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { dashboardService } from '../services/dashboardService';
@@ -25,6 +28,10 @@ import { studySessionService } from '../services/studySessionService';
 import TaskItem from '../components/tasks/TaskItem';
 import TaskDetailModal from '../components/tasks/TaskDetailModal';
 import RescheduleMissedTaskModal from '../components/tasks/RescheduleMissedTaskModal';
+import SaturdayRecollection from '../components/planner/SaturdayRecollection';
+import SundayAssessment from '../components/planner/SundayAssessment';
+import WeeklyEngineeringReport from '../components/analytics/WeeklyEngineeringReport';
+import Modal from '../components/ui/Modal';
 import Button from '../components/ui/Button';
 import EmptyState from '../components/ui/EmptyState';
 import ErrorState from '../components/ui/ErrorState';
@@ -43,6 +50,8 @@ export default function DailyPlannerPage() {
   const [error, setError] = useState(null);
   const [collapsedGroups, setCollapsedGroups] = useState({});
   const [tasksFocusMap, setTasksFocusMap] = useState({});
+  const [weekendMode, setWeekendMode] = useState(true);
+  const [isWeeklyReportOpen, setIsWeeklyReportOpen] = useState(false);
 
   // Modals
   const [detailTaskId, setDetailTaskId] = useState(null);
@@ -231,16 +240,20 @@ export default function DailyPlannerPage() {
           </div>
         </div>
 
-        {/* Right: Date Picker, Jump to Today & Progress Pill */}
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#F8F9F6] dark:bg-[#171B21] border border-[#E4E7E0] dark:border-[#303945] font-mono text-xs">
+        {/* Right: Date Picker, Freezes Badge, Jump to Today & Actions */}
+        <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30 font-mono text-xs font-semibold">
+            <span>❄️ {streak.streakFreezes?.freezesRemaining ?? streak.freezes?.remaining ?? 4}/4 Freezes</span>
+          </div>
+
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#F8F9F6] dark:bg-[#171B21] border border-[#E4E7E0] dark:border-[#303945] font-mono text-xs">
             <span className="text-[#858D82] dark:text-[#7F8996]">Completed:</span>
             <span className="font-bold text-[var(--accent-primary)]">
               {completedCount} / {targetCount}
             </span>
           </div>
 
-          <div className="flex items-center gap-2 bg-[#F8F9F6] dark:bg-[#171B21] border border-[#E4E7E0] dark:border-[#303945] rounded-xl px-3 py-2">
+          <div className="flex items-center gap-2 bg-[#F8F9F6] dark:bg-[#171B21] border border-[#E4E7E0] dark:border-[#303945] rounded-xl px-2.5 py-1.5">
             <Calendar className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
             <input
               type="date"
@@ -249,6 +262,16 @@ export default function DailyPlannerPage() {
               className="bg-transparent text-xs text-[#202620] dark:text-[#F3F4F6] focus:outline-none font-mono cursor-pointer"
             />
           </div>
+
+          {plannerData?.isWeekendRevisionDay && (
+            <button
+              onClick={() => setIsWeeklyReportOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F0F2ED] dark:bg-[#252C35] hover:border-[var(--accent-primary)] text-xs font-semibold border border-[#E4E7E0] dark:border-[#303945] text-[#202620] dark:text-[#F3F4F6] transition cursor-pointer"
+            >
+              <BarChart2 className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
+              <span className="hidden sm:inline">Weekly Report</span>
+            </button>
+          )}
 
           <Button
             variant="outline"
@@ -278,7 +301,83 @@ export default function DailyPlannerPage() {
         />
       </div>
 
-      {/* 3. Segmented Filter Tabs (Reference Style) */}
+      {/* 3. Workload Overload Alert Banner */}
+      {plannerData?.workload?.isOverloaded && (
+        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+              <AlertTriangle className="w-4 h-4" />
+            </div>
+            <div>
+              <h4 className="text-xs sm:text-sm font-bold text-[#202620] dark:text-[#F3F4F6]">
+                Workload alert: {plannerData.workload.totalScheduled} tasks scheduled for today
+              </h4>
+              <p className="text-xs text-[#596258] dark:text-[#B0B7C2] mt-0.5">
+                Recommended maximum is 7. To maintain consistency, consider rescheduling personal tasks to lighter days.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setActiveTab('personal')}
+            className="px-4 py-2 rounded-xl bg-[var(--accent-primary)] text-[var(--accent-text)] text-xs font-semibold shrink-0 cursor-pointer shadow-xs"
+          >
+            Manage Personal Tasks
+          </button>
+        </div>
+      )}
+
+      {/* 4. Weekend Revision Mode Active Banner & Toggle */}
+      {plannerData?.isWeekendRevisionDay && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-[#FFFFFF] dark:bg-[#1D232B] border border-amber-500/30 shadow-xs">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-[var(--accent-primary)] flex items-center justify-center shrink-0">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-300">
+                  {plannerData.weekendReviewType === 'recollection' ? 'Saturday Recollection' : 'Sunday Assessment'}
+                </span>
+                <span className="text-xs text-[#858D82] dark:text-[#7F8996] font-mono">
+                  Dedicated Weekend Revision Mode
+                </span>
+              </div>
+              <p className="text-xs text-[#596258] dark:text-[#B0B7C2] mt-0.5">
+                Weekends protect and solidify your Mon–Fri learning without advancing curriculum days or consuming streak freezes.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => setWeekendMode(!weekendMode)}
+              className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#F8F9F6] dark:bg-[#171B21] border border-[#E4E7E0] dark:border-[#303945] hover:border-[var(--accent-primary)]/50 transition cursor-pointer text-[#202620] dark:text-[#F3F4F6]"
+            >
+              {weekendMode ? 'View Normal Task Queue' : 'Return to Revision Mode'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 5. Conditional Render: Weekend Revision Screen vs Regular Queue */}
+      {plannerData?.isWeekendRevisionDay && weekendMode ? (
+        plannerData.weekendReviewType === 'recollection' ? (
+          <SaturdayRecollection
+            weekStartDate={plannerData.date}
+            initialData={plannerData.weekendData}
+            onSaved={() => fetchPlanner(selectedDate)}
+          />
+        ) : (
+          <SundayAssessment
+            weekStartDate={plannerData.date}
+            initialData={plannerData.weekendData}
+            onOpenWeeklyReport={() => setIsWeeklyReportOpen(true)}
+            onSaved={() => fetchPlanner(selectedDate)}
+          />
+        )
+      ) : (
+        <>
+          {/* Segmented Filter Tabs (Reference Style) */}
       <div className="flex items-center gap-2.5 overflow-x-auto pb-0.5 scrollbar-none">
         <button
           onClick={() => setActiveTab('pending')}
@@ -622,6 +721,20 @@ export default function DailyPlannerPage() {
           </div>
         </div>
       </div>
+    </>
+  )}
+
+      {/* Weekly Engineering Report Modal */}
+      {isWeeklyReportOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-2xl max-w-4xl w-full p-6 shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
+            <WeeklyEngineeringReport
+              weekStartDate={plannerData?.date}
+              onClose={() => setIsWeeklyReportOpen(false)}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Task Detail Modal */}
       {detailTaskId && (

@@ -214,6 +214,8 @@ export const DashboardRepository = {
       remainingToday: streakData.remainingToday,
       qualifiedToday: streakData.qualifiedToday,
       isPendingToday: streakData.isPendingToday,
+      streakFreezes: streakData.streakFreezes,
+      freezeStatus: streakData.freezeStatus,
       roadmaps: roadmapProgress,
       learningQueue,
       weeklyActivity,

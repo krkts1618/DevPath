@@ -52,4 +52,10 @@ export const analyticsService = {
   updateStreakTarget: async (target, effectiveFrom = null) => {
     return api.post('/analytics/streak-target', { target, effectiveFrom });
   },
+
+  getWeeklyReport: async (weekStartDate = null) => {
+    return api.get('/analytics/weekly-report', {
+      params: weekStartDate ? { weekStartDate } : {},
+    });
+  },
 };

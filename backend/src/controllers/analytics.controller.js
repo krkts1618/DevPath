@@ -120,4 +120,14 @@ export const AnalyticsController = {
       next(err);
     }
   },
+
+  async getWeeklyReport(req, res, next) {
+    try {
+      const { weekStartDate } = req.query;
+      const report = await AnalyticsService.getWeeklyEngineeringReport(weekStartDate);
+      return successResponse(res, report, 'Weekly engineering report retrieved successfully');
+    } catch (err) {
+      next(err);
+    }
+  },
 };

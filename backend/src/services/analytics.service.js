@@ -3,6 +3,10 @@ import {
   getKolkataDateString,
   addDaysToKolkataDate,
   calculateScheduledDate,
+  getKolkataWeekRange,
+  isKolkataWeekday,
+  isKolkataWeekend,
+  DEFAULT_TIMEZONE,
 } from '../utils/date.util.js';
 import { StreakService } from './streak.service.js';
 import { computeProgressionFromRoadmap } from './progression.service.js';
@@ -1092,5 +1096,227 @@ export const AnalyticsService = {
       default:
         throw new Error(`Unsupported export type: ${type}`);
     }
+  },
+
+  /**
+   * Generates real weekly engineering metrics adhering to:
+   * - Five-day learning week target tracking (out of 5 weekdays)
+   * - Tasks completed by roadmap
+   * - Unique topics mastered
+   * - Real focus time logged
+   * - Weekend revision completion status (Recollection & Assessment)
+   * - Streak freezes utilized
+   * - Weak topics flagged for reinforcement
+   * - Notes and projects momentum
+   */
+  async getWeeklyEngineeringReport(queryWeekStart = null) {
+    const todayStr = getKolkataDateString();
+    const refDate = queryWeekStart || todayStr;
+    const { weekStartDate, weekEndDate } = getKolkataWeekRange(refDate);
+
+    const [sy, sm, sd] = weekStartDate.split('-').map(Number);
+    const [ey, em, ed] = weekEndDate.split('-').map(Number);
+
+    const startUtc = new Date(Date.UTC(sy, sm - 1, sd, 0, 0, 0) - (5 * 60 + 30) * 60 * 1000);
+    const endUtc = new Date(Date.UTC(ey, em - 1, ed, 23, 59, 59, 999) - (5 * 60 + 30) * 60 * 1000);
+
+    const [
+      taskCompletions,
+      personalTasks,
+      studySessions,
+      weekendReviews,
+      streakFreezes,
+      topicAssessments,
+      notes,
+      projects,
+    ] = await Promise.all([
+      prisma.taskCompletion.findMany({
+        where: {
+          completed: true,
+          completedAt: { gte: startUtc, lte: endUtc },
+        },
+        include: {
+          task: {
+            include: {
+              roadmapDay: {
+                include: {
+                  roadmap: { select: { id: true, title: true, iconIdentifier: true } },
+                },
+              },
+            },
+          },
+        },
+        orderBy: { completedAt: 'asc' },
+      }),
+      prisma.personalTask.findMany({
+        where: {
+          completed: true,
+          completedAt: { gte: startUtc, lte: endUtc },
+        },
+        include: {
+          roadmap: { select: { id: true, title: true } },
+        },
+        orderBy: { completedAt: 'asc' },
+      }),
+      prisma.studySession.findMany({
+        where: {
+          completedAt: { gte: startUtc, lte: endUtc },
+        },
+        orderBy: { completedAt: 'asc' },
+      }),
+      prisma.weekendReview.findMany({
+        where: { weekStartDate },
+      }),
+      prisma.streakFreeze.findMany({
+        where: {
+          date: { gte: weekStartDate, lte: weekEndDate },
+        },
+      }),
+      prisma.topicAssessment.findMany({
+        where: {
+          assessedDate: { gte: weekStartDate, lte: weekEndDate },
+        },
+        include: {
+          roadmap: { select: { id: true, title: true } },
+        },
+      }),
+      prisma.note.findMany({
+        where: {
+          updatedAt: { gte: startUtc, lte: endUtc },
+        },
+        select: { id: true, title: true, updatedAt: true },
+      }),
+      prisma.project.findMany({
+        where: {
+          updatedAt: { gte: startUtc, lte: endUtc },
+        },
+        select: { id: true, name: true, status: true, priority: true, updatedAt: true },
+      }),
+    ]);
+
+    // 1. Group daily completions by date string
+    const completionsByDay = new Map();
+    taskCompletions.forEach((tc) => {
+      const dStr = getKolkataDateString(tc.completedAt);
+      completionsByDay.set(dStr, (completionsByDay.get(dStr) || 0) + 1);
+    });
+    personalTasks.forEach((pt) => {
+      const dStr = getKolkataDateString(pt.completedAt);
+      completionsByDay.set(dStr, (completionsByDay.get(dStr) || 0) + 1);
+    });
+
+    const freezeDates = new Set(streakFreezes.map((f) => f.date));
+
+    // 2. Weekday breakdown (Monday–Friday, 5 days)
+    const weekdayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+    const weekdayBreakdown = [];
+    let learningDaysAchieved = 0;
+
+    for (let i = 0; i < 5; i++) {
+      const dayDateStr = addDaysToKolkataDate(weekStartDate, i);
+      const count = completionsByDay.get(dayDateStr) || 0;
+      const targetReached = count >= 5;
+      const freezeConsumed = freezeDates.has(dayDateStr);
+
+      if (targetReached) {
+        learningDaysAchieved++;
+      }
+
+      weekdayBreakdown.push({
+        dayName: weekdayLabels[i],
+        date: dayDateStr,
+        completedTasks: count,
+        target: 5,
+        targetReached,
+        freezeConsumed,
+      });
+    }
+
+    // 3. Tasks grouped by roadmap
+    const roadmapMap = new Map();
+    taskCompletions.forEach((tc) => {
+      const rm = tc.task?.roadmapDay?.roadmap;
+      if (!rm) return;
+      if (!roadmapMap.has(rm.id)) {
+        roadmapMap.set(rm.id, {
+          roadmapId: rm.id,
+          title: rm.title,
+          iconIdentifier: rm.iconIdentifier,
+          count: 0,
+          tasks: [],
+        });
+      }
+      const entry = roadmapMap.get(rm.id);
+      entry.count++;
+      entry.tasks.push(tc.task.title);
+    });
+
+    if (personalTasks.length > 0) {
+      roadmapMap.set('personal', {
+        roadmapId: 'personal',
+        title: 'Personal & Scheduled Tasks',
+        iconIdentifier: 'check-square',
+        count: personalTasks.length,
+        tasks: personalTasks.map((p) => p.title),
+      });
+    }
+
+    // 4. Unique topics covered
+    const topicsCoveredSet = new Set();
+    taskCompletions.forEach((tc) => {
+      if (tc.task?.title) topicsCoveredSet.add(tc.task.title);
+    });
+    personalTasks.forEach((pt) => {
+      if (pt.title) topicsCoveredSet.add(pt.title);
+    });
+
+    // 5. Total focus time logged
+    const totalFocusMinutes = studySessions.reduce((acc, s) => {
+      const mins = s.durationMinutes || (s.durationSeconds ? Math.round(s.durationSeconds / 60) : 0);
+      return acc + mins;
+    }, 0);
+
+    // 6. Weekend review status
+    const saturdayReview = weekendReviews.find((r) => r.reviewType === 'recollection');
+    const sundayReview = weekendReviews.find((r) => r.reviewType === 'assessment');
+
+    // 7. Weak topics flagged
+    const weakTopics = topicAssessments
+      .filter((ta) => ['needs_revision', 'difficult'].includes(ta.understanding))
+      .map((ta) => ({
+        topic: ta.topic,
+        understanding: ta.understanding,
+        roadmapTitle: ta.roadmap?.title || 'Engineering',
+        assessedDate: ta.assessedDate,
+      }));
+
+    return {
+      weekStartDate,
+      weekEndDate,
+      learningDaysAchieved,
+      totalWeekdayTargets: 5,
+      weekdayCompletionRatePercent: Math.round((learningDaysAchieved / 5) * 100),
+      weekdayBreakdown,
+      totalTasksCompleted: taskCompletions.length + personalTasks.length,
+      tasksByRoadmap: Array.from(roadmapMap.values()),
+      uniqueTopicsCount: topicsCoveredSet.size,
+      topicsCovered: Array.from(topicsCoveredSet),
+      focusTime: {
+        totalMinutes: totalFocusMinutes,
+        formatted: `${Math.floor(totalFocusMinutes / 60)}h ${totalFocusMinutes % 60}m`,
+        sessionsCount: studySessions.length,
+      },
+      weekendRevision: {
+        saturdayRecollectionCompleted: !!saturdayReview,
+        saturdayReviewDate: saturdayReview?.reviewDate || null,
+        sundayAssessmentCompleted: !!sundayReview,
+        sundayReviewDate: sundayReview?.reviewDate || null,
+      },
+      streakFreezesUsedThisWeek: streakFreezes.length,
+      freezeDetails: streakFreezes.map((f) => ({ date: f.date, reason: f.reason })),
+      weakTopicsFlagged: weakTopics,
+      notesUpdatedCount: notes.length,
+      projectsActiveCount: projects.length,
+    };
   },
 };

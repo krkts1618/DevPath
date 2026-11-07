@@ -4,8 +4,12 @@ import {
   getPreviousKolkataDate,
   addDaysToKolkataDate,
   calculateScheduledDate,
+  isKolkataWeekend,
+  getKolkataDayOfWeek,
+  getKolkataWeekRange,
 } from '../utils/date.util.js';
 import { StreakService } from './streak.service.js';
+import { WeekendReviewService } from './weekendReview.service.js';
 
 export const DAILY_STREAK_TARGET = 5;
 
@@ -381,12 +385,42 @@ export const ProgressionService = {
       rm.activeTasks.forEach((t) => activeTasksFlat.push(t));
     });
 
+    const isWeekend = isKolkataWeekend(queryDate);
+    const dayOfWeek = getKolkataDayOfWeek(queryDate);
+    const isWeekendRevisionDay = isWeekend;
+    const weekendReviewType = isWeekend ? (dayOfWeek === 6 ? 'recollection' : 'assessment') : null;
+
+    let weekendData = null;
+    if (isWeekend) {
+      if (weekendReviewType === 'recollection') {
+        weekendData = await WeekendReviewService.getRecollectionData(queryDate);
+      } else {
+        weekendData = await WeekendReviewService.getAssessmentData(queryDate);
+      }
+    }
+
+    // Workload analysis: DevPath target 5 tasks, overload threshold 7 tasks
+    const totalScheduled = activeTasksFlat.length + personalTasks.length;
+    const isOverloaded = totalScheduled > 7;
+    const overloadMessage = isOverloaded
+      ? `Workload alert: ${totalScheduled} tasks scheduled for today. Recommended maximum is 7. Would you like to reschedule non-essential tasks to lighter days?`
+      : null;
+
     return {
       date: queryDate,
       isToday,
       todayStr,
       isRestDay: !!restDay,
       restDayInfo: restDay || null,
+      isWeekendRevisionDay,
+      weekendReviewType,
+      weekendData,
+      workload: {
+        totalScheduled,
+        threshold: 7,
+        isOverloaded,
+        message: overloadMessage,
+      },
       streak: {
         currentStreak: streak.currentStreak,
         bestStreak: streak.bestStreak,
@@ -395,6 +429,8 @@ export const ProgressionService = {
         remainingToday: streak.remainingToday,
         qualifiedToday: streak.qualifiedToday,
         isPendingToday: streak.isPendingToday,
+        streakFreezes: streak.streakFreezes,
+        freezeStatus: streak.freezeStatus,
       },
       summary: {
         activeRoadmapsCount: adaptiveQueue.roadmaps.length,

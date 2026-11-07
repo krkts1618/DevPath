@@ -21,8 +21,68 @@ export function getKolkataDateString(date = new Date()) {
 }
 
 /**
- * Calculates scheduled date for a roadmap day based on roadmap start date.
- * scheduled_date = roadmap.start_date + (day_number - 1)
+ * Returns YYYY-MM string in Asia/Kolkata
+ * @param {Date|string} [date=new Date()]
+ * @returns {string} e.g. "2026-11"
+ */
+export function getKolkataYearMonth(date = new Date()) {
+  const dateStr = getKolkataDateString(date);
+  return dateStr.slice(0, 7);
+}
+
+/**
+ * Returns day of week (0=Sunday, 1=Monday... 6=Saturday) in Asia/Kolkata
+ * @param {Date|string} [date=new Date()]
+ * @returns {number}
+ */
+export function getKolkataDayOfWeek(date = new Date()) {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  const weekdayStr = new Intl.DateTimeFormat('en-US', {
+    timeZone: DEFAULT_TIMEZONE,
+    weekday: 'short',
+  }).format(d);
+  const map = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+  return map[weekdayStr] ?? d.getDay();
+}
+
+/**
+ * Checks whether a given date or YYYY-MM-DD string is a weekday (Monday–Friday) in Asia/Kolkata
+ * @param {Date|string} [date=new Date()]
+ * @returns {boolean}
+ */
+export function isKolkataWeekday(date = new Date()) {
+  const dow = getKolkataDayOfWeek(date);
+  return dow >= 1 && dow <= 5;
+}
+
+/**
+ * Checks whether a given date or YYYY-MM-DD string is a weekend (Saturday or Sunday) in Asia/Kolkata
+ * @param {Date|string} [date=new Date()]
+ * @returns {boolean}
+ */
+export function isKolkataWeekend(date = new Date()) {
+  const dow = getKolkataDayOfWeek(date);
+  return dow === 0 || dow === 6;
+}
+
+/**
+ * For any given date, returns the week range { weekStartDate, weekEndDate }
+ * where weekStartDate is Monday and weekEndDate is Sunday in Asia/Kolkata.
+ * @param {Date|string} [date=new Date()]
+ * @returns {{ weekStartDate: string, weekEndDate: string }}
+ */
+export function getKolkataWeekRange(date = new Date()) {
+  const dateStr = getKolkataDateString(date);
+  const dow = getKolkataDayOfWeek(date);
+  const diffToMonday = dow === 0 ? 6 : dow - 1;
+  const weekStartDate = addDaysToKolkataDate(dateStr, -diffToMonday);
+  const weekEndDate = addDaysToKolkataDate(weekStartDate, 6);
+  return { weekStartDate, weekEndDate };
+}
+
+/**
+ * Calculates scheduled date for a roadmap day based on a 5-day learning week (skipping weekends).
+ * Monday–Friday are learning days; Saturday and Sunday are reserved for revision.
  *
  * @param {Date|string|null} startDate - The start date of the roadmap
  * @param {number} dayNumber - 1-based day index within the roadmap
@@ -32,14 +92,24 @@ export function calculateScheduledDate(startDate, dayNumber) {
   if (!startDate || !dayNumber || dayNumber < 1) {
     return null;
   }
-  const base = new Date(startDate);
-  if (isNaN(base.getTime())) {
-    return null;
+  const baseStr = getKolkataDateString(startDate);
+  // If startDate falls on weekend, advance to following Monday
+  let currentStr = baseStr;
+  while (isKolkataWeekend(currentStr)) {
+    currentStr = addDaysToKolkataDate(currentStr, 1);
   }
-  // Add (day_number - 1) days
-  const scheduled = new Date(base);
-  scheduled.setUTCDate(scheduled.getUTCDate() + (dayNumber - 1));
-  return scheduled;
+
+  // Advance (dayNumber - 1) weekdays
+  let weekdaysCount = 1;
+  while (weekdaysCount < dayNumber) {
+    currentStr = addDaysToKolkataDate(currentStr, 1);
+    if (!isKolkataWeekend(currentStr)) {
+      weekdaysCount++;
+    }
+  }
+
+  const [y, m, d] = currentStr.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
 }
 
 /**
@@ -60,6 +130,7 @@ export function formatKolkataDate(date, timeZone = DEFAULT_TIMEZONE) {
 
 /**
  * Calculates the 1-based day number of a roadmap given its start date and a target date.
+ * Weekends do not advance the curriculum day number.
  * @param {Date|string} startDate
  * @param {Date|string} [targetDate]
  * @returns {number|null} 1-based day number, or null if invalid
@@ -69,11 +140,21 @@ export function calculateDayNumberForDate(startDate, targetDate = new Date()) {
   const startStr = getKolkataDateString(startDate);
   const targetStr = getKolkataDateString(targetDate);
 
-  const startUtc = new Date(`${startStr}T00:00:00Z`).getTime();
-  const targetUtc = new Date(`${targetStr}T00:00:00Z`).getTime();
+  if (targetStr < startStr) return 1;
 
-  const diffDays = Math.round((targetUtc - startUtc) / (1000 * 60 * 60 * 24));
-  return diffDays + 1;
+  let currentStr = startStr;
+  while (isKolkataWeekend(currentStr)) {
+    currentStr = addDaysToKolkataDate(currentStr, 1);
+  }
+
+  let dayNumber = 1;
+  while (currentStr < targetStr) {
+    currentStr = addDaysToKolkataDate(currentStr, 1);
+    if (!isKolkataWeekend(currentStr)) {
+      dayNumber++;
+    }
+  }
+  return dayNumber;
 }
 
 /**
@@ -120,21 +201,6 @@ export function getKolkataTimeString(date = new Date()) {
     minute: '2-digit',
     hour12: false,
   }).format(d);
-}
-
-/**
- * Returns day of week (0=Sunday, 1=Monday... 6=Saturday) in Asia/Kolkata
- * @param {Date|string} [date=new Date()]
- * @returns {number}
- */
-export function getKolkataDayOfWeek(date = new Date()) {
-  const d = typeof date === 'string' ? new Date(date) : date;
-  const weekdayStr = new Intl.DateTimeFormat('en-US', {
-    timeZone: DEFAULT_TIMEZONE,
-    weekday: 'short',
-  }).format(d);
-  const map = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
-  return map[weekdayStr] ?? d.getDay();
 }
 
 /**

@@ -51,6 +51,7 @@ model Roadmap {
   personalTasks PersonalTask[]
   notes         Note[]
   studySessions StudySession[]
+  topicAssessments TopicAssessment[]
 
   @@index([categoryId])
   @@index([status])
@@ -127,6 +128,7 @@ model Task {
   notes         Note[]
   projectTasks  ProjectTask[]
   studySessions StudySession[]
+  topicAssessments TopicAssessment[]
 
   @@index([roadmapDayId])
   @@index([roadmapDayId, isRequired])
@@ -458,6 +460,9 @@ model PersonalTask {
   description       String?   @db.Text
   scheduledDate     String    @map("scheduled_date") @db.VarChar(10)
   dueDate           String?   @map("due_date") @db.VarChar(10)
+  startTime         String?   @map("start_time") @db.VarChar(10)
+  endTime           String?   @map("end_time") @db.VarChar(10)
+  taskType          String?   @default("custom") @map("task_type") @db.VarChar(30)
   priority          String    @default("normal") @db.VarChar(20)
   estimatedDuration Int       @default(30) @map("estimated_duration")
   category          String?   @db.VarChar(100)
@@ -610,4 +615,63 @@ model ReminderExecution {
   @@index([status])
   @@map("reminder_executions")
 }
+
+model StreakFreeze {
+  id         String   @id @default(uuid()) @db.Uuid
+  date       String   @unique @db.VarChar(10)
+  yearMonth  String   @map("year_month") @db.VarChar(7)
+  reason     String?  @default("Missed weekday learning target protected") @db.Text
+  consumedAt DateTime @default(now()) @map("consumed_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([yearMonth])
+  @@index([date])
+  @@map("streak_freezes")
+}
+
+model WeekendReview {
+  id             String   @id @default(uuid()) @db.Uuid
+  weekStartDate  String   @map("week_start_date") @db.VarChar(10)
+  reviewDate     String   @map("review_date") @db.VarChar(10)
+  reviewType     String   @map("review_type") @db.VarChar(20)
+  reflection     String?  @db.Text
+  mistakes       String?  @db.Text
+  questions      String?  @db.Text
+  weakAreas      String?  @map("weak_areas") @db.Text
+  nextWeekGoals  String?  @map("next_week_goals") @db.Text
+  checklistItems Json?    @default("[]")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  topicAssessments TopicAssessment[]
+
+  @@unique([weekStartDate, reviewType])
+  @@index([weekStartDate])
+  @@index([reviewDate])
+  @@map("weekend_reviews")
+}
+
+model TopicAssessment {
+  id              String   @id @default(uuid()) @db.Uuid
+  weekendReviewId String?  @map("weekend_review_id") @db.Uuid
+  roadmapId       String?  @map("roadmap_id") @db.Uuid
+  taskId          String?  @map("task_id") @db.Uuid
+  topic           String   @db.VarChar(300)
+  understanding   String   @db.VarChar(30)
+  notes           String?  @db.Text
+  assessedDate    String   @map("assessed_date") @db.VarChar(10)
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  weekendReview WeekendReview? @relation(fields: [weekendReviewId], references: [id], onDelete: Cascade)
+  roadmap       Roadmap?       @relation(fields: [roadmapId], references: [id], onDelete: SetNull)
+  task          Task?          @relation(fields: [taskId], references: [id], onDelete: SetNull)
+
+  @@index([weekendReviewId])
+  @@index([roadmapId])
+  @@index([taskId])
+  @@index([understanding])
+  @@index([assessedDate])
+  @@map("topic_assessments")
+}
+
 

@@ -4,16 +4,25 @@ import {
   getPreviousKolkataDate,
   addDaysToKolkataDate,
   calculateScheduledDate,
+  isKolkataWeekday,
+  isKolkataWeekend,
+  getKolkataYearMonth,
+  getKolkataDayOfWeek,
 } from '../utils/date.util.js';
 
 export const DEFAULT_STREAK_TARGET = 5;
+export const MAX_MONTHLY_FREEZES = 4;
 
 /**
  * Streak Calculation Engine adhering to:
  * - 5-task default daily qualification (configurable per effective date)
- * - Asia/Kolkata timezone
+ * - Five-Day Learning Week (Monday–Friday learning days; Saturday & Sunday dedicated revision)
+ * - Weekends are neutral: they never reset or increment weekday learning streak
+ * - Four Monthly Streak Freezes (resets to 4 on calendar month boundary in Asia/Kolkata)
+ * - Automatic streak protection on missed weekdays when freezes available
+ * - Idempotent, duplicate-preventing freeze consumption
  * - Distinct completed tasks per local calendar day
- * - Neutral planned rest days (does not break streak, does not increment streak unless completed >= target)
+ * - Neutral planned rest days
  * - Mid-day pending state (never prematurely breaks streak on current day)
  * - Isolated roadmap-specific streaks (threshold = 1 task/day)
  */
@@ -76,45 +85,79 @@ export const StreakService = {
 
   /**
    * Calculate overall application streak across roadmap task completions and personal tasks.
+   * Adheres to 5-day learning week and 4 monthly streak freezes.
    */
   async calculateOverallStreak(cutoffDays = 365) {
     const todayStr = getKolkataDateString();
+    const currentYearMonth = getKolkataYearMonth(todayStr);
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - cutoffDays);
 
-    // Fetch completions, personal tasks, rest days, and target configs concurrently
-    const [completions, personalCompletions, restDaysList, targetConfigs] = await Promise.all([
-      prisma.taskCompletion.findMany({
-        where: {
-          completed: true,
-          completedAt: { gte: cutoffDate },
-        },
-        select: {
-          taskId: true,
-          completedAt: true,
-        },
-      }),
-      prisma.personalTask.findMany({
-        where: {
-          completed: true,
-          completedAt: { gte: cutoffDate },
-        },
-        select: {
-          id: true,
-          completedAt: true,
-        },
-      }),
-      prisma.plannedRestDay.findMany({
-        select: { date: true, title: true, reason: true },
-      }),
-      prisma.streakTargetConfig.findMany({
-        orderBy: { effectiveFrom: 'asc' },
-      }),
-    ]);
+    // Fetch completions, personal tasks, rest days, target configs, and streak freezes concurrently
+    const [completions, personalCompletions, restDaysList, targetConfigs, streakFreezes] =
+      await Promise.all([
+        prisma.taskCompletion.findMany({
+          where: {
+            completed: true,
+            completedAt: { gte: cutoffDate },
+          },
+          select: {
+            taskId: true,
+            completedAt: true,
+          },
+        }),
+        prisma.personalTask.findMany({
+          where: {
+            completed: true,
+            completedAt: { gte: cutoffDate },
+          },
+          select: {
+            id: true,
+            completedAt: true,
+          },
+        }),
+        prisma.plannedRestDay.findMany({
+          select: { date: true, title: true, reason: true },
+        }),
+        prisma.streakTargetConfig.findMany({
+          orderBy: { effectiveFrom: 'asc' },
+        }),
+        prisma.streakFreeze.findMany({
+          orderBy: { date: 'asc' },
+        }),
+      ]);
 
     // Build rest day lookup
     const restDayMap = new Map();
     restDaysList.forEach((r) => restDayMap.set(r.date, r));
+
+    // Build frozen dates lookup and monthly freeze usage
+    const frozenDateSet = new Set(streakFreezes.map((f) => f.date));
+    const monthlyFreezeCounts = new Map();
+    streakFreezes.forEach((f) => {
+      monthlyFreezeCounts.set(f.yearMonth, (monthlyFreezeCounts.get(f.yearMonth) || 0) + 1);
+    });
+
+    const getFreezesRemaining = (ym) =>
+      Math.max(0, MAX_MONTHLY_FREEZES - (monthlyFreezeCounts.get(ym) || 0));
+
+    const newFreezesToCreate = [];
+    const tryConsumeFreeze = (dateStr) => {
+      if (isKolkataWeekend(dateStr)) return false; // Weekends never consume freezes
+      if (frozenDateSet.has(dateStr)) return true; // Already protected by freeze
+      const ym = dateStr.slice(0, 7);
+      if (getFreezesRemaining(ym) > 0) {
+        newFreezesToCreate.push({
+          date: dateStr,
+          yearMonth: ym,
+          reason: `Missed weekday learning target on ${dateStr} automatically protected`,
+        });
+        frozenDateSet.add(dateStr);
+        monthlyFreezeCounts.set(ym, (monthlyFreezeCounts.get(ym) || 0) + 1);
+        return true;
+      }
+      return false;
+    };
 
     // Aggregate distinct completed task IDs per local Kolkata date
     const tasksPerDate = new Map();
@@ -147,8 +190,9 @@ export const StreakService = {
       return tgt;
     };
 
-    // Identify qualifying dates
+    // Identify qualifying dates: Monday–Friday weekdays count towards learning streak
     const qualifyingDates = new Set();
+    const weekendActivityDates = new Set();
     let lastQualifyingDate = null;
     const allKnownDates = new Set([...tasksPerDate.keys()]);
 
@@ -156,20 +200,29 @@ export const StreakService = {
       const distinctCount = tasksPerDate.get(dStr)?.size || 0;
       const target = getTarget(dStr);
       if (distinctCount >= target) {
-        qualifyingDates.add(dStr);
-        if (!lastQualifyingDate || dStr > lastQualifyingDate) {
-          lastQualifyingDate = dStr;
+        if (isKolkataWeekday(dStr)) {
+          qualifyingDates.add(dStr);
+          if (!lastQualifyingDate || dStr > lastQualifyingDate) {
+            lastQualifyingDate = dStr;
+          }
+        } else {
+          weekendActivityDates.add(dStr);
         }
+      } else if (distinctCount > 0 && isKolkataWeekend(dStr)) {
+        weekendActivityDates.add(dStr);
       }
     });
 
     // Today's metrics
+    const isTodayWeekday = isKolkataWeekday(todayStr);
+    const isTodayWeekend = isKolkataWeekend(todayStr);
+    const dailyTarget = getTarget(todayStr);
     const completedToday = tasksPerDate.get(todayStr)?.size || 0;
-    const requiredToday = getTarget(todayStr);
-    const qualifiedToday = completedToday >= requiredToday;
-    const remainingToday = Math.max(0, requiredToday - completedToday);
+    const requiredToday = isTodayWeekday ? dailyTarget : 0;
+    const qualifiedToday = isTodayWeekday && completedToday >= requiredToday;
+    const remainingToday = isTodayWeekday ? Math.max(0, requiredToday - completedToday) : 0;
 
-    // Current Streak calculation with neutral rest days
+    // Current Streak calculation with neutral weekends, neutral rest days, and streak freezes
     let currentStreak = 0;
     let isPendingToday = false;
 
@@ -177,45 +230,67 @@ export const StreakService = {
       currentStreak = 1;
       let checkDate = getPreviousKolkataDate(todayStr);
       while (true) {
-        if (qualifyingDates.has(checkDate)) {
-          currentStreak++;
+        if (isKolkataWeekend(checkDate)) {
+          // Weekend revision day: neutral, does not break or increment streak
           checkDate = getPreviousKolkataDate(checkDate);
         } else if (restDayMap.has(checkDate)) {
-          // Neutral rest day: skip without incrementing or breaking
+          // Planned rest day: neutral
+          checkDate = getPreviousKolkataDate(checkDate);
+        } else if (qualifyingDates.has(checkDate)) {
+          currentStreak++;
+          checkDate = getPreviousKolkataDate(checkDate);
+        } else if (tryConsumeFreeze(checkDate)) {
+          // Protected by streak freeze: preserves streak without incrementing count
           checkDate = getPreviousKolkataDate(checkDate);
         } else {
-          // Non-qualifying active day -> streak boundary reached
+          // Unprotected missed weekday: streak boundary reached
           break;
         }
       }
     } else {
-      // Today not yet qualified: check prior active day
+      // Today not yet qualified (mid-day pending weekday, or today is a weekend, or a rest day)
       let checkDate = getPreviousKolkataDate(todayStr);
-      // Skip backwards over rest days
-      while (restDayMap.has(checkDate) && !qualifyingDates.has(checkDate)) {
+      while (isKolkataWeekend(checkDate) || restDayMap.has(checkDate)) {
         checkDate = getPreviousKolkataDate(checkDate);
       }
 
-      if (qualifyingDates.has(checkDate)) {
-        // Prior active day qualified! Streak remains intact and pending today
+      // Check if latest past weekday qualified or was protected by freeze
+      const isCheckDateProtected = qualifyingDates.has(checkDate) || tryConsumeFreeze(checkDate);
+      if (isCheckDateProtected) {
         while (true) {
-          if (qualifyingDates.has(checkDate)) {
-            currentStreak++;
+          if (isKolkataWeekend(checkDate)) {
             checkDate = getPreviousKolkataDate(checkDate);
           } else if (restDayMap.has(checkDate)) {
+            checkDate = getPreviousKolkataDate(checkDate);
+          } else if (qualifyingDates.has(checkDate)) {
+            currentStreak++;
+            checkDate = getPreviousKolkataDate(checkDate);
+          } else if (tryConsumeFreeze(checkDate)) {
             checkDate = getPreviousKolkataDate(checkDate);
           } else {
             break;
           }
         }
-        isPendingToday = currentStreak > 0;
+        isPendingToday = isTodayWeekday && currentStreak > 0;
       } else {
-        // Previous day was not a rest day and failed to qualify -> streak broken
         currentStreak = 0;
+        isPendingToday = false;
       }
     }
 
-    // Best Streak calculation across history (allowing neutral rest days)
+    // Persist any newly consumed streak freezes safely
+    if (newFreezesToCreate.length > 0) {
+      try {
+        await prisma.streakFreeze.createMany({
+          data: newFreezesToCreate,
+          skipDuplicates: true,
+        });
+      } catch (err) {
+        console.warn('Non-blocking streak freeze persistence notice:', err.message);
+      }
+    }
+
+    // Best Streak calculation across historical weekdays (neutral weekends, rest days, and freezes)
     const sortedQualifyingDates = Array.from(qualifyingDates).sort();
     let bestStreak = 0;
     if (sortedQualifyingDates.length > 0) {
@@ -226,18 +301,19 @@ export const StreakService = {
         if (!prevDate) {
           tempStreak = 1;
         } else {
-          // Check if every day between prevDate and dStr is a rest day
           let cur = addDaysToKolkataDate(prevDate, 1);
-          let allInBetweenAreRest = true;
+          let allInBetweenAreNeutral = true;
           while (cur < dStr) {
-            if (!restDayMap.has(cur)) {
-              allInBetweenAreRest = false;
+            const isNeutral =
+              isKolkataWeekend(cur) || restDayMap.has(cur) || frozenDateSet.has(cur);
+            if (!isNeutral) {
+              allInBetweenAreNeutral = false;
               break;
             }
             cur = addDaysToKolkataDate(cur, 1);
           }
 
-          if (cur === dStr && allInBetweenAreRest) {
+          if (cur === dStr && allInBetweenAreNeutral) {
             tempStreak++;
           } else {
             tempStreak = 1;
@@ -254,6 +330,17 @@ export const StreakService = {
       bestStreak = currentStreak;
     }
 
+    const currentMonthUsed = monthlyFreezeCounts.get(currentYearMonth) || 0;
+    const currentMonthRemaining = Math.max(0, MAX_MONTHLY_FREEZES - currentMonthUsed);
+
+    const freezeHistory = streakFreezes.map((f) => ({
+      id: f.id,
+      date: f.date,
+      yearMonth: f.yearMonth,
+      reason: f.reason,
+      consumedAt: f.consumedAt,
+    }));
+
     return {
       currentStreak,
       bestStreak,
@@ -263,10 +350,35 @@ export const StreakService = {
       isPendingToday,
       lastQualifyingDate,
       totalQualifyingDays: qualifyingDates.size,
-      streakTarget: requiredToday,
+      streakTarget: dailyTarget,
       remainingToday,
       todayStr,
       isTodayRestDay: restDayMap.has(todayStr),
+      isTodayWeekend,
+      isTodayWeekday,
+      freezes: {
+        allowance: MAX_MONTHLY_FREEZES,
+        used: currentMonthUsed,
+        remaining: currentMonthRemaining,
+        month: currentYearMonth,
+        isFrozenToday: frozenDateSet.has(todayStr),
+        history: freezeHistory,
+      },
+      streakFreezes: {
+        allowance: MAX_MONTHLY_FREEZES,
+        used: currentMonthUsed,
+        remaining: currentMonthRemaining,
+        month: currentYearMonth,
+        isFrozenToday: frozenDateSet.has(todayStr),
+        history: freezeHistory,
+      },
+      freezeStatus: {
+        allowance: MAX_MONTHLY_FREEZES,
+        used: currentMonthUsed,
+        remaining: currentMonthRemaining,
+        badgeText: `❄️ ${currentMonthRemaining}/${MAX_MONTHLY_FREEZES} Freezes Available`,
+      },
+      weekendActivityDates: Array.from(weekendActivityDates),
     };
   },
 
