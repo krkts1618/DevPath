@@ -48,7 +48,8 @@ export function normalizePrismaUrl(rawUrl) {
         u.searchParams.set('pool_timeout', '30');
       }
       if (!u.searchParams.has('connection_limit')) {
-        u.searchParams.set('connection_limit', '15');
+        // Render 512MB RAM tier optimization: 5 connections prevents buffer bloat and pool starvation
+        u.searchParams.set('connection_limit', process.env.PRISMA_CONNECTION_LIMIT || '5');
       }
     }
 

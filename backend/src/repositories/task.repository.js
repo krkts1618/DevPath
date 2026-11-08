@@ -1,4 +1,5 @@
 import { prisma } from '../config/db.js';
+import { invalidateStreakCache } from '../services/streak.service.js';
 
 export const TaskRepository = {
   async findByDayId(roadmapDayId) {
@@ -88,6 +89,7 @@ export const TaskRepository = {
    * Upserts or updates the completion record.
    */
   async setCompletion(taskId, { completed, notes = null }) {
+    invalidateStreakCache();
     const existing = await prisma.taskCompletion.findUnique({
       where: { taskId },
     });

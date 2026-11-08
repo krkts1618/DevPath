@@ -4,11 +4,13 @@ services:
     runtime: node
     plan: free
     buildCommand: npm install && npx prisma generate
-    startCommand: node src/server.js
+    startCommand: node --max-old-space-size=384 src/server.js
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NODE_OPTIONS
+        value: "--max-old-space-size=384"
       - key: PORT
         value: 10000
       - key: DATABASE_URL

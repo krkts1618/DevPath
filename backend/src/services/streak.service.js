@@ -13,6 +13,15 @@ import {
 export const DEFAULT_STREAK_TARGET = 5;
 export const MAX_MONTHLY_FREEZES = 4;
 
+let streakCache = null;
+let streakCacheTimestamp = 0;
+const STREAK_CACHE_TTL_MS = 15000; // 15 seconds
+
+export function invalidateStreakCache() {
+  streakCache = null;
+  streakCacheTimestamp = 0;
+}
+
 /**
  * Streak Calculation Engine adhering to:
  * - 5-task default daily qualification (configurable per effective date)
@@ -90,42 +99,49 @@ export const StreakService = {
   async calculateOverallStreak(cutoffDays = 365) {
     const todayStr = getKolkataDateString();
     const currentYearMonth = getKolkataYearMonth(todayStr);
+
+    if (cutoffDays === 365 && streakCache && Date.now() - streakCacheTimestamp < STREAK_CACHE_TTL_MS) {
+      return { ...streakCache };
+    }
+
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - cutoffDays);
 
-    // Fetch completions, personal tasks, rest days, target configs, and streak freezes concurrently
-    const [completions, personalCompletions, restDaysList, targetConfigs, streakFreezes] =
-      await Promise.all([
-        prisma.taskCompletion.findMany({
-          where: {
-            completed: true,
-            completedAt: { gte: cutoffDate },
-          },
-          select: {
-            taskId: true,
-            completedAt: true,
-          },
-        }),
-        prisma.personalTask.findMany({
-          where: {
-            completed: true,
-            completedAt: { gte: cutoffDate },
-          },
-          select: {
-            id: true,
-            completedAt: true,
-          },
-        }),
-        prisma.plannedRestDay.findMany({
-          select: { date: true, title: true, reason: true },
-        }),
-        prisma.streakTargetConfig.findMany({
-          orderBy: { effectiveFrom: 'asc' },
-        }),
-        prisma.streakFreeze.findMany({
-          orderBy: { date: 'asc' },
-        }),
-      ]);
+    // Fetch in 2 small batches to prevent Supabase connection pool exhaustion (10054 ConnectionReset)
+    const [completions, personalCompletions] = await Promise.all([
+      prisma.taskCompletion.findMany({
+        where: {
+          completed: true,
+          completedAt: { gte: cutoffDate },
+        },
+        select: {
+          taskId: true,
+          completedAt: true,
+        },
+      }),
+      prisma.personalTask.findMany({
+        where: {
+          completed: true,
+          completedAt: { gte: cutoffDate },
+        },
+        select: {
+          id: true,
+          completedAt: true,
+        },
+      }),
+    ]);
+
+    const [restDaysList, targetConfigs, streakFreezes] = await Promise.all([
+      prisma.plannedRestDay.findMany({
+        select: { date: true, title: true, reason: true },
+      }),
+      prisma.streakTargetConfig.findMany({
+        orderBy: { effectiveFrom: 'asc' },
+      }),
+      prisma.streakFreeze.findMany({
+        orderBy: { date: 'asc' },
+      }),
+    ]);
 
     // Build rest day lookup
     const restDayMap = new Map();
@@ -341,7 +357,7 @@ export const StreakService = {
       consumedAt: f.consumedAt,
     }));
 
-    return {
+    const result = {
       currentStreak,
       bestStreak,
       completedToday,
@@ -380,6 +396,13 @@ export const StreakService = {
       },
       weekendActivityDates: Array.from(weekendActivityDates),
     };
+
+    if (cutoffDays === 365) {
+      streakCache = { ...result };
+      streakCacheTimestamp = Date.now();
+    }
+
+    return result;
   },
 
   /**

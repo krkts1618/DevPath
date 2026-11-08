@@ -30,14 +30,16 @@ export const prisma = basePrisma.$extends({
         return await query(args);
       } catch (error) {
         if (
+          error.code === 'P1001' ||
           error.code === 'P1017' ||
           error.code === 'P2024' ||
           error.message?.includes('closed the connection') ||
           error.message?.includes('10054') ||
+          error.message?.includes("Can't reach database server") ||
           error.message?.includes('connection pool')
         ) {
-          console.warn(`[Prisma] Connection issue (${error.code || 'timeout'}) in ${model || 'raw'}.${operation}, retrying once...`);
-          await new Promise((r) => setTimeout(r, 1000));
+          console.warn(`[Prisma] Transient connection issue (${error.code || 'timeout'}) in ${model || 'raw'}.${operation}, retrying once...`);
+          await new Promise((r) => setTimeout(r, 1200));
           return await query(args);
         }
         throw error;

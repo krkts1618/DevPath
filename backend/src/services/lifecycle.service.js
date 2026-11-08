@@ -1,4 +1,5 @@
 import { prisma } from '../config/db.js';
+import { invalidateStreakCache } from './streak.service.js';
 import {
   getKolkataDateString,
   addDaysToKolkataDate,
@@ -227,6 +228,7 @@ export const LifecycleService = {
   },
 
   async togglePersonalTask(id) {
+    invalidateStreakCache();
     const existing = await prisma.personalTask.findUnique({ where: { id } });
     if (!existing) {
       throw new Error('Personal task not found');
@@ -246,6 +248,7 @@ export const LifecycleService = {
   },
 
   async deletePersonalTask(id) {
+    invalidateStreakCache();
     return prisma.personalTask.delete({
       where: { id },
     });
@@ -288,28 +291,34 @@ export const LifecycleService = {
     const queryEnd = endStr || addDaysToKolkataDate(todayStr, 45);
     const yearMonth = getKolkataYearMonth();
 
-    // Fetch active & paused roadmaps, rest days, personal tasks, revision items, and freezes
-    const [roadmaps, restDays, personalTasks, revisions, freezes] = await Promise.all([
+    // Fetch in 2 small batches to prevent Supabase connection pool exhaustion (10054 ConnectionReset)
+    const [roadmaps, personalTasks] = await Promise.all([
       prisma.roadmap.findMany({
         where: {
           status: { in: ['active', 'paused'] },
           startDate: { not: null },
         },
-        include: {
-          category: true,
+        select: {
+          id: true,
+          title: true,
+          startDate: true,
+          themeIdentifier: true,
+          iconIdentifier: true,
+          category: { select: { id: true, name: true, slug: true } },
           roadmapDays: {
             orderBy: { dayNumber: 'asc' },
-            include: {
+            select: {
+              id: true,
+              dayNumber: true,
+              title: true,
               tasks: {
-                include: { completions: true },
+                select: {
+                  id: true,
+                  completions: { select: { completed: true } },
+                },
               },
             },
           },
-        },
-      }),
-      prisma.plannedRestDay.findMany({
-        where: {
-          date: { gte: queryStart, lte: queryEnd },
         },
       }),
       prisma.personalTask.findMany({
@@ -318,6 +327,14 @@ export const LifecycleService = {
         },
         include: {
           roadmap: { select: { id: true, title: true } },
+        },
+      }),
+    ]);
+
+    const [restDays, revisions, freezes] = await Promise.all([
+      prisma.plannedRestDay.findMany({
+        where: {
+          date: { gte: queryStart, lte: queryEnd },
         },
       }),
       prisma.revisionSchedule.findMany({
@@ -428,11 +445,11 @@ export const LifecycleService = {
         addEvent(dStr, {
           id: `revision_${rev.id}`,
           type: 'revision',
-          title: `Revision #${rev.revisionNumber}: ${rev.task?.title || rev.roadmap.title}`,
+          title: `Revision #${rev.revisionNumber}: ${rev.topic || rev.task?.title || rev.roadmap?.title || 'Topic Revision'}`,
           revisionNumber: rev.revisionNumber,
           completed: rev.completed,
-          roadmapId: rev.roadmapId,
-          roadmapTitle: rev.roadmap.title,
+          roadmapId: rev.roadmapId || null,
+          roadmapTitle: rev.roadmap?.title || 'General Curriculum',
           notes: rev.notes,
         });
       }

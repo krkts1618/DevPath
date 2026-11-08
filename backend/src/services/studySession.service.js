@@ -429,12 +429,18 @@ export const StudySessionService = {
     const monthStartStr = `${todayStr.substring(0, 7)}-01`;
 
     // Only count completed focus sessions (exclude breaks and non-completed statuses)
+    // Select only scalar fields needed to compute metrics, preventing memory bloat on Render
     const completedSessions = await prisma.studySession.findMany({
       where: {
         status: 'completed',
         sessionType: { in: ['pomodoro', 'custom', 'stopwatch'] },
       },
-      include: {
+      select: {
+        id: true,
+        actualDurationSeconds: true,
+        startedAt: true,
+        roadmapId: true,
+        projectId: true,
         roadmap: {
           select: {
             id: true,

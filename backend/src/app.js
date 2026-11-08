@@ -15,6 +15,16 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Configure Trust Proxy for Render & Reverse Proxies (Resolves ERR_ERL_UNEXPECTED_X_FORWARDED_FOR)
+// Render passes traffic through 1 reverse proxy hop before hitting the container.
+// Setting trust proxy to 1 ensures express-rate-limit and req.ip read the client IP correctly.
+const trustProxyConfig = process.env.TRUST_PROXY
+  ? isNaN(process.env.TRUST_PROXY)
+    ? process.env.TRUST_PROXY
+    : parseInt(process.env.TRUST_PROXY, 10)
+  : 1;
+app.set('trust proxy', trustProxyConfig);
+
 // Security Headers with Helmet
 app.use(
   helmet({

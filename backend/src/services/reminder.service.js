@@ -517,35 +517,43 @@ export const ReminderService = {
     // 3. Adaptive Revision Due Reminders (if enabled)
     if (pref.revisionRemindersEnabled) {
       try {
-        const revData = await RevisionService.getRevisions();
-        // Due today
-        if (revData.dueToday && revData.dueToday.length > 0) {
-          const count = revData.dueToday.length;
-          const revKey = `revision_due_${todayStr}`;
-          const createResult = await NotificationService.createNotification({
-            title: 'Spaced Repetition Due Today',
-            description: `You have ${count} topic${count > 1 ? 's' : ''} ready for review: "${revData.dueToday[0].topic}"${count > 1 ? ` and ${count - 1} more` : ''}.`,
-            notificationType: 'revision_due',
-            priority: 'normal',
-            actionUrl: '/revision',
-            idempotencyKey: revKey,
-          });
-          if (!createResult.isDuplicate) executionLog.notificationsCreated++;
-        }
+        const revKey = `revision_due_${todayStr}`;
+        const overdueKey = `revision_overdue_${todayStr}`;
+        const existingNotifs = await prisma.notification.findMany({
+          where: { idempotencyKey: { in: [revKey, overdueKey] } },
+          select: { idempotencyKey: true },
+        });
+        const existingKeys = new Set(existingNotifs.map((n) => n.idempotencyKey));
 
-        // Overdue revisions
-        if (revData.overdue && revData.overdue.length > 0) {
-          const count = revData.overdue.length;
-          const overdueKey = `revision_overdue_${todayStr}`;
-          const createResult = await NotificationService.createNotification({
-            title: 'Overdue Revisions Waiting',
-            description: `${count} revision topic${count > 1 ? 's remain' : ' remains'} incomplete past their scheduled date.`,
-            notificationType: 'revision_overdue',
-            priority: 'high',
-            actionUrl: '/revision',
-            idempotencyKey: overdueKey,
-          });
-          if (!createResult.isDuplicate) executionLog.notificationsCreated++;
+        if (!existingKeys.has(revKey) || !existingKeys.has(overdueKey)) {
+          const revData = await RevisionService.getRevisions();
+          // Due today
+          if (!existingKeys.has(revKey) && revData.dueToday && revData.dueToday.length > 0) {
+            const count = revData.dueToday.length;
+            const createResult = await NotificationService.createNotification({
+              title: 'Spaced Repetition Due Today',
+              description: `You have ${count} topic${count > 1 ? 's' : ''} ready for review: "${revData.dueToday[0].topic}"${count > 1 ? ` and ${count - 1} more` : ''}.`,
+              notificationType: 'revision_due',
+              priority: 'normal',
+              actionUrl: '/revision',
+              idempotencyKey: revKey,
+            });
+            if (!createResult.isDuplicate) executionLog.notificationsCreated++;
+          }
+
+          // Overdue revisions
+          if (!existingKeys.has(overdueKey) && revData.overdue && revData.overdue.length > 0) {
+            const count = revData.overdue.length;
+            const createResult = await NotificationService.createNotification({
+              title: 'Overdue Revisions Waiting',
+              description: `${count} revision topic${count > 1 ? 's remain' : ' remains'} incomplete past their scheduled date.`,
+              notificationType: 'revision_overdue',
+              priority: 'high',
+              actionUrl: '/revision',
+              idempotencyKey: overdueKey,
+            });
+            if (!createResult.isDuplicate) executionLog.notificationsCreated++;
+          }
         }
       } catch (err) {
         console.error('Adaptive revision reminder check error:', err);
@@ -555,20 +563,27 @@ export const ReminderService = {
     // 4. Adaptive Pending Roadmap Tasks (if enabled and past 17:00 IST)
     if (pref.missedTaskRemindersEnabled && currentTimeStr >= '17:00') {
       try {
-        const queueData = await ProgressionService.getDailyLearningQueue();
-        const roadmapsQueue = queueData?.roadmaps || [];
-        const activeTasks = roadmapsQueue.flatMap((q) => q.activeTasks || []);
-        if (activeTasks.length > 0) {
-          const pendingKey = `pending_tasks_${todayStr}`;
-          const createResult = await NotificationService.createNotification({
-            title: 'Pending Active Learning Tasks',
-            description: `You have ${activeTasks.length} pending task(s) at your active learning frontier for today.`,
-            notificationType: 'missed_task',
-            priority: 'normal',
-            actionUrl: '/planner',
-            idempotencyKey: pendingKey,
-          });
-          if (!createResult.isDuplicate) executionLog.notificationsCreated++;
+        const pendingKey = `pending_tasks_${todayStr}`;
+        const existingPending = await prisma.notification.findUnique({
+          where: { idempotencyKey: pendingKey },
+          select: { id: true },
+        });
+
+        if (!existingPending) {
+          const queueData = await ProgressionService.getDailyLearningQueue();
+          const roadmapsQueue = queueData?.roadmaps || [];
+          const activeTasks = roadmapsQueue.flatMap((q) => q.activeTasks || []);
+          if (activeTasks.length > 0) {
+            const createResult = await NotificationService.createNotification({
+              title: 'Pending Active Learning Tasks',
+              description: `You have ${activeTasks.length} pending task(s) at your active learning frontier for today.`,
+              notificationType: 'missed_task',
+              priority: 'normal',
+              actionUrl: '/planner',
+              idempotencyKey: pendingKey,
+            });
+            if (!createResult.isDuplicate) executionLog.notificationsCreated++;
+          }
         }
       } catch (err) {
         console.error('Adaptive pending task check error:', err);
