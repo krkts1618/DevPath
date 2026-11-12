@@ -5,8 +5,12 @@ export const roadmapService = {
     return api.get('/roadmaps', { params });
   },
 
-  async getRoadmapById(id) {
-    return api.get(`/roadmaps/${id}`);
+  async getRoadmapById(id, options = {}) {
+    return api.get(`/roadmaps/${id}`, options);
+  },
+
+  async getRoadmapSummary(id, options = {}) {
+    return api.get(`/roadmaps/${id}/summary`, options);
   },
 
   async createRoadmap(data) {

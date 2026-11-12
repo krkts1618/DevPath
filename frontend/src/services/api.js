@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { cacheStore } from './cacheStore';
 
 // Automatically ensure clean /api suffix even if user omits it in Vercel environment variables
 const getNormalizedApiUrl = () => {
@@ -8,28 +9,17 @@ const getNormalizedApiUrl = () => {
 };
 
 const API_BASE_URL = getNormalizedApiUrl();
+const DEFAULT_CACHE_TTL = 60000; // 60 seconds
 
-const DEFAULT_CACHE_TTL = 30000; // 30 seconds
-
-// Memory caches
-const responseCache = new Map();
+// In-flight deduplication tracker
 const inFlightRequests = new Map();
 
 /**
  * Invalidate cached responses matching an optional pattern (string or RegExp).
- * If no pattern is provided, clears the entire cache.
+ * Broadcasts to both cacheStore and UI listeners.
  */
 export function invalidateApiCache(pattern) {
-  if (!pattern) {
-    responseCache.clear();
-    return;
-  }
-  const regex = typeof pattern === 'string' ? new RegExp(pattern) : pattern;
-  for (const key of responseCache.keys()) {
-    if (regex.test(key)) {
-      responseCache.delete(key);
-    }
-  }
+  cacheStore.invalidate(pattern);
 }
 
 /**
@@ -40,21 +30,21 @@ function autoInvalidateOnMutation(url, method) {
   const upperMethod = (method || '').toUpperCase();
   if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(upperMethod)) {
     if (/tasks|task-completions|personal-tasks/i.test(url)) {
-      invalidateApiCache(/dashboard|roadmaps|reminders|analytics/);
+      invalidateApiCache(/dashboard|roadmaps|reminders|analytics|days|calendar|planner/i);
     } else if (/roadmaps/i.test(url)) {
-      invalidateApiCache(/roadmaps|dashboard|analytics/);
+      invalidateApiCache(/roadmaps|dashboard|analytics/i);
     } else if (/study-sessions/i.test(url)) {
-      invalidateApiCache(/study-sessions|dashboard|analytics/);
+      invalidateApiCache(/study-sessions|dashboard|analytics/i);
     } else if (/notifications|reminders/i.test(url)) {
-      invalidateApiCache(/notifications|reminders/);
+      invalidateApiCache(/notifications|reminders/i);
     } else if (/notes/i.test(url)) {
-      invalidateApiCache(/notes/);
+      invalidateApiCache(/notes/i);
     } else if (/revisions|revision-schedules/i.test(url)) {
-      invalidateApiCache(/revision|dashboard|reminders|analytics/);
+      invalidateApiCache(/revision|dashboard|reminders|analytics/i);
     } else if (/projects/i.test(url)) {
-      invalidateApiCache(/project|dashboard|reminders|analytics/);
+      invalidateApiCache(/project|dashboard|reminders|analytics/i);
     } else {
-      invalidateApiCache(/dashboard|analytics/);
+      invalidateApiCache(/dashboard|analytics/i);
     }
   }
 }
@@ -178,28 +168,60 @@ axiosInstance.interceptors.response.use(
 );
 
 /**
- * Wrapped API client with In-Flight Deduplication and In-Memory Caching for GET requests.
+ * Execute request with bounded exponential backoff (idempotent GET only)
+ */
+async function fetchWithRetry(url, axiosConfig, maxRetries = 2) {
+  let attempt = 0;
+  while (attempt <= maxRetries) {
+    try {
+      return await axiosInstance.get(url, axiosConfig);
+    } catch (err) {
+      attempt++;
+      const isRetryable =
+        err.message?.includes('Network Error') ||
+        err.message?.includes('timeout') ||
+        err.code === 'ECONNABORTED' ||
+        [502, 503, 504].includes(err.response?.status);
+
+      if (attempt > maxRetries || !isRetryable) {
+        throw err;
+      }
+
+      // Exponential backoff with jitter: attempt 1 -> ~1500ms, attempt 2 -> ~3000ms
+      const delay = Math.min(4000, 1200 * Math.pow(1.8, attempt - 1)) + Math.random() * 300;
+      await new Promise((r) => setTimeout(r, delay));
+    }
+  }
+}
+
+/**
+ * Wrapped API client with Persistent SWR Cache, In-Flight Deduplication, and Bounded Retries.
  */
 const api = {
   ...axiosInstance,
 
-  get(url, config = {}) {
+  async get(url, config = {}) {
     const { skipCache = false, cacheTtl = DEFAULT_CACHE_TTL, ...axiosConfig } = config;
 
     // Generate unique request key from URL and params
     const sortedParams = axiosConfig.params
-      ? JSON.stringify(Object.keys(axiosConfig.params).sort().reduce((acc, k) => {
-          acc[k] = axiosConfig.params[k];
-          return acc;
-        }, {}))
+      ? JSON.stringify(
+          Object.keys(axiosConfig.params)
+            .sort()
+            .reduce((acc, k) => {
+              acc[k] = axiosConfig.params[k];
+              return acc;
+            }, {})
+        )
       : '';
     const cacheKey = `GET:${url}:${sortedParams}`;
 
-    // 1. Check in-memory cache if not skipping cache
+    // 1. Check persistent cache store first (0ms if already cached)
     if (!skipCache) {
-      const cached = responseCache.get(cacheKey);
-      if (cached && Date.now() - cached.timestamp < (cached.ttl || DEFAULT_CACHE_TTL)) {
-        return Promise.resolve(cached.data);
+      const cachedData = await cacheStore.get(cacheKey);
+      if (cachedData !== null) {
+        // Return cached data immediately
+        return cachedData;
       }
     }
 
@@ -208,15 +230,13 @@ const api = {
       return inFlightRequests.get(cacheKey);
     }
 
-    // 3. Initiate request and track in-flight promise
-    const requestPromise = axiosInstance.get(url, axiosConfig)
-      .then((data) => {
-        // Cache successful response
-        responseCache.set(cacheKey, {
-          data,
-          timestamp: Date.now(),
-          ttl: cacheTtl,
-        });
+    // 3. Initiate request with bounded retry and track in-flight promise
+    const requestPromise = fetchWithRetry(url, axiosConfig)
+      .then(async (data) => {
+        // Persist successful response in cacheStore
+        if (!skipCache) {
+          await cacheStore.set(cacheKey, data, cacheTtl);
+        }
         return data;
       })
       .finally(() => {
@@ -249,5 +269,5 @@ const api = {
   },
 };
 
+export { cacheStore };
 export default api;
-

@@ -16,8 +16,20 @@ export const RoadmapController = {
 
   async getById(req, res, next) {
     try {
-      const roadmap = await RoadmapService.getRoadmapById(req.params.id);
+      const isFull = req.query.full === 'true';
+      const roadmap = isFull
+        ? await RoadmapService.getRoadmapById(req.params.id)
+        : await RoadmapService.getRoadmapSummary(req.params.id);
       return successResponse(res, roadmap, 'Roadmap retrieved successfully');
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async getSummary(req, res, next) {
+    try {
+      const summary = await RoadmapService.getRoadmapSummary(req.params.id);
+      return successResponse(res, summary, 'Roadmap summary retrieved successfully');
     } catch (error) {
       next(error);
     }

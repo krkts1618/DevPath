@@ -13,6 +13,7 @@ const router = Router();
 router.get('/', RoadmapController.getAll);
 router.post('/', validate(createRoadmapSchema), RoadmapController.create);
 router.get('/:id', RoadmapController.getById);
+router.get('/:id/summary', RoadmapController.getSummary);
 router.patch('/:id', validate(updateRoadmapSchema), RoadmapController.update);
 router.put('/:id', validate(updateRoadmapSchema), RoadmapController.update);
 router.delete('/:id', RoadmapController.delete);

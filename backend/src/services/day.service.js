@@ -6,7 +6,7 @@ import { calculateScheduledDate } from '../utils/date.util.js';
 
 export const DayService = {
   async getDaysByRoadmapId(roadmapId) {
-    const roadmap = await RoadmapRepository.findById(roadmapId);
+    const roadmap = await RoadmapRepository.findBasicById(roadmapId);
     if (!roadmap) {
       throw new AppError(`Roadmap with ID "${roadmapId}" not found`, 404);
     }
@@ -29,7 +29,7 @@ export const DayService = {
   },
 
   async createDay(roadmapId, data) {
-    const roadmap = await RoadmapRepository.findById(roadmapId);
+    const roadmap = await RoadmapRepository.findBasicById(roadmapId);
     if (!roadmap) {
       throw new AppError(`Roadmap with ID "${roadmapId}" not found`, 404);
     }

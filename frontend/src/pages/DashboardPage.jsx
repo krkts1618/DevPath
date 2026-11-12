@@ -20,13 +20,14 @@ import NotificationSummaryCard from '../components/dashboard/NotificationSummary
 import RecentActivityFeed from '../components/dashboard/RecentActivityFeed';
 import { StatCardSkeleton, CardSkeleton } from '../components/ui/Skeleton';
 import ErrorState from '../components/ui/ErrorState';
+import { cacheStore } from '../services/cacheStore';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { activeSession, remainingSeconds, elapsedSeconds } = useTimer();
-  const [stats, setStats] = useState(null);
+  const [stats, setStats] = useState(() => cacheStore.getSync('GET:/dashboard:') || null);
   const [focusAnalytics, setFocusAnalytics] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !cacheStore.getSync('GET:/dashboard:'));
   const [error, setError] = useState(null);
 
   const fetchDashboardData = async (skipCache = false) => {
@@ -45,13 +46,25 @@ export default function DashboardPage() {
       await statsPromise;
     } catch (err) {
       console.error('Failed to load dashboard data:', err);
-      setError(err.message || 'Unable to connect to DevPath backend.');
+      if (!stats) {
+        setError(err.message || 'Unable to connect to DevPath backend.');
+      }
       setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchDashboardData();
+
+    const handleInvalidation = (e) => {
+      const { pattern } = e.detail || {};
+      if (pattern === 'all' || /dashboard|tasks|roadmaps/i.test(pattern)) {
+        fetchDashboardData(true);
+      }
+    };
+
+    window.addEventListener('devpath:cache-invalidated', handleInvalidation);
+    return () => window.removeEventListener('devpath:cache-invalidated', handleInvalidation);
   }, []);
 
   const handleTaskUpdated = () => {

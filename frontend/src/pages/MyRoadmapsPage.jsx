@@ -16,13 +16,18 @@ import ConfirmationDialog from '../components/ui/ConfirmationDialog';
 import EmptyState from '../components/ui/EmptyState';
 import ErrorState from '../components/ui/ErrorState';
 import { CardSkeleton } from '../components/ui/Skeleton';
+import { cacheStore } from '../services/cacheStore';
 
 export default function MyRoadmapsPage() {
   const { refreshNavData } = useOutletContext() || {};
 
-  const [roadmaps, setRoadmaps] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [roadmaps, setRoadmaps] = useState(() => {
+    return cacheStore.getSync('GET:/roadmaps:{"limit":100}') || [];
+  });
+  const [categories, setCategories] = useState(() => {
+    return cacheStore.getSync('GET:/categories:{"status":"all"}') || [];
+  });
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   // Filters, Search & Sorting
@@ -48,7 +53,7 @@ export default function MyRoadmapsPage() {
   });
 
   const fetchRoadmapsAndCategories = async () => {
-    setLoading(true);
+    if (roadmaps.length === 0) setLoading(true);
     setError(null);
     try {
       const [cats, roadmapsRes] = await Promise.all([
@@ -65,7 +70,9 @@ export default function MyRoadmapsPage() {
       setRoadmaps(roadmapsRes || []);
     } catch (err) {
       console.error('Failed to load roadmaps:', err);
-      setError(err.message || 'Failed to fetch roadmaps');
+      if (roadmaps.length === 0) {
+        setError(err.message || 'Failed to fetch roadmaps');
+      }
     } finally {
       setLoading(false);
     }
@@ -73,6 +80,16 @@ export default function MyRoadmapsPage() {
 
   useEffect(() => {
     fetchRoadmapsAndCategories();
+
+    const handleInvalidation = (e) => {
+      const { pattern } = e.detail || {};
+      if (pattern === 'all' || /roadmaps|categories/i.test(pattern)) {
+        fetchRoadmapsAndCategories();
+      }
+    };
+
+    window.addEventListener('devpath:cache-invalidated', handleInvalidation);
+    return () => window.removeEventListener('devpath:cache-invalidated', handleInvalidation);
   }, [selectedCategory, selectedStatus, searchQuery, sortBy]);
 
   const handleArchive = (id) => {
@@ -231,7 +248,7 @@ export default function MyRoadmapsPage() {
       </div>
 
       {/* 4. Balanced 3-Column Grid Matching IMAGE 1 Desktop Spec */}
-      {loading ? (
+      {loading && roadmaps.length === 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <CardSkeleton />
           <CardSkeleton />

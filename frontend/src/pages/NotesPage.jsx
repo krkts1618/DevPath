@@ -26,12 +26,16 @@ import ConfirmationDialog from '../components/ui/ConfirmationDialog';
 import NoteEditor from '../components/notes/NoteEditor';
 import { noteService } from '../services/noteService';
 import { roadmapService } from '../services/roadmapService';
+import { cacheStore } from '../services/cacheStore';
 
 export default function NotesPage() {
-  const [notes, setNotes] = useState([]);
+  const [notes, setNotes] = useState(() => {
+    const cached = cacheStore.getSync('GET:/notes:{"isArchived":false,"limit":100}');
+    return cached?.notes || [];
+  });
   const [roadmaps, setRoadmaps] = useState([]);
   const [tags, setTags] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   // Filters & State
@@ -49,7 +53,7 @@ export default function NotesPage() {
 
   const fetchNotes = useCallback(async () => {
     try {
-      setLoading(true);
+      if (notes.length === 0) setLoading(true);
       setError(null);
 
       const params = {
@@ -64,7 +68,9 @@ export default function NotesPage() {
       setNotes(res?.notes || []);
     } catch (err) {
       console.error('Failed to load notes:', err);
-      setError(err.message || 'Failed to load notes');
+      if (notes.length === 0) {
+        setError(err.message || 'Failed to load notes');
+      }
     } finally {
       setLoading(false);
     }
@@ -72,6 +78,16 @@ export default function NotesPage() {
 
   useEffect(() => {
     fetchNotes();
+
+    const handleInvalidation = (e) => {
+      const { pattern } = e.detail || {};
+      if (pattern === 'all' || /notes/i.test(pattern)) {
+        fetchNotes();
+      }
+    };
+
+    window.addEventListener('devpath:cache-invalidated', handleInvalidation);
+    return () => window.removeEventListener('devpath:cache-invalidated', handleInvalidation);
   }, [fetchNotes]);
 
   useEffect(() => {

@@ -80,7 +80,11 @@ export function TimerProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    refreshActiveSession();
+    // Prioritize primary route queries before fetching timer status
+    const initTimer = setTimeout(() => {
+      refreshActiveSession();
+    }, 350);
+    return () => clearTimeout(initTimer);
   }, [refreshActiveSession]);
 
   // Save sound setting

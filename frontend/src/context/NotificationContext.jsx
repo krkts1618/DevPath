@@ -190,17 +190,23 @@ export function NotificationProvider({ children }) {
     }
   };
 
-  // Initial load & periodic unread check
+  // Initial load with prioritized scheduling & periodic unread check
   useEffect(() => {
-    fetchUnreadCount();
-    fetchPreferences();
-
-    // In-app heartbeat check every 30s
-    const timer = setInterval(() => {
+    // Prioritize route-critical data first by deferring background polling
+    const initialTimer = setTimeout(() => {
       fetchUnreadCount();
-    }, 30000);
+      fetchPreferences();
+    }, 450);
 
-    return () => clearInterval(timer);
+    // In-app heartbeat check every 45s (lightweight)
+    const periodicTimer = setInterval(() => {
+      fetchUnreadCount();
+    }, 45000);
+
+    return () => {
+      clearTimeout(initialTimer);
+      clearInterval(periodicTimer);
+    };
   }, [fetchUnreadCount, fetchPreferences]);
 
   return (

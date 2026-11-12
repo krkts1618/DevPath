@@ -16,7 +16,73 @@ export const RoadmapService = {
     return RoadmapRepository.findAll({ categoryId, status, search, sortBy, page, limit, summaryOnly });
   },
 
-  async getRoadmapById(id) {
+  async getRoadmapSummary(id) {
+    const summary = await RoadmapRepository.findSummaryById(id);
+    if (!summary) {
+      throw new AppError('Roadmap not found', 404);
+    }
+
+    let currentLearningDayNumber = null;
+    let totalTasks = 0;
+    let completedTasks = 0;
+
+    if (summary.roadmapDays) {
+      for (const day of summary.roadmapDays) {
+        totalTasks += day.totalTasksCount;
+        completedTasks += day.completedTasksCount;
+        if (!currentLearningDayNumber && !day.isDayCompleted && day.totalTasksCount > 0) {
+          currentLearningDayNumber = day.dayNumber;
+        }
+      }
+
+      if (!currentLearningDayNumber && summary.roadmapDays.length > 0) {
+        currentLearningDayNumber = summary.roadmapDays[summary.roadmapDays.length - 1].dayNumber;
+      }
+
+      const activeDayNum = currentLearningDayNumber || 1;
+      const activeDay = summary.roadmapDays.find((d) => d.dayNumber === activeDayNum);
+
+      let activeTasks = [];
+      if (activeDay) {
+        const { prisma } = await import('../config/db.js');
+        activeTasks = await prisma.task.findMany({
+          where: { roadmapDayId: activeDay.id },
+          orderBy: { displayOrder: 'asc' },
+          include: {
+            completions: true,
+          },
+        });
+      }
+
+      summary.roadmapDays = summary.roadmapDays.map((day) => {
+        let progressionStatus = 'upcoming';
+        if (day.isDayCompleted) {
+          progressionStatus = 'completed';
+        } else if (day.dayNumber === activeDayNum) {
+          progressionStatus = 'active';
+        }
+
+        return {
+          ...day,
+          progressionStatus,
+          scheduledDate: calculateScheduledDate(summary.startDate, day.dayNumber),
+          tasks: day.id === activeDay?.id ? activeTasks : [],
+        };
+      });
+
+      summary.currentLearningDayNumber = activeDayNum;
+      summary.totalTasks = totalTasks;
+      summary.completedTasks = completedTasks;
+      summary.progressPercent = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+    }
+
+    return summary;
+  },
+
+  async getRoadmapById(id, { preferSummary = false } = {}) {
+    if (preferSummary) {
+      return this.getRoadmapSummary(id);
+    }
     const roadmap = await RoadmapRepository.findById(id);
     if (!roadmap) {
       throw new AppError('Roadmap not found', 404);

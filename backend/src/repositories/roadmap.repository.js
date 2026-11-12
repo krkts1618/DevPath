@@ -123,6 +123,78 @@ export const RoadmapRepository = {
     return { total, roadmaps };
   },
 
+  async findSummaryById(id) {
+    const rows = await prisma.$queryRaw`
+      SELECT 
+        json_build_object(
+          'id', r.id,
+          'title', r.title,
+          'slug', r.slug,
+          'description', r.description,
+          'duration', r.duration,
+          'targetDailyStudyTime', r.target_daily_study_time,
+          'startDate', r.start_date,
+          'status', r.status,
+          'displayOrder', r.display_order,
+          'iconIdentifier', r.icon_identifier,
+          'themeIdentifier', r.theme_identifier,
+          'createdAt', r.created_at,
+          'updatedAt', r.updated_at,
+          'category', json_build_object('id', c.id, 'name', c.name, 'slug', c.slug)
+        ) as roadmap,
+        (
+          SELECT COALESCE(json_agg(json_build_object(
+            'id', m.id,
+            'roadmapId', m.roadmap_id,
+            'title', m.title,
+            'description', m.description,
+            'startingDay', m.starting_day,
+            'endingDay', m.ending_day,
+            'displayOrder', m.display_order
+          ) ORDER BY m.display_order ASC, m.starting_day ASC), '[]'::json)
+          FROM modules m
+          WHERE m.roadmap_id = r.id
+        ) as modules,
+        (
+          SELECT COALESCE(json_agg(json_build_object(
+            'id', rd.id,
+            'roadmapId', rd.roadmap_id,
+            'moduleId', rd.module_id,
+            'dayNumber', rd.day_number,
+            'title', rd.title,
+            'objective', rd.objective,
+            'estimatedStudyTime', rd.estimated_study_time,
+            'dayType', rd.day_type,
+            'totalTasksCount', COALESCE(t_agg.total_tasks, 0),
+            'completedTasksCount', COALESCE(t_agg.completed_tasks, 0),
+            'isDayCompleted', CASE WHEN COALESCE(t_agg.total_tasks, 0) > 0 THEN COALESCE(t_agg.completed_tasks, 0) = t_agg.total_tasks ELSE true END
+          ) ORDER BY rd.day_number ASC), '[]'::json)
+          FROM roadmap_days rd
+          LEFT JOIN (
+            SELECT 
+              t.roadmap_day_id,
+              COUNT(t.id)::int as total_tasks,
+              COUNT(DISTINCT CASE WHEN tc.completed = true THEN tc.task_id END)::int as completed_tasks
+            FROM tasks t
+            LEFT JOIN task_completions tc ON tc.task_id = t.id AND tc.completed = true
+            GROUP BY t.roadmap_day_id
+          ) t_agg ON t_agg.roadmap_day_id = rd.id
+          WHERE rd.roadmap_id = r.id
+        ) as days
+      FROM roadmaps r
+      JOIN roadmap_categories c ON c.id = r.category_id
+      WHERE r.id = ${id}::uuid
+    `;
+
+    if (!rows || rows.length === 0) return null;
+    const row = rows[0];
+    return {
+      ...row.roadmap,
+      modules: row.modules || [],
+      roadmapDays: row.days || [],
+    };
+  },
+
   async findById(id) {
     return prisma.roadmap.findUnique({
       where: { id },
@@ -164,7 +236,7 @@ export const RoadmapRepository = {
   async findBasicById(id) {
     return prisma.roadmap.findUnique({
       where: { id },
-      select: { id: true, status: true, title: true, categoryId: true },
+      select: { id: true, status: true, title: true, categoryId: true, startDate: true, duration: true },
     });
   },
 

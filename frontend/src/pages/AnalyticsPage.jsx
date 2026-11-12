@@ -12,14 +12,17 @@ import ProjectPerformanceSection from '../components/analytics/ProjectPerformanc
 import EngineeringInsightsSection from '../components/analytics/EngineeringInsightsSection';
 import WeeklyEngineeringReport from '../components/analytics/WeeklyEngineeringReport';
 import ErrorState from '../components/ui/ErrorState';
+import { cacheStore } from '../services/cacheStore';
 
 export default function AnalyticsPage() {
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState(() => {
+    return cacheStore.getSync('GET:/analytics/comprehensive:{"timeframe":"7d"}') || null;
+  });
+  const [loading, setLoading] = useState(() => !cacheStore.getSync('GET:/analytics/comprehensive:{"timeframe":"7d"}'));
   const [error, setError] = useState(null);
   const [timeframe, setTimeframe] = useState('7d'); // Default to 7D matching reference
   const [customRange, setCustomRange] = useState({ startDate: '', endDate: '' });
   const [activeSection, setActiveSection] = useState('all');
-  const [data, setData] = useState(null);
 
   // Target config modal state
   const [isConfigOpen, setIsConfigOpen] = useState(false);
@@ -29,7 +32,7 @@ export default function AnalyticsPage() {
 
   const fetchAnalytics = async (signal) => {
     try {
-      setLoading(true);
+      if (!data) setLoading(true);
       setError(null);
       const params = { timeframe };
       if (timeframe === 'custom' && customRange.startDate && customRange.endDate) {

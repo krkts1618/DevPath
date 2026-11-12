@@ -28,28 +28,42 @@ export default function ModuleAccordion({
   onAddDayToModule,
   onEditModule,
   onDeleteModule,
+  onLoadDayTasks,
 }) {
   const [isOpen, setIsOpen] = useState(true);
   const [openDays, setOpenDays] = useState({});
+  const [loadingDays, setLoadingDays] = useState({});
 
-  const toggleDay = (dayId) => {
+  const toggleDay = async (day) => {
+    const dayId = day.id;
+    const willOpen = !openDays[dayId];
     setOpenDays((prev) => ({
       ...prev,
-      [dayId]: !prev[dayId],
+      [dayId]: willOpen,
     }));
+
+    const totalCount = day.totalTasksCount ?? (day.tasks || []).length;
+    if (willOpen && (!day.tasks || day.tasks.length === 0) && totalCount > 0 && onLoadDayTasks) {
+      setLoadingDays((prev) => ({ ...prev, [dayId]: true }));
+      try {
+        await onLoadDayTasks(dayId);
+      } finally {
+        setLoadingDays((prev) => ({ ...prev, [dayId]: false }));
+      }
+    }
   };
 
-  // Compute module progress
+  // Compute module progress accurately from precomputed counts or loaded tasks
   let moduleTotalTasks = 0;
   let moduleCompletedTasks = 0;
 
   days.forEach((d) => {
-    (d.tasks || []).forEach((t) => {
-      moduleTotalTasks++;
-      if (t.completions?.some((c) => c.completed)) {
-        moduleCompletedTasks++;
-      }
-    });
+    const dayTotal = d.totalTasksCount ?? (d.tasks || []).length;
+    const dayDone =
+      d.completedTasksCount ??
+      (d.tasks || []).filter((t) => t.completions?.some((c) => c.completed)).length;
+    moduleTotalTasks += dayTotal;
+    moduleCompletedTasks += dayDone;
   });
 
   const progressPercent =
@@ -148,11 +162,16 @@ export default function ModuleAccordion({
             days.map((day) => {
               const isDayOpen = openDays[day.id] ?? false;
               const dayTasks = day.tasks || [];
-              let doneCount = 0;
-              dayTasks.forEach((t) => {
-                if (t.completions?.some((c) => c.completed)) doneCount++;
-              });
-              const dayIsCompleted = dayTasks.length > 0 && doneCount === dayTasks.length;
+              const totalCount = day.totalTasksCount ?? dayTasks.length;
+              let doneCount = day.completedTasksCount;
+              if (doneCount === undefined) {
+                doneCount = 0;
+                dayTasks.forEach((t) => {
+                  if (t.completions?.some((c) => c.completed)) doneCount++;
+                });
+              }
+              const dayIsCompleted =
+                day.isDayCompleted ?? (totalCount > 0 && doneCount === totalCount);
 
               return (
                 <div
@@ -161,7 +180,7 @@ export default function ModuleAccordion({
                 >
                   {/* Day Header */}
                   <div
-                    onClick={() => toggleDay(day.id)}
+                    onClick={() => toggleDay(day)}
                     className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-[#F8F9F6] dark:hover:bg-[#252C35] transition-colors"
                   >
                     <div className="flex items-center gap-3 min-w-0">
@@ -203,7 +222,7 @@ export default function ModuleAccordion({
 
                     <div className="flex items-center gap-3 flex-shrink-0">
                       <span className="text-xs font-mono text-[#858D82] dark:text-[#7F8996]">
-                        {doneCount}/{dayTasks.length}
+                        {doneCount}/{totalCount}
                       </span>
 
                       {onAddTask && (
@@ -253,7 +272,12 @@ export default function ModuleAccordion({
                   {/* Day Tasks List */}
                   {isDayOpen && (
                     <div className="p-3.5 bg-[#F8F9F6] dark:bg-[#171B21] border-t border-[#E4E7E0] dark:border-[#303945] space-y-2">
-                      {dayTasks.length > 0 ? (
+                      {loadingDays[day.id] ? (
+                        <div className="py-4 flex items-center justify-center gap-2 text-xs text-[#858D82] dark:text-[#7F8996]">
+                          <div className="w-3.5 h-3.5 border-2 border-[var(--accent-primary)] border-t-transparent rounded-full animate-spin" />
+                          <span>Loading tasks for Day {day.dayNumber}...</span>
+                        </div>
+                      ) : dayTasks.length > 0 ? (
                         dayTasks.map((task) => (
                           <TaskItem
                             key={task.id}
