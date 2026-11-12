@@ -94,7 +94,7 @@ export function promptForAccessSecret() {
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 25000,
+  timeout: 60000, // 60s allows Render Free cold starts (35-45s) to complete without triggering Network Error
   headers: {
     'Content-Type': 'application/json',
   },
