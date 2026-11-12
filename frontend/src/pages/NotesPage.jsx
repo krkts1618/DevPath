@@ -197,7 +197,13 @@ export default function NotesPage() {
         <NoteEditor
           key={activeNoteForEdit?.id || (isCreatingNew ? 'new-note' : 'note-editor')}
           note={activeNoteForEdit}
-          onSave={() => fetchNotes()}
+          onSave={(saved) => {
+            if (saved?.id) {
+              setActiveNoteForEdit(saved);
+              setIsCreatingNew(false);
+            }
+            fetchNotes();
+          }}
           onClose={() => {
             setIsCreatingNew(false);
             setActiveNoteForEdit(null);

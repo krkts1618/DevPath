@@ -31,6 +31,8 @@ import { roadmapService } from '../../services/roadmapService';
 import { noteService } from '../../services/noteService';
 
 export default function NoteEditor({ note, onSave, onClose }) {
+  const [currentNoteId, setCurrentNoteId] = useState(note?.id || null);
+  const currentNoteIdRef = useRef(note?.id || null);
   const [title, setTitle] = useState(note?.title || '');
   const [content, setContent] = useState(note?.content || '');
   const [mode, setMode] = useState('split'); // 'edit' | 'split' | 'preview'
@@ -57,6 +59,8 @@ export default function NoteEditor({ note, onSave, onClose }) {
 
   // Synchronize state when note prop changes
   useEffect(() => {
+    currentNoteIdRef.current = note?.id || null;
+    setCurrentNoteId(note?.id || null);
     setTitle(note?.title || '');
     setContent(note?.content || '');
     setSelectedRoadmapId(note?.roadmapId || '');
@@ -163,10 +167,14 @@ export default function NoteEditor({ note, onSave, onClose }) {
         };
 
         let savedNote;
-        if (note?.id) {
-          savedNote = await noteService.updateNote(note.id, payload);
+        const targetId = currentNoteIdRef.current || currentNoteId || note?.id;
+        if (targetId) {
+          savedNote = await noteService.updateNote(targetId, payload);
         } else {
           savedNote = await noteService.createNote(payload);
+          // CRITICAL: Remember newly created note's ID so all subsequent autosaves & manual saves UPDATE it
+          currentNoteIdRef.current = savedNote.id;
+          setCurrentNoteId(savedNote.id);
         }
 
         lastSavedRef.current = { title: cleanTitle, content: overrideContent };
@@ -177,7 +185,7 @@ export default function NoteEditor({ note, onSave, onClose }) {
         setSaveStatus('error');
       }
     },
-    [title, content, selectedRoadmapId, selectedDayId, selectedTaskId, selectedTagNames, note, onSave]
+    [title, content, selectedRoadmapId, selectedDayId, selectedTaskId, selectedTagNames, currentNoteId, note, onSave]
   );
 
   // Debounced Autosave (1500ms after user stops typing)
