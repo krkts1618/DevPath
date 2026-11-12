@@ -44,24 +44,22 @@ function ComparisonBadge({ comparison }) {
   );
 }
 
-export default function OverviewSection({ overview }) {
+export default function OverviewSection({ overview, roadmaps = [], studyTime = null, consistency = null }) {
   if (!overview) return null;
 
-  const completionPct = overview.totalCompletionPercentage ?? 78;
-  const completedTasks = overview.totalCompletedCurriculumTasks ?? 142;
-  const streakDays = overview.currentOverallStreak ?? 12;
-  const focusHours = overview.totalFocusedStudyHours ?? 6.5;
+  const completionPct = overview.totalCompletionPercentage ?? 0;
+  const completedTasks = overview.totalCompletedCurriculumTasks ?? 0;
+  const streakDays = overview.currentOverallStreak ?? 0;
+  const focusHours = overview.totalFocusedStudyHours ?? 0;
 
-  // Mock / live distribution for Learning Trend curve (0 to 100 scale across 7 days)
-  const trendPoints = [
-    { day: 'Mon', val: 32 },
-    { day: 'Tue', val: 40 },
-    { day: 'Wed', val: 52 },
-    { day: 'Thu', val: 61 },
-    { day: 'Fri', val: 68 },
-    { day: 'Sat', val: 72 },
-    { day: 'Sun', val: completionPct },
-  ];
+  // Real distribution for Learning Trend curve (Asia/Kolkata date points)
+  const defaultTrendDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const trendPoints =
+    overview.learningTrend && overview.learningTrend.length > 0
+      ? overview.learningTrend.slice(-7)
+      : defaultTrendDays.map((day) => ({ day, val: 0, completedTasks: 0 }));
+
+  const maxVal = Math.max(...trendPoints.map((p) => p.val ?? p.completedTasks ?? 0), 5);
 
   // SVG curved path builder
   const chartWidth = 360;
@@ -72,9 +70,11 @@ export default function OverviewSection({ overview }) {
   const innerH = chartHeight - paddingY * 2;
 
   const points = trendPoints.map((pt, idx) => {
-    const x = paddingX + (idx / (trendPoints.length - 1)) * innerW;
-    const y = chartHeight - paddingY - (pt.val / 100) * innerH;
-    return { x, y, val: pt.val, day: pt.day };
+    const divisor = trendPoints.length > 1 ? trendPoints.length - 1 : 1;
+    const x = paddingX + (idx / divisor) * innerW;
+    const v = pt.val ?? pt.completedTasks ?? 0;
+    const y = chartHeight - paddingY - (v / maxVal) * innerH;
+    return { x, y, val: v, day: pt.day || '' };
   });
 
   const pathD = points.reduce((acc, curr, idx) => {
@@ -89,35 +89,42 @@ export default function OverviewSection({ overview }) {
 
   const areaD = `${pathD} L ${points[points.length - 1].x} ${chartHeight - paddingY} L ${points[0].x} ${chartHeight - paddingY} Z`;
 
-  // Roadmap Progress segments for donut chart
-  const roadmapsList = [
-    { name: 'MERN', progress: 72, color: 'var(--accent-primary)' },
-    { name: 'Java', progress: 45, color: '#F97316' },
-    { name: 'OS + DBMS', progress: 38, color: '#38BDF8' },
-  ];
+  // Roadmap Progress segments for donut chart (from real active roadmaps)
+  const activeRoadmaps = (roadmaps || []).filter((r) => r.status === 'active');
+  const palette = ['var(--accent-primary)', '#F97316', '#38BDF8'];
+  const roadmapsList = activeRoadmaps.slice(0, 3).map((r, idx) => ({
+    name: r.title,
+    progress: r.progressPercent ?? 0,
+    color: palette[idx % palette.length],
+  }));
 
   // Daily focus distribution for 7-day bar chart
-  const focusDays = [
-    { day: 'Mon', hours: 0.8 },
-    { day: 'Tue', hours: 1.2 },
-    { day: 'Wed', hours: 1.0 },
-    { day: 'Thu', hours: 1.5 },
-    { day: 'Fri', hours: 0.6 },
-    { day: 'Sat', hours: 0.9 },
-    { day: 'Sun', hours: 0.5 },
-  ];
-  const maxFocusHours = Math.max(...focusDays.map((d) => d.hours), 2.0);
+  const focusDays =
+    studyTime?.dailyTrend && studyTime.dailyTrend.length > 0
+      ? studyTime.dailyTrend.slice(-7).map((d) => ({
+          day: d.dayShort || d.day || 'Day',
+          hours: d.focusHours || 0,
+        }))
+      : defaultTrendDays.map((day) => ({ day, hours: 0 }));
 
-  // Compact 4 x 12 Activity Heatmap data
+  const maxFocusHours = Math.max(...focusDays.map((d) => d.hours), 1.0);
+  const todayShort = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][new Date().getDay()];
+
+  // Compact 4 x 12 Activity Heatmap data (from real activity heatmap days)
   const heatmapRows = 4;
   const heatmapCols = 12;
-  const heatmapCells = Array.from({ length: heatmapRows * heatmapCols }, (_, i) => {
-    // Generate pseudo-pattern based on index to look realistic
-    const seed = (i * 17 + 5) % 10;
-    if (seed < 4) return 0; // empty
-    if (seed < 7) return 1; // low amber
-    if (seed < 9) return 2; // medium amber
-    return 3; // high amber
+  const totalHeatmapCells = heatmapRows * heatmapCols; // 48
+  const rawHeatmapDays = consistency?.heatmap?.days || [];
+  const recentDays = rawHeatmapDays.slice(-totalHeatmapCells);
+
+  const heatmapCells = Array.from({ length: totalHeatmapCells }, (_, i) => {
+    const dayData = recentDays[i];
+    if (!dayData) return 0;
+    const count = dayData.count || dayData.completedTasksCount || 0;
+    if (count === 0) return 0;
+    if (count <= 2) return 1;
+    if (count <= 4) return 2;
+    return 3;
   });
 
   return (
@@ -293,45 +300,51 @@ export default function OverviewSection({ overview }) {
                   strokeWidth="10"
                   fill="none"
                 />
-                {/* MERN Track Segment */}
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="38"
-                  stroke="var(--accent-primary)"
-                  strokeWidth="10"
-                  strokeDasharray="238.7"
-                  strokeDashoffset={238.7 * (1 - 0.72)}
-                  strokeLinecap="round"
-                  fill="none"
-                  className="transition-all duration-700"
-                />
-                {/* Java Track Segment */}
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="26"
-                  stroke="#F97316"
-                  strokeWidth="8"
-                  strokeDasharray="163.3"
-                  strokeDashoffset={163.3 * (1 - 0.45)}
-                  strokeLinecap="round"
-                  fill="none"
-                  className="transition-all duration-700"
-                />
-                {/* Core CS Track Segment */}
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="16"
-                  stroke="#38BDF8"
-                  strokeWidth="6"
-                  strokeDasharray="100.5"
-                  strokeDashoffset={100.5 * (1 - 0.38)}
-                  strokeLinecap="round"
-                  fill="none"
-                  className="transition-all duration-700"
-                />
+                {/* Track 1 Segment */}
+                {roadmapsList[0] && (
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="38"
+                    stroke={roadmapsList[0].color}
+                    strokeWidth="10"
+                    strokeDasharray="238.7"
+                    strokeDashoffset={238.7 * (1 - (roadmapsList[0].progress || 0) / 100)}
+                    strokeLinecap="round"
+                    fill="none"
+                    className="transition-all duration-700"
+                  />
+                )}
+                {/* Track 2 Segment */}
+                {roadmapsList[1] && (
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="26"
+                    stroke={roadmapsList[1].color}
+                    strokeWidth="8"
+                    strokeDasharray="163.3"
+                    strokeDashoffset={163.3 * (1 - (roadmapsList[1].progress || 0) / 100)}
+                    strokeLinecap="round"
+                    fill="none"
+                    className="transition-all duration-700"
+                  />
+                )}
+                {/* Track 3 Segment */}
+                {roadmapsList[2] && (
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="16"
+                    stroke={roadmapsList[2].color}
+                    strokeWidth="6"
+                    strokeDasharray="100.5"
+                    strokeDashoffset={100.5 * (1 - (roadmapsList[2].progress || 0) / 100)}
+                    strokeLinecap="round"
+                    fill="none"
+                    className="transition-all duration-700"
+                  />
+                )}
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
                 <span className="text-lg font-bold font-mono text-[var(--text-primary)]">
@@ -345,22 +358,26 @@ export default function OverviewSection({ overview }) {
 
             {/* Right Legend */}
             <div className="space-y-3 w-full max-w-[200px]">
-              {roadmapsList.map((item, idx) => (
-                <div key={idx} className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="w-2.5 h-2.5 rounded-full shrink-0"
-                      style={{ backgroundColor: item.color }}
-                    />
-                    <span className="font-semibold text-[var(--text-primary)] truncate">
-                      {item.name}
+              {roadmapsList.length === 0 ? (
+                <p className="text-xs text-[var(--text-muted)] italic">No active roadmaps found</p>
+              ) : (
+                roadmapsList.map((item, idx) => (
+                  <div key={idx} className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="w-2.5 h-2.5 rounded-full shrink-0"
+                        style={{ backgroundColor: item.color }}
+                      />
+                      <span className="font-semibold text-[var(--text-primary)] truncate">
+                        {item.name}
+                      </span>
+                    </div>
+                    <span className="font-mono font-bold text-[var(--text-secondary)]">
+                      {item.progress}%
                     </span>
                   </div>
-                  <span className="font-mono font-bold text-[var(--text-secondary)]">
-                    {item.progress}%
-                  </span>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -378,8 +395,8 @@ export default function OverviewSection({ overview }) {
 
           <div className="h-40 flex items-end justify-between gap-3 pt-6 pb-2 px-2">
             {focusDays.map((d, idx) => {
-              const heightPct = Math.min(100, Math.max(15, (d.hours / maxFocusHours) * 100));
-              const isToday = d.day === 'Wed'; // active sample or live
+              const heightPct = d.hours > 0 ? Math.min(100, Math.max(15, (d.hours / maxFocusHours) * 100)) : 6;
+              const isToday = d.day.toLowerCase() === todayShort.toLowerCase();
               return (
                 <div key={idx} className="flex-1 flex flex-col items-center gap-2 h-full justify-end">
                   <div className="w-full max-w-[28px] h-full flex items-end">

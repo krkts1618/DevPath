@@ -27,7 +27,7 @@ export default function AnalyticsPage() {
   const [newTarget, setNewTarget] = useState(5);
   const [savingTarget, setSavingTarget] = useState(false);
 
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = async (signal) => {
     try {
       setLoading(true);
       setError(null);
@@ -37,16 +37,20 @@ export default function AnalyticsPage() {
         params.endDate = customRange.endDate;
       }
 
-      const res = await analyticsService.getComprehensiveAnalytics(params);
+      const res = await analyticsService.getComprehensiveAnalytics(params, { signal });
       setData(res);
 
-      analyticsService.getStreakTarget()
+      analyticsService
+        .getStreakTarget({ signal })
         .then((tc) => {
           setTargetConfig(tc || { currentTarget: 5, history: [] });
           setNewTarget(tc?.currentTarget || 5);
         })
         .catch(() => {});
     } catch (err) {
+      if (err.name === 'CanceledError' || err.code === 'ERR_CANCELED') {
+        return; // Ignore normal request cancellation
+      }
       console.error('Failed to load comprehensive analytics:', err);
       setError(err.message || 'Unable to connect to DevPath analytics service.');
     } finally {
@@ -55,7 +59,11 @@ export default function AnalyticsPage() {
   };
 
   useEffect(() => {
-    fetchAnalytics();
+    const controller = new AbortController();
+    fetchAnalytics(controller.signal);
+    return () => {
+      controller.abort();
+    };
   }, [timeframe, customRange]);
 
   const handleExportCsv = async (type) => {
@@ -86,34 +94,6 @@ export default function AnalyticsPage() {
     }
   };
 
-  if (loading && !data) {
-    return (
-      <div className="space-y-6">
-        <div className="h-16 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl animate-pulse" />
-        <div className="h-10 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl animate-pulse" />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="h-32 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl animate-pulse" />
-          <div className="h-32 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl animate-pulse" />
-          <div className="h-32 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl animate-pulse" />
-          <div className="h-32 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl animate-pulse" />
-        </div>
-        <div className="h-72 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl animate-pulse" />
-      </div>
-    );
-  }
-
-  if (error && !data) {
-    return (
-      <div className="py-12">
-        <ErrorState
-          title="Failed to Load Analytics"
-          message={error}
-          onRetry={fetchAnalytics}
-        />
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       {/* 1. Header with Timeframe Pills & Export */}
@@ -122,7 +102,7 @@ export default function AnalyticsPage() {
         setTimeframe={setTimeframe}
         customRange={customRange}
         setCustomRange={setCustomRange}
-        onRefresh={fetchAnalytics}
+        onRefresh={() => fetchAnalytics()}
         onExportCsv={handleExportCsv}
         loading={loading}
       />
@@ -133,44 +113,80 @@ export default function AnalyticsPage() {
         onSelectSection={setActiveSection}
       />
 
-      {/* 3. Render Sections based on activeSection */}
-      {(activeSection === 'all' || activeSection === 'weekly-report') && (
-        <WeeklyEngineeringReport />
+      {/* Error state notification if data fetch fails */}
+      {error && !data && (
+        <div className="py-6">
+          <ErrorState
+            title="Failed to Load Analytics"
+            message={error}
+            onRetry={() => fetchAnalytics()}
+          />
+        </div>
       )}
 
-      {(activeSection === 'all' || activeSection === 'overview') && (
-        <OverviewSection overview={data?.overview} />
+      {/* Loading Skeleton if no data yet */}
+      {loading && !data && (
+        <div className="space-y-6 animate-pulse">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="h-28 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl" />
+            <div className="h-28 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl" />
+            <div className="h-28 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl" />
+            <div className="h-28 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl" />
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <div className="h-64 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl" />
+            <div className="h-64 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl" />
+          </div>
+        </div>
       )}
 
-      {(activeSection === 'all' || activeSection === 'insights') && (
-        <EngineeringInsightsSection insights={data?.insights} />
-      )}
+      {/* 3. Render Sections when data is available */}
+      {data && (
+        <>
+          {(activeSection === 'all' || activeSection === 'weekly-report') && (
+            <WeeklyEngineeringReport />
+          )}
 
-      {(activeSection === 'all' || activeSection === 'technology') && (
-        <TechnologySection
-          roadmaps={data?.roadmaps}
-          consistency={data?.consistency}
-        />
-      )}
+          {(activeSection === 'all' || activeSection === 'overview') && (
+            <OverviewSection
+              overview={data?.overview}
+              roadmaps={data?.roadmaps}
+              studyTime={data?.studyTime}
+              consistency={data?.consistency}
+            />
+          )}
 
-      {(activeSection === 'all' || activeSection === 'study-time') && (
-        <StudyTimeSection studyTime={data?.studyTime} />
-      )}
+          {(activeSection === 'all' || activeSection === 'insights') && (
+            <EngineeringInsightsSection insights={data?.insights} />
+          )}
 
-      {(activeSection === 'all' || activeSection === 'consistency') && (
-        <ConsistencySection consistency={data?.consistency} />
-      )}
+          {(activeSection === 'all' || activeSection === 'technology') && (
+            <TechnologySection
+              roadmaps={data?.roadmaps}
+              consistency={data?.consistency}
+            />
+          )}
 
-      {(activeSection === 'all' || activeSection === 'tasks') && (
-        <TaskPerformanceSection taskPerformance={data?.taskPerformance} />
-      )}
+          {(activeSection === 'all' || activeSection === 'study-time') && (
+            <StudyTimeSection studyTime={data?.studyTime} />
+          )}
 
-      {(activeSection === 'all' || activeSection === 'revisions') && (
-        <RevisionPerformanceSection revisionPerformance={data?.revisionPerformance} />
-      )}
+          {(activeSection === 'all' || activeSection === 'consistency') && (
+            <ConsistencySection consistency={data?.consistency} />
+          )}
 
-      {(activeSection === 'all' || activeSection === 'projects') && (
-        <ProjectPerformanceSection projectPerformance={data?.projectPerformance} />
+          {(activeSection === 'all' || activeSection === 'tasks') && (
+            <TaskPerformanceSection taskPerformance={data?.taskPerformance} />
+          )}
+
+          {(activeSection === 'all' || activeSection === 'revisions') && (
+            <RevisionPerformanceSection revisionPerformance={data?.revisionPerformance} />
+          )}
+
+          {(activeSection === 'all' || activeSection === 'projects') && (
+            <ProjectPerformanceSection projectPerformance={data?.projectPerformance} />
+          )}
+        </>
       )}
 
       {/* Streak Target Configuration Modal */}

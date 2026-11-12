@@ -43,16 +43,33 @@ export default function NoteEditor({ note, onSave, onClose }) {
   const [availableTasks, setAvailableTasks] = useState([]);
   const [tags, setTags] = useState([]);
   const [selectedTagNames, setSelectedTagNames] = useState(
-    note?.tags ? note.tags.map((t) => t.name) : []
+    note?.tags ? note.tags.map((t) => (typeof t === 'string' ? t : t.name)) : []
   );
   const [newTagInput, setNewTagInput] = useState('');
   const [attachments, setAttachments] = useState(note?.attachments || []);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
+  const [titleError, setTitleError] = useState('');
 
   const textareaRef = useRef(null);
   const lastSavedRef = useRef({ title: note?.title || '', content: note?.content || '' });
   const isInitialMount = useRef(true);
+
+  // Synchronize state when note prop changes
+  useEffect(() => {
+    setTitle(note?.title || '');
+    setContent(note?.content || '');
+    setSelectedRoadmapId(note?.roadmapId || '');
+    setSelectedDayId(note?.roadmapDayId || '');
+    setSelectedTaskId(note?.taskId || '');
+    setSelectedTagNames(
+      note?.tags ? note.tags.map((t) => (typeof t === 'string' ? t : t.name)) : []
+    );
+    setAttachments(note?.attachments || []);
+    lastSavedRef.current = { title: note?.title || '', content: note?.content || '' };
+    setSaveStatus('saved');
+    setTitleError('');
+  }, [note]);
 
   // Load roadmaps and tags
   useEffect(() => {
@@ -126,17 +143,23 @@ export default function NoteEditor({ note, onSave, onClose }) {
   // Perform saving
   const handleSave = useCallback(
     async (overrideContent = content, overrideTitle = title) => {
-      if (!overrideTitle.trim()) return;
+      const cleanTitle = (overrideTitle || '').trim();
+      if (!cleanTitle) {
+        setTitleError('Note title is required.');
+        return;
+      }
+      setTitleError('');
 
       try {
         setSaveStatus('saving');
         const payload = {
-          title: overrideTitle.trim(),
+          title: cleanTitle,
           content: overrideContent,
           roadmapId: selectedRoadmapId || null,
           roadmapDayId: selectedDayId || null,
           taskId: selectedTaskId || null,
           tags: selectedTagNames,
+          tagNames: selectedTagNames,
         };
 
         let savedNote;
@@ -146,7 +169,7 @@ export default function NoteEditor({ note, onSave, onClose }) {
           savedNote = await noteService.createNote(payload);
         }
 
-        lastSavedRef.current = { title: overrideTitle, content: overrideContent };
+        lastSavedRef.current = { title: cleanTitle, content: overrideContent };
         setSaveStatus('saved');
         if (onSave) onSave(savedNote);
       } catch (err) {
@@ -239,10 +262,16 @@ export default function NoteEditor({ note, onSave, onClose }) {
             value={title}
             onChange={(e) => {
               setTitle(e.target.value);
+              if (e.target.value.trim()) setTitleError('');
               setSaveStatus('unsaved');
             }}
-            className="w-full text-lg font-bold bg-transparent text-[#202620] dark:text-[#F3F4F6] border-none outline-none focus:ring-0 placeholder:text-[#858D82] dark:placeholder:text-[#7F8996]"
+            className={`w-full text-lg font-bold bg-transparent text-[#202620] dark:text-[#F3F4F6] border-none outline-none focus:ring-0 placeholder:text-[#858D82] dark:placeholder:text-[#7F8996] ${
+              titleError ? 'border-b-2 border-red-500' : ''
+            }`}
           />
+          {titleError && (
+            <p className="text-[11px] text-red-500 font-medium mt-0.5">{titleError}</p>
+          )}
         </div>
 
         {/* Status & View Mode */}

@@ -17,9 +17,14 @@ let streakCache = null;
 let streakCacheTimestamp = 0;
 const STREAK_CACHE_TTL_MS = 15000; // 15 seconds
 
+let heatmapCache = null;
+let heatmapCacheTimestamp = 0;
+
 export function invalidateStreakCache() {
   streakCache = null;
   streakCacheTimestamp = 0;
+  heatmapCache = null;
+  heatmapCacheTimestamp = 0;
 }
 
 /**
@@ -558,9 +563,149 @@ export const StreakService = {
   },
 
   /**
+   * Batch Calculate Roadmap-Specific Streaks across all active roadmaps in a single SQL operation.
+   * Completely avoids N*3 serial database roundtrips.
+   */
+  async calculateAllRoadmapStreaks(activeRoadmaps = []) {
+    if (!activeRoadmaps || activeRoadmaps.length === 0) return [];
+    const todayStr = getKolkataDateString();
+
+    const [completions, personalCompletions, restDaysList] = await Promise.all([
+      prisma.$queryRaw`
+        SELECT 
+          rd.roadmap_id as "roadmapId",
+          (tc.completed_at AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Kolkata')::date::text as "dateStr",
+          COUNT(DISTINCT tc.task_id)::int as "count"
+        FROM task_completions tc
+        JOIN tasks t ON t.id = tc.task_id
+        JOIN roadmap_days rd ON rd.id = t.roadmap_day_id
+        WHERE tc.completed = true AND tc.completed_at >= NOW() - INTERVAL '365 days'
+        GROUP BY rd.roadmap_id, "dateStr"
+      `,
+      prisma.$queryRaw`
+        SELECT 
+          roadmap_id as "roadmapId",
+          (completed_at AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Kolkata')::date::text as "dateStr",
+          COUNT(DISTINCT id)::int as "count"
+        FROM personal_tasks
+        WHERE completed = true AND roadmap_id IS NOT NULL AND completed_at >= NOW() - INTERVAL '365 days'
+        GROUP BY roadmap_id, "dateStr"
+      `,
+      prisma.plannedRestDay.findMany({ select: { date: true } }),
+    ]);
+
+    const restDaySet = new Set(restDaysList.map((r) => r.date));
+    const roadmapActivityMap = new Map();
+    activeRoadmaps.forEach((rm) => roadmapActivityMap.set(rm.id, new Map()));
+
+    completions.forEach((c) => {
+      if (!roadmapActivityMap.has(c.roadmapId)) roadmapActivityMap.set(c.roadmapId, new Map());
+      const dateMap = roadmapActivityMap.get(c.roadmapId);
+      dateMap.set(c.dateStr, (dateMap.get(c.dateStr) || 0) + c.count);
+    });
+
+    personalCompletions.forEach((p) => {
+      if (!roadmapActivityMap.has(p.roadmapId)) roadmapActivityMap.set(p.roadmapId, new Map());
+      const dateMap = roadmapActivityMap.get(p.roadmapId);
+      dateMap.set(p.dateStr, (dateMap.get(p.dateStr) || 0) + p.count);
+    });
+
+    return activeRoadmaps.map((rm) => {
+      const activity = roadmapActivityMap.get(rm.id) || new Map();
+      const qualifyingDates = new Set();
+      let lastActiveDate = null;
+
+      activity.forEach((cnt, dStr) => {
+        if (cnt >= 1) {
+          qualifyingDates.add(dStr);
+          if (!lastActiveDate || dStr > lastActiveDate) lastActiveDate = dStr;
+        }
+      });
+
+      const completedToday = (activity.get(todayStr) || 0) >= 1;
+
+      let currentStreak = 0;
+      if (completedToday) {
+        currentStreak = 1;
+        let check = getPreviousKolkataDate(todayStr);
+        while (true) {
+          if (qualifyingDates.has(check)) {
+            currentStreak++;
+            check = getPreviousKolkataDate(check);
+          } else if (restDaySet.has(check)) {
+            check = getPreviousKolkataDate(check);
+          } else {
+            break;
+          }
+        }
+      } else {
+        let check = getPreviousKolkataDate(todayStr);
+        while (restDaySet.has(check) && !qualifyingDates.has(check)) {
+          check = getPreviousKolkataDate(check);
+        }
+        if (qualifyingDates.has(check)) {
+          while (true) {
+            if (qualifyingDates.has(check)) {
+              currentStreak++;
+              check = getPreviousKolkataDate(check);
+            } else if (restDaySet.has(check)) {
+              check = getPreviousKolkataDate(check);
+            } else {
+              break;
+            }
+          }
+        }
+      }
+
+      // Best streak
+      const sorted = Array.from(qualifyingDates).sort();
+      let bestStreak = 0;
+      let temp = 0;
+      let prev = null;
+      for (const d of sorted) {
+        if (!prev) {
+          temp = 1;
+        } else {
+          let cur = addDaysToKolkataDate(prev, 1);
+          let allRest = true;
+          while (cur < d) {
+            if (!restDaySet.has(cur)) {
+              allRest = false;
+              break;
+            }
+            cur = addDaysToKolkataDate(cur, 1);
+          }
+          if (cur === d && allRest) {
+            temp++;
+          } else {
+            temp = 1;
+          }
+        }
+        if (temp > bestStreak) bestStreak = temp;
+        prev = d;
+      }
+      if (currentStreak > bestStreak) bestStreak = currentStreak;
+
+      return {
+        roadmapId: rm.id,
+        title: rm.title,
+        categoryName: rm.category?.name || rm.categoryName || 'General',
+        currentStreak,
+        bestStreak,
+        completedToday,
+        lastActiveDate,
+      };
+    });
+  },
+
+  /**
    * 12-Month GitHub-style Activity Heatmap
    */
   async getActivityHeatmap(months = 12) {
+    if (months === 12 && heatmapCache && Date.now() - heatmapCacheTimestamp < STREAK_CACHE_TTL_MS) {
+      return JSON.parse(JSON.stringify(heatmapCache));
+    }
+
     const todayStr = getKolkataDateString();
     const daysCount = months * 30;
     const startDateStr = addDaysToKolkataDate(todayStr, -daysCount);
@@ -666,7 +811,7 @@ export const StreakService = {
 
     const overallStreak = await this.calculateOverallStreak();
 
-    return {
+    const result = {
       days,
       summary: {
         totalDays: days.length,
@@ -678,6 +823,13 @@ export const StreakService = {
         totalQualifyingDays: overallStreak.totalQualifyingDays,
       },
     };
+
+    if (months === 12) {
+      heatmapCache = JSON.parse(JSON.stringify(result));
+      heatmapCacheTimestamp = Date.now();
+    }
+
+    return result;
   },
 
   /**

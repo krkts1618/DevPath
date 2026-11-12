@@ -8,6 +8,7 @@ import {
   Coffee,
   Info,
   Clock,
+  Shield,
 } from 'lucide-react';
 import ActivityHeatmap from './ActivityHeatmap';
 
@@ -32,11 +33,15 @@ export default function ConsistencySection({ consistency }) {
             <Flame className="w-3.5 h-3.5" />
             Target: {consistency.streakTarget || 5} tasks/day
           </span>
+          <span className="px-2.5 py-1 rounded-lg bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-400 text-xs font-mono font-bold flex items-center gap-1">
+            <Shield className="w-3.5 h-3.5" />
+            Freezes: {consistency.monthlyFreezesRemaining ?? 4} left
+          </span>
         </div>
       </div>
 
-      {/* 4 Consistency Stat Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+      {/* 5 Consistency Stat Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3.5">
         <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-4 shadow-xs">
           <div className="text-[11px] font-semibold text-[#858D82] dark:text-[#7F8996]">Current Streak</div>
           <div className="text-2xl font-bold font-mono text-[#202620] dark:text-[#F3F4F6] mt-1 flex items-center gap-1.5">
@@ -82,6 +87,17 @@ export default function ConsistencySection({ consistency }) {
           </div>
           <p className="text-[11px] text-[#858D82] dark:text-[#7F8996] mt-0.5">
             Streak-neutral recovery days
+          </p>
+        </div>
+
+        <div className="bg-[#FFFFFF] dark:bg-[#1D232B] border border-[#E4E7E0] dark:border-[#303945] rounded-xl p-4 shadow-xs">
+          <div className="text-[11px] font-semibold text-[#858D82] dark:text-[#7F8996]">Monthly Freezes</div>
+          <div className="text-2xl font-bold font-mono text-[#202620] dark:text-[#F3F4F6] mt-1 flex items-center gap-1.5">
+            <span>{consistency.monthlyFreezesRemaining ?? 4}</span>
+            <Shield className="w-4 h-4 text-sky-500" />
+          </div>
+          <p className="text-[11px] text-[#858D82] dark:text-[#7F8996] mt-0.5">
+            {consistency.monthlyFreezesUsed || 0} used of 4 allowance
           </p>
         </div>
       </div>

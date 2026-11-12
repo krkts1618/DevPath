@@ -125,59 +125,30 @@ export const AnalyticsService = {
       dateRange.prevEndDate
     );
 
-    // 1. Parallel execute core domain queries
-    const [
-      allRoadmaps,
-      streakData,
-      completionsInPeriod,
-      completionsInPrevPeriod,
-      allCompletions,
-      studySessionsInPeriod,
-      studySessionsPrevPeriod,
-      allStudySessions,
-      allRevisions,
-      revisionSessionsInPeriod,
-      allProjects,
-      carriedForwardCount,
-      plannedRestDays,
-    ] = await Promise.all([
-      // A. All Roadmaps with complete structural hierarchy for independent progression
-      prisma.roadmap.findMany({
-        include: {
-          category: { select: { id: true, name: true, slug: true } },
-          roadmapDays: {
-            orderBy: { dayNumber: 'asc' },
-            select: {
-              id: true,
-              dayNumber: true,
-              title: true,
-              estimatedStudyTime: true,
-              dayType: true,
-              tasks: {
-                select: {
-                  id: true,
-                  title: true,
-                  taskType: true,
-                  priority: true,
-                  estimatedDuration: true,
-                  isRequired: true,
-                  displayOrder: true,
-                  completions: {
-                    select: { completed: true, completedAt: true },
-                  },
-                },
-                orderBy: { displayOrder: 'asc' },
-              },
-            },
-          },
-        },
-        orderBy: [{ displayOrder: 'asc' }, { createdAt: 'desc' }],
-      }),
-
-      // B. Overall streak calculation
+    // 1. Stage 1: Fast SQL aggregates, streak engine, period completions & study sessions
+    const [roadmapRows, streakData, completionsInPeriod, studySessionsInPeriod] = await Promise.all([
+      prisma.$queryRaw`
+        SELECT 
+          r.id as "roadmapId",
+          r.title,
+          r.slug,
+          r.status,
+          r.start_date as "startDate",
+          c.name as "categoryName",
+          COUNT(t.id)::int as "totalTasks",
+          COUNT(tc.id) FILTER (WHERE tc.completed = true)::int as "completedTasks",
+          MAX(tc.completed_at) as "lastActivityDate",
+          COALESCE(SUM(t.estimated_duration), 0)::int as "totalEstimatedMinutes",
+          COALESCE(SUM(t.estimated_duration) FILTER (WHERE tc.completed = true), 0)::int as "completedEstimatedMinutes"
+        FROM roadmaps r
+        LEFT JOIN roadmap_categories c ON c.id = r.category_id
+        LEFT JOIN roadmap_days rd ON rd.roadmap_id = r.id
+        LEFT JOIN tasks t ON t.roadmap_day_id = rd.id
+        LEFT JOIN task_completions tc ON tc.task_id = t.id AND tc.completed = true
+        GROUP BY r.id, r.title, r.slug, r.status, r.start_date, c.name, r.display_order
+        ORDER BY r.display_order ASC;
+      `,
       StreakService.calculateOverallStreak(),
-
-      // C. Task completions in current period
       prisma.taskCompletion.findMany({
         where: {
           completed: true,
@@ -185,91 +156,91 @@ export const AnalyticsService = {
         },
         select: {
           id: true,
-          taskId: true,
           completedAt: true,
           task: {
             select: {
-              id: true,
-              title: true,
               priority: true,
               taskType: true,
-              estimatedDuration: true,
-              roadmapDay: {
-                select: {
-                  dayNumber: true,
-                  roadmap: { select: { id: true, title: true, categoryId: true } },
-                },
-              },
+              roadmapDay: { select: { roadmapId: true } },
             },
           },
         },
         orderBy: { completedAt: 'asc' },
       }),
-
-      // D. Task completions in previous period (for comparison)
-      prisma.taskCompletion.findMany({
-        where: {
-          completed: true,
-          completedAt: { gte: prevStartUtc, lte: prevEndUtc },
-        },
-        select: { id: true, completedAt: true },
-      }),
-
-      // E. All-time completed tasks
-      prisma.taskCompletion.findMany({
-        where: { completed: true },
-        select: { id: true, taskId: true, completedAt: true },
-      }),
-
-      // F. Completed study sessions in current period (excluding paused & discarded)
       prisma.studySession.findMany({
         where: {
           status: 'completed',
           sessionType: { in: ['pomodoro', 'custom', 'stopwatch'] },
           startedAt: { gte: startUtc, lte: endUtc },
         },
-        include: {
+        select: {
+          id: true,
+          actualDurationSeconds: true,
+          startedAt: true,
+          roadmapId: true,
+          projectId: true,
           roadmap: { select: { id: true, title: true, category: { select: { id: true, name: true } } } },
           project: { select: { id: true, name: true } },
         },
         orderBy: { startedAt: 'asc' },
       }),
+    ]);
 
-      // G. Completed study sessions in previous period
-      prisma.studySession.findMany({
+    // 2. Stage 2: Previous period aggregates, revisions, projects, rest days (preserves connection pool)
+    const [
+      prevCompletionsCount,
+      prevStudyAgg,
+      allStudyAgg,
+      studyHoursByRoadmap,
+      allRevisions,
+      revisionSessionsInPeriod,
+      allProjects,
+      carriedForwardCount,
+      plannedRestDays,
+    ] = await Promise.all([
+      prisma.taskCompletion.count({
+        where: { completed: true, completedAt: { gte: prevStartUtc, lte: prevEndUtc } },
+      }),
+      prisma.studySession.aggregate({
         where: {
           status: 'completed',
           sessionType: { in: ['pomodoro', 'custom', 'stopwatch'] },
           startedAt: { gte: prevStartUtc, lte: prevEndUtc },
         },
-        select: { actualDurationSeconds: true },
+        _sum: { actualDurationSeconds: true },
+        _count: { id: true },
       }),
-
-      // H. All completed study sessions
-      prisma.studySession.findMany({
+      prisma.studySession.aggregate({
         where: {
           status: 'completed',
           sessionType: { in: ['pomodoro', 'custom', 'stopwatch'] },
         },
-        select: { actualDurationSeconds: true, startedAt: true },
+        _sum: { actualDurationSeconds: true },
+        _count: { id: true },
       }),
-
-      // I. All revision items
+      prisma.studySession.groupBy({
+        by: ['roadmapId'],
+        where: { status: 'completed' },
+        _sum: { actualDurationSeconds: true },
+      }),
       prisma.revisionSchedule.findMany({
-        include: {
+        select: {
+          id: true,
+          topic: true,
+          stage: true,
+          status: true,
+          scheduledDate: true,
+          completed: true,
           roadmap: { select: { id: true, title: true, category: { select: { id: true, name: true } } } },
           sessions: {
+            select: { id: true, rating: true, revisedAt: true, durationMinutes: true },
             orderBy: { revisedAt: 'desc' },
           },
         },
         orderBy: { scheduledDate: 'asc' },
       }),
-
-      // J. Revision review sessions in current period
       prisma.revisionSession.findMany({
-        where: {
-          revisedAt: { gte: startUtc, lte: endUtc },
-        },
+        where: { revisedAt: { gte: startUtc, lte: endUtc } },
         select: {
           id: true,
           rating: true,
@@ -278,98 +249,99 @@ export const AnalyticsService = {
           revisionScheduleId: true,
         },
       }),
-
-      // K. Projects with milestones and tasks
       prisma.project.findMany({
-        include: {
+        select: {
+          id: true,
+          name: true,
+          status: true,
+          priority: true,
+          targetDate: true,
           roadmap: { select: { id: true, title: true } },
-          milestones: { orderBy: { displayOrder: 'asc' } },
-          tasks: true,
+          milestones: {
+            select: { id: true, status: true, dueDate: true, completedAt: true, displayOrder: true },
+            orderBy: { displayOrder: 'asc' },
+          },
+          tasks: { select: { id: true, status: true, completedAt: true } },
         },
         orderBy: { updatedAt: 'desc' },
       }),
-
-      // L. Carried forward tasks count
       prisma.taskReassignment.count(),
-
-      // M. Planned rest days in period
       prisma.plannedRestDay.findMany({
         where: {
           date: { gte: dateRange.startDate, lte: dateRange.endDate },
         },
+        select: { date: true, title: true, reason: true },
       }),
     ]);
 
     // ==========================================
-    // 2. OVERVIEW & METRICS COMPUTATION
+    // 3. OVERVIEW & METRICS COMPUTATION
     // ==========================================
     let totalCurriculumTasks = 0;
     let completedCurriculumTasks = 0;
-    const activeRoadmaps = allRoadmaps.filter((r) => r.status === 'active');
-    const archivedRoadmaps = allRoadmaps.filter((r) => r.status === 'archived');
-    const pausedRoadmaps = allRoadmaps.filter((r) => r.status === 'paused');
+    const activeRoadmaps = roadmapRows.filter((r) => r.status === 'active');
+    const archivedRoadmaps = roadmapRows.filter((r) => r.status === 'archived');
+    const pausedRoadmaps = roadmapRows.filter((r) => r.status === 'paused');
 
-    // Build independent roadmap progression list
-    const roadmapCards = [];
-    for (const rm of allRoadmaps) {
-      const prog = computeProgressionFromRoadmap(rm);
+    const roadmapAllTimeStudyMap = new Map();
+    studyHoursByRoadmap.forEach((s) => {
+      if (s.roadmapId) {
+        roadmapAllTimeStudyMap.set(s.roadmapId, s._sum?.actualDurationSeconds || 0);
+      }
+    });
+
+    const todayStr = getKolkataDateString();
+
+    const roadmapCards = roadmapRows.map((rm) => {
       if (rm.status === 'active') {
-        totalCurriculumTasks += prog.totalTasks;
-        completedCurriculumTasks += prog.completedTasks;
+        totalCurriculumTasks += rm.totalTasks;
+        completedCurriculumTasks += rm.completedTasks;
       }
 
-      // Calculate total study time for this roadmap
-      let roadmapStudySeconds = 0;
-      allStudySessions.forEach((s) => {
-        if (s.roadmapId === rm.id) roadmapStudySeconds += (s.actualDurationSeconds || 0);
-      });
+      const roadmapStudySeconds = roadmapAllTimeStudyMap.get(rm.roadmapId) || 0;
+      const pendingTasksCount = Math.max(0, rm.totalTasks - rm.completedTasks);
+      const progressPercent =
+        rm.totalTasks > 0 ? Math.round((rm.completedTasks / rm.totalTasks) * 100) : 0;
+      const estimatedRemainingMinutes = Math.max(
+        0,
+        (rm.totalEstimatedMinutes || 0) - (rm.completedEstimatedMinutes || 0)
+      );
 
-      // Find last activity
-      let lastActivityDate = null;
-      (rm.roadmapDays || []).forEach((d) => {
-        (d.tasks || []).forEach((t) => {
-          (t.completions || []).forEach((c) => {
-            if (c.completed && c.completedAt) {
-              if (!lastActivityDate || new Date(c.completedAt) > new Date(lastActivityDate)) {
-                lastActivityDate = c.completedAt;
-              }
-            }
-          });
-        });
-      });
-
-      // Calculate remaining tasks and duration
-      const pendingTasksCount = Math.max(0, prog.totalTasks - prog.completedTasks);
-      let estimatedRemainingMinutes = 0;
-      (rm.roadmapDays || []).forEach((d) => {
-        (d.tasks || []).forEach((t) => {
-          const isDone = t.completions && t.completions.some((c) => c.completed);
-          if (!isDone && t.estimatedDuration) {
-            estimatedRemainingMinutes += t.estimatedDuration;
+      // Compute current weekday learning day count in Asia/Kolkata
+      let currentDayNumber = 1;
+      if (rm.startDate) {
+        const startStr = getKolkataDateString(rm.startDate);
+        if (todayStr > startStr) {
+          let cur = startStr;
+          let weekdays = 1;
+          while (cur < todayStr) {
+            cur = addDaysToKolkataDate(cur, 1);
+            if (isKolkataWeekday(cur)) weekdays++;
           }
-        });
-      });
+          currentDayNumber = weekdays;
+        }
+      }
 
-      roadmapCards.push({
-        id: rm.id,
+      return {
+        id: rm.roadmapId,
         title: rm.title,
         slug: rm.slug,
         status: rm.status,
-        category: rm.category,
+        category: { id: rm.categoryId, name: rm.categoryName || 'General' },
         categoryId: rm.categoryId,
-        categoryName: rm.category?.name || 'General',
-        totalTasks: prog.totalTasks,
-        completedTasks: prog.completedTasks,
+        categoryName: rm.categoryName || 'General',
+        totalTasks: rm.totalTasks,
+        completedTasks: rm.completedTasks,
         pendingTasks: pendingTasksCount,
-        progressPercent: prog.progressPercent,
-        currentDayNumber: prog.currentLearningDayNumber,
-        currentDayTitle: prog.currentLearningDay?.title || `Day ${prog.currentLearningDayNumber}`,
-        lastActivityDate,
+        progressPercent,
+        currentDayNumber,
+        currentDayTitle: `Day ${currentDayNumber}`,
+        lastActivityDate: rm.lastActivityDate,
         totalStudyHours: Math.round((roadmapStudySeconds / 3600) * 10) / 10,
         estimatedRemainingMinutes,
         estimatedRemainingHours: Math.round((estimatedRemainingMinutes / 60) * 10) / 10,
-      });
-    }
+      };
+    });
 
     const overallCompletionPercent =
       totalCurriculumTasks > 0
@@ -381,14 +353,8 @@ export const AnalyticsService = {
     studySessionsInPeriod.forEach((s) => {
       currentPeriodStudySeconds += (s.actualDurationSeconds || 0);
     });
-    let prevPeriodStudySeconds = 0;
-    studySessionsPrevPeriod.forEach((s) => {
-      prevPeriodStudySeconds += (s.actualDurationSeconds || 0);
-    });
-    let allTimeStudySeconds = 0;
-    allStudySessions.forEach((s) => {
-      allTimeStudySeconds += (s.actualDurationSeconds || 0);
-    });
+    let prevPeriodStudySeconds = prevStudyAgg._sum?.actualDurationSeconds || 0;
+    let allTimeStudySeconds = allStudyAgg._sum?.actualDurationSeconds || 0;
 
     const focusedHoursPeriod = Math.round((currentPeriodStudySeconds / 3600) * 10) / 10;
     const focusedHoursPrev = Math.round((prevPeriodStudySeconds / 3600) * 10) / 10;
@@ -404,9 +370,9 @@ export const AnalyticsService = {
     const activeProjectsCount = allProjects.filter((p) => p.status === 'active').length;
 
     // Period Comparisons
-    const hasHistoricalData = dateRange.timeframe !== 'all' && (completionsInPrevPeriod.length > 0 || studySessionsPrevPeriod.length > 0);
+    const hasHistoricalData = dateRange.timeframe !== 'all' && (prevCompletionsCount > 0 || prevPeriodStudySeconds > 0);
     const taskComparison = hasHistoricalData
-      ? calculateComparison(completionsInPeriod.length, completionsInPrevPeriod.length)
+      ? calculateComparison(completionsInPeriod.length, prevCompletionsCount)
       : { status: 'insufficient_data', percentChange: 0, text: 'Insufficient historical data' };
 
     const studyTimeComparison = hasHistoricalData
@@ -414,8 +380,34 @@ export const AnalyticsService = {
       : { status: 'insufficient_data', percentChange: 0, text: 'Insufficient historical data' };
 
     const sessionsComparison = hasHistoricalData
-      ? calculateComparison(studySessionsInPeriod.length, studySessionsPrevPeriod.length)
+      ? calculateComparison(studySessionsInPeriod.length, prevStudyAgg._count?.id || 0)
       : { status: 'insufficient_data', percentChange: 0, text: 'Insufficient historical data' };
+
+    // Learning Trend Points for Overview chart (Asia/Kolkata date grouping)
+    const learningTrendMap = new Map();
+    let curD = dateRange.startDate;
+    while (curD <= dateRange.endDate) {
+      learningTrendMap.set(curD, { date: curD, completedTasks: 0 });
+      curD = addDaysToKolkataDate(curD, 1);
+    }
+    completionsInPeriod.forEach((c) => {
+      const dStr = getKolkataDateString(c.completedAt);
+      if (learningTrendMap.has(dStr)) {
+        learningTrendMap.get(dStr).completedTasks += 1;
+      }
+    });
+
+    const dayLabelsShort = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const learningTrend = Array.from(learningTrendMap.values()).map((d) => {
+      const [y, m, dayNum] = d.date.split('-').map(Number);
+      const dayOfWeek = new Date(Date.UTC(y, m - 1, dayNum, 12, 0, 0)).getDay();
+      return {
+        date: d.date,
+        day: dayLabelsShort[dayOfWeek],
+        val: d.completedTasks,
+        completedTasks: d.completedTasks,
+      };
+    });
 
     const overview = {
       activeRoadmapsCount: activeRoadmaps.length,
@@ -429,12 +421,15 @@ export const AnalyticsService = {
       currentOverallStreak: streakData.currentStreak,
       bestOverallStreak: streakData.bestStreak,
       totalQualifyingStreakDays: streakData.qualifyingDaysCount || 0,
+      monthlyFreezesUsed: streakData.monthlyFreezesUsed || 0,
+      monthlyFreezesRemaining: streakData.monthlyFreezesRemaining !== undefined ? streakData.monthlyFreezesRemaining : 4,
       totalFocusedStudyHours: focusedHoursPeriod,
       allTimeFocusedStudyHours: focusedHoursAllTime,
       totalCompletedFocusSessions: studySessionsInPeriod.length,
-      allTimeFocusSessionsCount: allStudySessions.length,
+      allTimeFocusSessionsCount: allStudyAgg._count?.id || 0,
       totalRevisionsCompleted: completedRevisionsCount,
       activeProjectsCount,
+      learningTrend,
       comparisons: {
         tasks: taskComparison,
         studyTime: studyTimeComparison,
@@ -587,20 +582,8 @@ export const AnalyticsService = {
     // Fetch heatmap records using StreakService
     const heatmap = await StreakService.getActivityHeatmap(12);
 
-    // Roadmap-specific streaks
-    const roadmapStreaks = [];
-    for (const rm of activeRoadmaps) {
-      const s = await StreakService.calculateRoadmapStreak(rm.id);
-      roadmapStreaks.push({
-        roadmapId: rm.id,
-        title: rm.title,
-        categoryName: rm.category?.name || 'General',
-        currentStreak: s.currentStreak,
-        bestStreak: s.bestStreak,
-        completedToday: s.completedToday,
-        lastActiveDate: s.lastActiveDate,
-      });
-    }
+    // Roadmap-specific streaks calculated in a single batched SQL query
+    const roadmapStreaks = await StreakService.calculateAllRoadmapStreaks(activeRoadmaps);
 
     const consistency = {
       currentOverallStreak: streakData.currentStreak,
@@ -611,6 +594,8 @@ export const AnalyticsService = {
       qualifiedToday: streakData.qualifiedToday,
       isPendingToday: streakData.isPendingToday,
       overallQualifyingDays: streakData.qualifyingDaysCount || 0,
+      monthlyFreezesUsed: streakData.monthlyFreezesUsed || 0,
+      monthlyFreezesRemaining: streakData.monthlyFreezesRemaining !== undefined ? streakData.monthlyFreezesRemaining : 4,
       roadmapStreaks,
       heatmap,
       activeLearningDaysInPeriod: activeStudyDaysCount,

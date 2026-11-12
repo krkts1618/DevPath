@@ -1,4 +1,5 @@
 import { errorResponse } from '../utils/response.util.js';
+import { isAllowedOrigin } from '../config/cors.js';
 
 export class AppError extends Error {
   constructor(message, statusCode = 400, details = null) {
@@ -10,11 +11,27 @@ export class AppError extends Error {
   }
 }
 
+function attachCorsHeaders(req, res) {
+  const origin = req.headers.origin;
+  if (origin && isAllowedOrigin(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS,HEAD');
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Content-Type,Authorization,x-app-access-secret,Cache-Control,Pragma,X-Requested-With'
+    );
+  }
+}
+
 export function notFoundHandler(req, res, next) {
+  attachCorsHeaders(req, res);
   next(new AppError(`Endpoint not found: ${req.method} ${req.originalUrl}`, 404));
 }
 
 export function errorHandler(err, req, res, next) {
+  attachCorsHeaders(req, res);
+
   // Never expose internal database errors or secrets
   let statusCode = err.statusCode || 500;
   let message = err.message || 'Internal Server Error';

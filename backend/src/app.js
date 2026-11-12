@@ -5,6 +5,7 @@ import rateLimit from 'express-rate-limit';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { config } from './config/env.js';
+import { corsOptions, isAllowedOrigin } from './config/cors.js';
 import { requestLogger } from './middlewares/request-logger.middleware.js';
 import { notFoundHandler, errorHandler } from './middlewares/error.middleware.js';
 import { appAccessSecretGuard } from './middlewares/auth-secret.middleware.js';
@@ -34,36 +35,9 @@ app.use(
 );
 
 // Strict Production CORS Configuration
-const allowedOrigins = [
-  config.frontendUrl,
-  'http://localhost:5173',
-  'http://127.0.0.1:5173',
-  'http://localhost:3000',
-];
-if (process.env.ADDITIONAL_CORS_ORIGINS) {
-  allowedOrigins.push(
-    ...process.env.ADDITIONAL_CORS_ORIGINS.split(',').map((s) => s.trim())
-  );
-}
-
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow non-browser requests (curl, server-to-server, cron jobs)
-      if (!origin) return callback(null, true);
-      if (
-        allowedOrigins.includes(origin) ||
-        origin.endsWith('.vercel.app') ||
-        config.nodeEnv !== 'production'
-      ) {
-        return callback(null, true);
-      }
-      return callback(new Error(`CORS origin not allowed: ${origin}`));
-    },
-    credentials: true,
-    exposedHeaders: ['Server-Timing'],
-  })
-);
+app.use(cors(corsOptions));
+// Handle preflight OPTIONS requests across all routes
+app.options('*', cors(corsOptions));
 
 // Rate Limiting (Protects Render instance against DoS & excessive queries)
 const apiLimiter = rateLimit({

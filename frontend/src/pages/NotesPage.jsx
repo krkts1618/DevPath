@@ -127,29 +127,19 @@ export default function NotesPage() {
     };
 
     notes.forEach((n) => {
-      const text = `${n.title} ${n.roadmapTitle || ''} ${(n.tags || []).map((t) => t.name).join(' ')}`.toLowerCase();
-      if (text.includes('react') || text.includes('web') || text.includes('node') || text.includes('javascript') || text.includes('mern') || text.includes('frontend') || text.includes('backend')) {
+      const text = `${n.title} ${n.categoryName || ''} ${n.roadmapTitle || ''} ${(n.tags || []).map((t) => (typeof t === 'string' ? t : t?.name)).join(' ')}`.toLowerCase();
+      if (text.includes('react') || text.includes('web') || text.includes('node') || text.includes('javascript') || text.includes('mern') || text.includes('frontend') || text.includes('backend') || text.includes('full-stack') || text.includes('spring')) {
         counts.web++;
-      } else if (text.includes('dsa') || text.includes('data structure') || text.includes('algorithm') || text.includes('tree') || text.includes('graph')) {
+      } else if (text.includes('dsa') || text.includes('data structure') || text.includes('algorithm') || text.includes('tree') || text.includes('graph') || text.includes('leetcode')) {
         counts.dsa++;
-      } else if (text.includes('system design') || text.includes('architecture') || text.includes('cache') || text.includes('load balancer') || text.includes('scale')) {
+      } else if (text.includes('system design') || text.includes('architecture') || text.includes('cache') || text.includes('load balancer') || text.includes('scale') || text.includes('distributed')) {
         counts.sysdesign++;
-      } else if (text.includes('docker') || text.includes('git') || text.includes('devops') || text.includes('ci/cd') || text.includes('linux') || text.includes('container')) {
+      } else if (text.includes('docker') || text.includes('git') || text.includes('devops') || text.includes('ci/cd') || text.includes('linux') || text.includes('container') || text.includes('kubernetes')) {
         counts.devops++;
       } else {
         counts.others++;
       }
     });
-
-    // Provide attractive minimums if dataset is sparse
-    if (counts.all === 0) {
-      counts.all = 24;
-      counts.web = 8;
-      counts.dsa = 6;
-      counts.sysdesign = 4;
-      counts.devops = 3;
-      counts.others = 3;
-    }
 
     return counts;
   }, [notes]);
@@ -183,14 +173,20 @@ export default function NotesPage() {
     }
   };
 
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const handleDeleteConfirm = async () => {
-    if (!noteToDelete) return;
+    if (!noteToDelete || isDeleting) return;
     try {
+      setIsDeleting(true);
       await noteService.deleteNote(noteToDelete.id);
       setNoteToDelete(null);
-      fetchNotes();
+      await fetchNotes();
     } catch (err) {
       console.error('Delete note error:', err);
+      setError(err.message || 'Failed to delete note');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -199,6 +195,7 @@ export default function NotesPage() {
     return (
       <div className="space-y-4">
         <NoteEditor
+          key={activeNoteForEdit?.id || (isCreatingNew ? 'new-note' : 'note-editor')}
           note={activeNoteForEdit}
           onSave={() => fetchNotes()}
           onClose={() => {
@@ -211,41 +208,6 @@ export default function NotesPage() {
     );
   }
 
-  // Display notes (if empty, populate with reference mock cards so the page is never blank)
-  const displayNotes = filteredNotes.length > 0 ? filteredNotes : [
-    {
-      id: 'ref-1',
-      title: 'React Hooks Guide',
-      isPinned: true,
-      previewSnippet: 'A complete guide to React hooks with examples.',
-      tags: [{ id: 't1', name: 'React' }, { id: 't2', name: 'Hooks' }],
-      updatedAt: '2025-11-04T12:00:00Z',
-    },
-    {
-      id: 'ref-2',
-      title: 'Docker Basics',
-      isPinned: false,
-      previewSnippet: 'Containerization with Docker and best practices.',
-      tags: [{ id: 't3', name: 'DevOps' }, { id: 't4', name: 'Docker' }],
-      updatedAt: '2025-11-02T12:00:00Z',
-    },
-    {
-      id: 'ref-3',
-      title: 'System Design Notes',
-      isPinned: false,
-      previewSnippet: 'Key concepts and architecture patterns.',
-      tags: [{ id: 't5', name: 'System Design' }],
-      updatedAt: '2025-10-30T12:00:00Z',
-    },
-    {
-      id: 'ref-4',
-      title: 'SQL Cheatsheet',
-      isPinned: false,
-      previewSnippet: 'Important SQL queries and concepts.',
-      tags: [{ id: 't6', name: 'Database' }],
-      updatedAt: '2025-10-28T12:00:00Z',
-    },
-  ];
 
   return (
     <div className="space-y-5">
@@ -320,109 +282,150 @@ export default function NotesPage() {
 
         {/* Right Cards Grid (approx 9 cols) */}
         <div className="md:col-span-9">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {displayNotes.map((note) => (
-              <div
-                key={note.id}
-                onClick={() => {
-                  if (note.id.startsWith('ref-')) {
-                    setActiveNoteForEdit({
-                      title: note.title,
-                      content: note.previewSnippet,
-                      tags: note.tags,
-                    });
-                  } else {
-                    setActiveNoteForEdit(note);
-                  }
+          {loading && notes.length === 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {[1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl p-5 h-44 animate-pulse"
+                />
+              ))}
+            </div>
+          ) : notes.length === 0 ? (
+            <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl p-10 text-center">
+              <EmptyState
+                icon={FileText}
+                title="No Notes Yet"
+                description="You haven't created any technical notes yet. Record architecture decisions, study summaries, and interview takeaways."
+                actionLabel="+ Create First Note"
+                onAction={() => {
+                  setActiveNoteForEdit(null);
+                  setIsCreatingNew(true);
                 }}
-                className="group relative bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--accent-primary)] rounded-2xl p-5 shadow-xs transition cursor-pointer flex flex-col justify-between"
-              >
-                <div>
-                  {/* Top row: Pin indicator & Menu actions */}
-                  <div className="flex items-center justify-between mb-2">
-                    {note.isPinned ? (
-                      <span className="p-1 rounded-lg bg-[var(--accent-subtle)] text-[var(--accent-primary)]">
-                        <Pin className="w-3.5 h-3.5 fill-current" />
-                      </span>
-                    ) : (
-                      <span className="w-3.5 h-3.5" />
-                    )}
+              />
+            </div>
+          ) : filteredNotes.length === 0 ? (
+            <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl p-10 text-center">
+              <EmptyState
+                icon={Search}
+                title="No Matching Notes Found"
+                description={
+                  searchQuery
+                    ? `No notes match "${searchQuery}" in this category.`
+                    : 'No notes found for this category filter.'
+                }
+                actionLabel="Clear Filters"
+                onAction={() => {
+                  setSearchQuery('');
+                  setSelectedCategory('all');
+                }}
+              />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {filteredNotes.map((note) => (
+                <div
+                  key={note.id}
+                  onClick={() => {
+                    setActiveNoteForEdit(note);
+                    setIsCreatingNew(false);
+                  }}
+                  className="group relative bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--accent-primary)] rounded-2xl p-5 shadow-xs transition cursor-pointer flex flex-col justify-between"
+                >
+                  <div>
+                    {/* Top row: Pin indicator & Menu actions */}
+                    <div className="flex items-center justify-between mb-2">
+                      {note.isPinned ? (
+                        <span className="p-1 rounded-lg bg-[var(--accent-subtle)] text-[var(--accent-primary)]">
+                          <Pin className="w-3.5 h-3.5 fill-current" />
+                        </span>
+                      ) : (
+                        <span className="w-3.5 h-3.5" />
+                      )}
 
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
-                      <button
-                        onClick={(e) => handleTogglePin(e, note.id)}
-                        title={note.isPinned ? 'Unpin' : 'Pin to top'}
-                        className="p-1 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                      >
-                        <Pin className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        onClick={(e) => handleDuplicate(e, note.id)}
-                        title="Duplicate note"
-                        className="p-1 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                      >
-                        <Copy className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setNoteToDelete(note);
-                        }}
-                        title="Delete note"
-                        className="p-1 rounded text-red-500 hover:text-red-700"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+                        <button
+                          onClick={(e) => handleTogglePin(e, note.id)}
+                          title={note.isPinned ? 'Unpin' : 'Pin to top'}
+                          className="p-1 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
+                        >
+                          <Pin className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={(e) => handleDuplicate(e, note.id)}
+                          title="Duplicate note"
+                          className="p-1 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
+                        >
+                          <Copy className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setNoteToDelete(note);
+                          }}
+                          title="Delete note"
+                          className="p-1 rounded text-red-500 hover:text-red-700 cursor-pointer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
+
+                    {/* Note Title */}
+                    <h3 className="font-bold text-sm text-[var(--text-primary)] mb-1 line-clamp-1">
+                      {note.title}
+                    </h3>
+
+                    {/* Note Snippet */}
+                    <p className="text-xs text-[var(--text-secondary)] line-clamp-2 mb-4 leading-relaxed">
+                      {note.previewSnippet || note.content || 'No additional content.'}
+                    </p>
                   </div>
 
-                  {/* Note Title */}
-                  <h3 className="font-bold text-sm text-[var(--text-primary)] mb-1 line-clamp-1">
-                    {note.title}
-                  </h3>
+                  {/* Footer row: Tags and Date */}
+                  <div className="flex items-center justify-between pt-3 border-t border-[var(--border-subtle)] text-[11px]">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {(note.tags || []).slice(0, 3).map((t, idx) => (
+                        <span
+                          key={t.id || idx}
+                          className="px-2.5 py-1 rounded-lg bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] text-[var(--text-secondary)] text-[10px] font-medium"
+                        >
+                          {typeof t === 'string' ? t : t.name}
+                        </span>
+                      ))}
+                    </div>
 
-                  {/* Note Snippet */}
-                  <p className="text-xs text-[var(--text-secondary)] line-clamp-2 mb-4 leading-relaxed">
-                    {note.previewSnippet || 'No additional content.'}
-                  </p>
-                </div>
-
-                {/* Footer row: Tags and Date */}
-                <div className="flex items-center justify-between pt-3 border-t border-[var(--border-subtle)] text-[11px]">
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    {(note.tags || []).slice(0, 3).map((t, idx) => (
-                      <span
-                        key={t.id || idx}
-                        className="px-2.5 py-1 rounded-lg bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] text-[var(--text-secondary)] text-[10px] font-medium"
-                      >
-                        {t.name}
-                      </span>
-                    ))}
+                    <span className="text-[10px] font-mono text-[var(--text-muted)] shrink-0">
+                      {new Date(note.updatedAt).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })}
+                    </span>
                   </div>
-
-                  <span className="text-[10px] font-mono text-[var(--text-muted)] shrink-0">
-                    {new Date(note.updatedAt).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                    })}
-                  </span>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
       {/* Delete Confirmation Dialog */}
       <ConfirmationDialog
         isOpen={!!noteToDelete}
-        onClose={() => setNoteToDelete(null)}
+        onClose={() => {
+          if (!isDeleting) setNoteToDelete(null);
+        }}
         onConfirm={handleDeleteConfirm}
         title="Delete Note"
-        message={`Are you sure you want to delete "${noteToDelete?.title}"?`}
-        confirmText="Delete Note"
-        confirmVariant="danger"
+        message={
+          noteToDelete
+            ? `Are you sure you want to delete "${noteToDelete.title}"? This action cannot be undone.`
+            : ''
+        }
+        confirmLabel="Delete Note"
+        isDestructive={true}
+        isLoading={isDeleting}
       />
     </div>
   );

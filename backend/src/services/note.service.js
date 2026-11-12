@@ -204,17 +204,21 @@ export const NoteService = {
       isFavorite = false,
       tagIds = [],
       tagNames = [],
+      tags = [],
     } = data;
 
     if (!title || !title.trim()) {
       throw new Error('Note title is required');
     }
 
-    // Process tag IDs and names
-    const resolvedTagIds = new Set(tagIds.filter(Boolean));
+    // Process tag IDs and names (support both tagNames and tags array)
+    const resolvedTagIds = new Set((tagIds || []).filter(Boolean));
+    const rawTagList = (tagNames && tagNames.length > 0)
+      ? tagNames
+      : (Array.isArray(tags) ? tags.map((t) => (typeof t === 'string' ? t : t?.name)).filter(Boolean) : []);
 
-    if (tagNames && tagNames.length > 0) {
-      for (const name of tagNames) {
+    if (rawTagList.length > 0) {
+      for (const name of rawTagList) {
         if (!name || !name.trim()) continue;
         const normalized = name.trim().toLowerCase();
         const existing = await prisma.noteTag.upsert({
@@ -276,6 +280,7 @@ export const NoteService = {
       isArchived,
       tagIds,
       tagNames,
+      tags,
     } = data;
 
     const updatePayload = {};
@@ -289,12 +294,15 @@ export const NoteService = {
     if (isFavorite !== undefined) updatePayload.isFavorite = Boolean(isFavorite);
     if (isArchived !== undefined) updatePayload.isArchived = Boolean(isArchived);
 
-    // Update tags if provided
-    if (tagIds !== undefined || tagNames !== undefined) {
+    // Update tags if provided (support tagIds, tagNames, or tags)
+    if (tagIds !== undefined || tagNames !== undefined || tags !== undefined) {
       const resolvedTagIds = new Set((tagIds || []).filter(Boolean));
+      const rawTagList = (tagNames !== undefined && Array.isArray(tagNames))
+        ? tagNames
+        : (Array.isArray(tags) ? tags.map((t) => (typeof t === 'string' ? t : t?.name)).filter(Boolean) : []);
 
-      if (tagNames && tagNames.length > 0) {
-        for (const name of tagNames) {
+      if (rawTagList.length > 0) {
+        for (const name of rawTagList) {
           if (!name || !name.trim()) continue;
           const normalized = name.trim().toLowerCase();
           const tag = await prisma.noteTag.upsert({
